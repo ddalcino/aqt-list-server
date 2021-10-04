@@ -74,7 +74,7 @@ const fetch_tool_variants = (
   target: string,
   tool_name: string
 ): Promise<ToolData> =>
-  fetch_meta(`/list-tool/${host}/${target}/?tool=${tool_name}`).then(
+  fetch_meta(`/list-tool/${host}/${target}/${tool_name}/`).then(
     (meta) => new ToolData(tool_name, meta as ToolVariant[])
   );
 
