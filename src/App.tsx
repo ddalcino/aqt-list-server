@@ -1,5 +1,7 @@
 import React from 'react';
 import ComboBox from './Components/ComboBox';
+import CheckBox from "./Components/CheckBox";
+import CommandPanel from "./Components/CommandPanel";
 import { SelectState, SelectValue } from './State';
 
 const App = () => {
