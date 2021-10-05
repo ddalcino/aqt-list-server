@@ -8,7 +8,7 @@ export const enum SelectValue {
 }
 
 export class SelectState {
-  constructor(private state: SelectValue) { }
+  constructor(private state: SelectValue) {}
 
   hasSelection(): boolean {
     return this.state === SelectValue.Selected;
@@ -40,8 +40,8 @@ class Selection {
         state !== undefined
           ? state
           : valueOrState === NO_SELECTION
-            ? SelectValue.Loaded
-            : SelectValue.Selected
+          ? SelectValue.Loaded
+          : SelectValue.Selected
       );
     } else {
       // it's a SelectState
@@ -58,7 +58,7 @@ export class SelectOne {
     public selected: Selection,
     public options: Array<string> = [],
     public allowEmpty: boolean = true
-  ) { }
+  ) {}
 
   copy(): SelectOne {
     return this.copyWithOption(this.selected.value);
@@ -96,7 +96,7 @@ export class Versions {
   constructor(
     public selected: Selection,
     public versions: Array<Array<string>>
-  ) { }
+  ) {}
 
   copy(): Versions {
     return this.copyWithOption(this.selected.value);
@@ -124,7 +124,7 @@ export class SelectMany {
   constructor(
     public state: SelectState = new SelectState(SelectValue.NotLoaded),
     public selections: Map<string, boolean> = new Map<string, boolean>()
-  ) { }
+  ) {}
 
   hasSelections(): boolean {
     return [...this.selections.values()].includes(true);
@@ -184,7 +184,7 @@ export interface ToolVariant {
 }
 
 export class ToolData {
-  constructor(public name: string, public variants: ToolVariant[]) { }
+  constructor(public name: string, public variants: ToolVariant[]) {}
 
   copy(): ToolData {
     return new ToolData(
@@ -195,7 +195,7 @@ export class ToolData {
 }
 
 export class ToolSelector {
-  constructor(public name: string, public toolVariants: SelectMany) { }
+  constructor(public name: string, public toolVariants: SelectMany) {}
 
   copy(): ToolSelector {
     return new ToolSelector(this.name, this.toolVariants.copy());
@@ -405,13 +405,13 @@ export class State {
     const modulesFlag = this.modules.hasAllOn()
       ? " -m all"
       : this.modules.hasSelections()
-        ? " -m " + this.modules.optionsTurnedOn().join(" ")
-        : "";
+      ? " -m " + this.modules.optionsTurnedOn().join(" ")
+      : "";
     return aqtMajorVersion === 2
       ? `aqt install-qt ${this.host.selected.value} ${this.target.selected.value} ` +
-      `${this.version.selected.value} ${this.arch.selected.value}${modulesFlag}`
+          `${this.version.selected.value} ${this.arch.selected.value}${modulesFlag}`
       : `aqt install ${this.version.selected.value} ${this.host.selected.value} ` +
-      `${this.target.selected.value} ${this.arch.selected.value}${modulesFlag}`;
+          `${this.target.selected.value} ${this.arch.selected.value}${modulesFlag}`;
   }
 
   toInstallQtAction(): string {

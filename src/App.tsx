@@ -1,8 +1,8 @@
-import React from 'react';
-import ComboBox from './Components/ComboBox';
+import React from "react";
+import ComboBox from "./Components/ComboBox";
 import CheckBox from "./Components/CheckBox";
 import CommandPanel from "./Components/CommandPanel";
-import { SelectState, SelectValue } from './State';
+import { SelectState, SelectValue } from "./State";
 
 const App = () => {
   return (
@@ -14,8 +14,9 @@ const App = () => {
         selected="linux"
         id="host"
         label="Choose an OS:"
-        isAutofocus={true} />
+        isAutofocus={true}
+      />
     </div>
-  )
-}
+  );
+};
 export default App;
