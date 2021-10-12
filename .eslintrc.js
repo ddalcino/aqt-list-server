@@ -6,5 +6,12 @@ module.exports = {
   ignorePatterns: ["old/**/*", "temp.js", "**/vendor/*.js"],
   rules: {
     "prettier/prettier": "error",
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+      },
+    ],
   },
 };
