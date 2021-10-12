@@ -5,7 +5,7 @@ interface Props {
   id: string;
   name: string;
   isChecked: boolean;
-  onChange: (name: string) => {};
+  onChange: (name: string) => void;
 }
 
 const CheckBox = (props: Props) => {
