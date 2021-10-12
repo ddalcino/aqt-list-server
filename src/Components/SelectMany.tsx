@@ -7,10 +7,10 @@ interface Props {
   type: string;
   label: JSX.Element;
   options: ToggleMany;
-  selectAll: () => {};
+  selectAll: () => void;
 }
 
-const SelectMany = (props: Props) => {
+const SelectMany = (props: Props): React.ReactElement => {
   const { label, id, options, selectAll, type } = props;
   const hasAllOn = [...options.values()].every(
     (isChecked: boolean) => isChecked

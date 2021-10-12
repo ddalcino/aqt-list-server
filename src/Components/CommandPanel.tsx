@@ -12,7 +12,7 @@ const copyToClipboard = async (text: string) => {
   await navigator.clipboard.writeText(text);
 };
 
-const CommandPanel = (props: Props) => {
+const CommandPanel = (props: Props): React.ReactElement => {
   const { id, label, command, children, isDisabled } = props;
   return (
     <div>

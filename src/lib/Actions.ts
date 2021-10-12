@@ -16,8 +16,8 @@ export const enum ActionT {
 }
 
 export interface Action {
-  type: ActionT,
-  reduce: (state: State) => State
+  type: ActionT;
+  reduce: (state: State) => State;
 }
 
 export const setHost = (host: Host): Action => ({
@@ -30,9 +30,13 @@ export const setTarget = (target: Target): Action => ({
   reduce: (state: State): State => state.withTargetLoadingVersionsTools(target),
 });
 
-export const loadedVersionsTools = (versions: string[][], tools: string[]): Action => ({
+export const loadedVersionsTools = (
+  versions: string[][],
+  tools: string[]
+): Action => ({
   type: ActionT.loadedVersionsTools,
-  reduce: (state: State): State => state.withVersionsToolsLoaded(versions, tools)
+  reduce: (state: State): State =>
+    state.withVersionsToolsLoaded(versions, tools),
 });
 
 export const setVersion = (version: string): Action => ({
@@ -42,7 +46,7 @@ export const setVersion = (version: string): Action => ({
 
 export const loadedArchitectures = (arches: string[]): Action => ({
   type: ActionT.loadedArchitectures,
-  reduce: (state: State): State => state.withArchesLoaded(arches)
+  reduce: (state: State): State => state.withArchesLoaded(arches),
 });
 
 export const setArchitecture = (arch: string): Action => ({
@@ -50,14 +54,18 @@ export const setArchitecture = (arch: string): Action => ({
   reduce: (state: State): State => state.withArchLoadingModulesArchives(arch),
 });
 
-export const loadedModulesArchives = (modules: string[], archives: string[]): Action => ({
+export const loadedModulesArchives = (
+  modules: string[],
+  archives: string[]
+): Action => ({
   type: ActionT.loadedModulesArchives,
-  reduce: (state: State): State => state.withModulesArchivesLoaded(modules, archives)
+  reduce: (state: State): State =>
+    state.withModulesArchivesLoaded(modules, archives),
 });
 
 export const setModule = (module: string, isAdd: boolean): Action => ({
   type: ActionT.chooseModule,
- reduce: (state: State): State => state.withModuleSet(module, isAdd),
+  reduce: (state: State): State => state.withModuleSet(module, isAdd),
 });
 
 export const setAllModules = (): Action => ({
@@ -72,7 +80,7 @@ export const clearModules = (): Action => ({
 
 export const setArchive = (archive: string, isAdd: boolean): Action => ({
   type: ActionT.chooseArchive,
-  reduce: (state: State): State => state.withArchiveSet(archive, isAdd)
+  reduce: (state: State): State => state.withArchiveSet(archive, isAdd),
 });
 
 export const setAllArchives = (): Action => ({
@@ -82,12 +90,13 @@ export const setAllArchives = (): Action => ({
 
 export const addTool = (toolName: string): Action => ({
   type: ActionT.chooseTool,
-  reduce: (state: State): State => state.withNewTool(new ToolData(toolName, true, new Map()))
+  reduce: (state: State): State =>
+    state.withNewTool(new ToolData(toolName, true, new Map())),
 });
 
 export const loadedToolVariants = (variants: ToolData): Action => ({
   type: ActionT.loadedToolVariants,
-  reduce: (state: State): State => state.withNewTool(variants)
+  reduce: (state: State): State => state.withNewTool(variants),
 });
 
 export const removeTool = (toolName: string): Action => ({
@@ -95,23 +104,32 @@ export const removeTool = (toolName: string): Action => ({
   reduce: (state: State): State => state.withoutTool(toolName),
 });
 
-export const addToolVariant = (toolName: string, toolVariant: string): Action => ({
+export const addToolVariant = (
+  toolName: string,
+  toolVariant: string
+): Action => ({
   type: ActionT.chooseToolVariant,
-  reduce: (state: State): State => state.withToolVariant(toolName, toolVariant, true),
+  reduce: (state: State): State =>
+    state.withToolVariant(toolName, toolVariant, true),
 });
 
-export const removeToolVariant = (toolName: string, toolVariant: string): Action => ({
+export const removeToolVariant = (
+  toolName: string,
+  toolVariant: string
+): Action => ({
   type: ActionT.chooseToolVariant,
-  reduce: (state: State): State => state.withToolVariant(toolName, toolVariant, false),
+  reduce: (state: State): State =>
+    state.withToolVariant(toolName, toolVariant, false),
 });
 
 export const addAllToolVariants = (toolName: string): Action => ({
   type: ActionT.chooseToolVariant,
-  reduce: (state: State): State => state.withToggledToolVariants(toolName, true),
+  reduce: (state: State): State =>
+    state.withToggledToolVariants(toolName, true),
 });
 
 export const clearAllToolVariants = (toolName: string): Action => ({
   type: ActionT.chooseToolVariant,
-  reduce: (state: State): State => state.withToggledToolVariants(toolName, false),
+  reduce: (state: State): State =>
+    state.withToggledToolVariants(toolName, false),
 });
-

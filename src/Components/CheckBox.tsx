@@ -8,7 +8,7 @@ interface Props {
   onChange: (name: string) => void;
 }
 
-const CheckBox = (props: Props) => {
+const CheckBox = (props: Props): React.ReactElement => {
   const { key, id, name, isChecked, onChange } = props;
   return (
     <div key={key}>

@@ -40,8 +40,8 @@ class Selection {
         state !== undefined
           ? state
           : valueOrState === NO_SELECTION
-            ? SelectValue.Loaded
-            : SelectValue.Selected
+          ? SelectValue.Loaded
+          : SelectValue.Selected
       );
     } else {
       // it's a SelectState
@@ -180,49 +180,74 @@ export interface ToolVariant {
   Description: string;
   ReleaseDate: string;
   Version: string;
-  selected: boolean
+  selected: boolean;
   // UpdateFile: { CompressedSize: string; UncompressedSize: string };
 }
 
 export class ToolData {
-  constructor(public name: string, public isLoading: boolean, public variants: Map<string, ToolVariant>) { }
+  constructor(
+    public name: string,
+    public isLoading: boolean,
+    public variants: Map<string, ToolVariant>
+  ) {}
 
   copy(): ToolData {
     return this._copy((k: string, selected: boolean) => selected);
   }
   copyWithVariantSet(variant: string, on: boolean): ToolData {
-    return this._copy((k: string, selected: boolean) => k === variant ? on : selected);
+    return this._copy((k: string, selected: boolean) =>
+      k === variant ? on : selected
+    );
   }
   copyWithToggledVariants(on: boolean): ToolData {
     return this._copy((_k: string, _selected: boolean) => on);
   }
-  _copy(shouldSelect: (variantName: string, existingSelected: boolean) => boolean): ToolData {
+  _copy(
+    shouldSelect: (variantName: string, existingSelected: boolean) => boolean
+  ): ToolData {
     const variants = new Map<string, ToolVariant>();
     this.variants.forEach((value: ToolVariant, variantName: string) =>
-      variants.set(variantName, { ...value, selected: shouldSelect(variantName, value.selected) }));
-    return new ToolData(
-      this.name,
-      this.isLoading,
-      variants
+      variants.set(variantName, {
+        ...value,
+        selected: shouldSelect(variantName, value.selected),
+      })
     );
+    return new ToolData(this.name, this.isLoading, variants);
   }
 
   installCmd(host: string, target: string): string {
-    if ([...this.variants.values()].every((variant: ToolVariant) => variant.selected))
-      return `aqt install-tool ${host} ${target} ${this.name}`
+    if (
+      [...this.variants.values()].every(
+        (variant: ToolVariant) => variant.selected
+      )
+    )
+      return `aqt install-tool ${host} ${target} ${this.name}`;
     return [...this.variants.values()]
       .filter((variant: ToolVariant) => variant.selected)
-      .map((variant: ToolVariant) => `aqt install-tool ${host} ${target} ${this.name} ${variant.Name}`)
+      .map(
+        (variant: ToolVariant) =>
+          `aqt install-tool ${host} ${target} ${this.name} ${variant.Name}`
+      )
       .join("\n");
   }
-  variantTuples(isFilterBadVersions: boolean = true): string {
+  variantTuples(isFilterBadVersions = true): string {
     const versionOk = (version: string): boolean => {
       if (!isFilterBadVersions) return true;
-      return null !== version.match(/^\d+\.\d+\.\d+(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$/)
-    }
+      return (
+        null !==
+        version.match(
+          /^\d+\.\d+\.\d+(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$/
+        )
+      );
+    };
     return [...this.variants.values()]
-      .filter((variant: ToolVariant) => variant.selected && versionOk(variant.Version))
-      .map((variant: ToolVariant) => `${this.name},${variant.Version},${variant.Name}`)
+      .filter(
+        (variant: ToolVariant) => variant.selected && versionOk(variant.Version)
+      )
+      .map(
+        (variant: ToolVariant) =>
+          `${this.name},${variant.Version},${variant.Name}`
+      )
       .join(" ");
   }
 }
@@ -269,7 +294,7 @@ export class State {
       []
     ),
     public modules: SelectMany = new SelectMany(),
-    public archives: SelectMany = new SelectMany(),
+    public archives: SelectMany = new SelectMany()
   ) {
     this.host = new SelectOne(
       new Selection(host, SelectValue.Selected),
@@ -359,7 +384,10 @@ export class State {
     );
   }
 
-  withModulesArchivesLoaded(modules: Array<string>, archives: Array<string>): State {
+  withModulesArchivesLoaded(
+    modules: Array<string>,
+    archives: Array<string>
+  ): State {
     return new State(
       this.host.selected.value as Host,
       this.target.copy(),
@@ -422,7 +450,6 @@ export class State {
       this.modules.copy(),
       this.archives.copyWithAllOptions(on)
     );
-
   }
 
   withNewTool(newToolData: ToolData): State {
@@ -494,13 +521,13 @@ export class State {
     );
   }
 
-  values() {
+  values(): { host: string; target: string; version: string; arch: string } {
     return {
       host: this.host.selected.value,
       target: this.target.selected.value,
       version: this.version.selected.value,
-      arch: this.arch.selected.value
-    }
+      arch: this.arch.selected.value,
+    };
   }
 
   toAqtInstallCmd(): string {
@@ -509,17 +536,22 @@ export class State {
     } else if (!this.arch.selected.state.hasSelection()) {
       return "Please select an architecture.";
     }
-    const {host, target, version, arch} = this.values();
-    const toolsLines = this.selectedTools.size === 0 ? "" : "\n" +
-      [...this.selectedTools.values()]
-        .map((toolData: ToolData) => toolData.installCmd(host, target))
+    const { host, target, version, arch } = this.values();
+    const toolsLines =
+      this.selectedTools.size === 0
+        ? ""
+        : "\n" +
+          [...this.selectedTools.values()].map((toolData: ToolData) =>
+            toolData.installCmd(host, target)
+          );
     const modulesFlag = this.modules.hasAllOn()
       ? " -m all"
       : this.modules.hasSelections()
-        ? " -m " + this.modules.optionsTurnedOn().join(" ")
-        : "";
-    const archivesFlag = this.archives.hasAllOn() ? "" :
-      " --archives " + this.archives.optionsTurnedOn().join(" ");
+      ? " -m " + this.modules.optionsTurnedOn().join(" ")
+      : "";
+    const archivesFlag = this.archives.hasAllOn()
+      ? ""
+      : " --archives " + this.archives.optionsTurnedOn().join(" ");
     return `aqt install-qt ${host} ${target} ${version} ${arch}${modulesFlag}${archivesFlag}${toolsLines}`;
   }
 
@@ -535,8 +567,8 @@ export class State {
     const toolsTuples = [...this.selectedTools.values()]
       .map((toolData: ToolData) => toolData.variantTuples())
       .join(" ");
-    const toolsLine = toolsTuples.length === 0 ? "" :
-      `\n        tools: '${toolsTuples}'`
+    const toolsLine =
+      toolsTuples.length === 0 ? "" : `\n        tools: '${toolsTuples}'`;
     return (
       `    - name: Install Qt
       uses: jurplel/install-qt-action@v2
@@ -544,7 +576,9 @@ export class State {
         version: '${this.version.selected.value}'
         host: '${this.host.selected.value}'
         target: '${this.target.selected.value}'
-        arch: '${this.arch.selected.value}'` + modulesLine + toolsLine
+        arch: '${this.arch.selected.value}'` +
+      modulesLine +
+      toolsLine
     );
   }
 }

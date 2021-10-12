@@ -75,9 +75,14 @@ const fetch_tool_variants = (
   tool_name: string
 ): Promise<ToolData> =>
   fetch_meta(`/list-tool/${host}/${target}/${tool_name}/`).then(
-    (meta) => new ToolData(tool_name, false, new Map<string, ToolVariant>(
-      (meta as ToolVariant[]).map((variant) => [variant.Name, variant]))
-    )
+    (meta) =>
+      new ToolData(
+        tool_name,
+        false,
+        new Map<string, ToolVariant>(
+          (meta as ToolVariant[]).map((variant) => [variant.Name, variant])
+        )
+      )
   );
 
 export {
