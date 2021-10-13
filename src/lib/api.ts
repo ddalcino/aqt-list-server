@@ -1,4 +1,4 @@
-import { ToolData, ToolVariant } from "./State";
+import { ToolData, ToolVariant } from "../State";
 
 interface Versions {
   versions: Array<Array<string>>;

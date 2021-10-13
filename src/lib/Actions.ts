@@ -1,4 +1,5 @@
-import { Host, State, Target, ToolData } from "../State";
+import { State, ToolData } from "../State";
+import { Host, Target } from "./utils";
 
 export const enum ActionT {
   chooseHost,

@@ -1,52 +1,82 @@
 import React from "react";
-import { NO_SELECTION, SelectValue } from "../State";
+import { NO_SELECTION, SelectOne, Versions } from "../State";
 
 interface Props {
-  selectState: SelectValue;
-  values: string[];
-  selected: string;
+  content: SelectOne | Versions;
   id: string;
   isAutofocus: boolean;
   children: React.ReactNode;
 }
 
-const Option = (value: string, isSelected: boolean, displayName?: string) => {
+interface OptionProps {
+  value: string;
+  isSelected: boolean;
+  displayName?: string;
+}
+const Option = (props: OptionProps): JSX.Element => {
   return (
-    <option value={value} selected={isSelected}>
-      {displayName ?? value}
+    <option value={props.value} selected={props.isSelected}>
+      {props.displayName ?? props.value}
     </option>
   );
 };
 
-const options = (props: Props): JSX.Element[] => {
-  const { values, selectState, selected } = props;
-  switch (selectState) {
-    case SelectValue.Loading:
-      return [Option(NO_SELECTION, true)];
-    case SelectValue.NotLoaded:
-      return [Option(NO_SELECTION, true, "Loading...")];
-    default:
-      return values.map((value) => Option(value, value === selected));
-  }
+const options = (content: SelectOne | Versions): JSX.Element[] => {
+  const selectState = content.selected.state;
+  const prefix = content.allowEmpty
+    ? [<Option value={NO_SELECTION} isSelected={!selectState.hasSelection()} />]
+    : [];
+
+  if (selectState.isLoading())
+    return [
+      <Option
+        value={NO_SELECTION}
+        isSelected={true}
+        displayName="Loading..."
+      />,
+    ];
+  if (selectState.isNotLoaded())
+    return [<Option value={NO_SELECTION} isSelected={true} />];
+
+  const options = (content as SelectOne).options;
+  if (options !== undefined)
+    return options.map((option) => (
+      <Option value={option} isSelected={option === content.selected.value} />
+    ));
+
+  return prefix.concat(
+    (content as Versions).versions
+      .filter((arr) => arr.length > 0)
+      .map((minor_group) => {
+        const major_minor = minor_group[0].split(".").slice(0, -1).join(".");
+        return (
+          <optgroup label={`Qt ${major_minor}`}>
+            {minor_group.map((version) => (
+              <Option
+                value={version}
+                isSelected={version === content.selected.value}
+              />
+            ))}
+          </optgroup>
+        );
+      })
+  );
 };
 
 const ComboBox = (props: Props): React.ReactElement => {
-  const { selectState, id, children } = props;
-  const className = selectState === SelectValue.Loading ? "loading" : "";
-  const isDisabled =
-    selectState === SelectValue.Loading ||
-    selectState === SelectValue.NotLoaded;
+  const { content, id, children } = props;
+  const selectState = content.selected.state;
   return (
     <div>
       <label htmlFor={id}>{children}</label>
       <select
         name={id}
         id={id}
-        className={className}
-        disabled={isDisabled}
+        className={selectState.isLoading() ? "loading" : ""}
+        disabled={selectState.isNotLoaded()}
         autoFocus={props.isAutofocus}
       >
-        {options(props)}
+        {options(content)}
       </select>
     </div>
   );

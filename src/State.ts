@@ -1,5 +1,7 @@
 // import _ from 'lodash';
 
+import { Host, hosts, get_host_target_targets, Target } from "./lib/utils";
+
 export const enum SelectValue {
   NotLoaded,
   Loading,
@@ -56,7 +58,7 @@ class Selection {
 export class SelectOne {
   constructor(
     public selected: Selection,
-    public options: Array<string> = [],
+    public options: Readonly<string[]> = [],
     public allowEmpty: boolean = true
   ) {}
 
@@ -267,62 +269,40 @@ export class ToolSelector {
   }
 }
 
-export type Host = "windows" | "mac" | "linux";
-export type Target = "desktop" | "android" | "ios" | "winrt";
-
-const hosts = ["windows", "mac", "linux"];
-const targetsForHost = new Map<string, Array<string>>([
-  ["windows", ["desktop", "android", "winrt"]],
-  ["mac", ["desktop", "android", "ios"]],
-  ["linux", ["desktop", "android"]],
-]);
-
 export class State {
-  public host: SelectOne;
-
   constructor(
-    host: Host,
+    public host: SelectOne,
     public target: SelectOne,
-    public toolNames: SelectNone = new SelectNone(SelectValue.NotLoaded),
-    public selectedTools: Map<string, ToolData> = new Map(), // Map: supports easy removal
-    public version: Versions = new Versions(
-      new Selection(SelectValue.NotLoaded),
-      []
-    ),
+    public toolNames: SelectNone, // = new SelectNone(SelectValue.NotLoaded),
+    public selectedTools: Map<string, ToolData>, // = new Map(), // Map: supports easy removal
+    public version: Versions, // = new Versions(new Selection(SelectValue.NotLoaded), []),
     public arch: SelectOne = new SelectOne(
       new Selection(SelectValue.NotLoaded),
       []
     ),
     public modules: SelectMany = new SelectMany(),
     public archives: SelectMany = new SelectMany()
-  ) {
-    this.host = new SelectOne(
-      new Selection(host, SelectValue.Selected),
-      hosts,
-      false
+  ) {}
+
+  copy(): State {
+    return new State(
+      this.host.copy(),
+      this.target.copy(),
+      this.toolNames.copy(),
+      new Map(this.selectedTools),
+      this.version.copy(),
+      this.arch.copy(),
+      this.modules.copy(),
+      this.archives.copy()
     );
   }
 
   withHostLoadingVersionsTools(newHost: Host): State {
-    const targets = makeTargets(newHost, this.target.selected.value as Target);
-    return new State(
-      newHost as Host,
-      targets,
-      new SelectNone(SelectValue.Loading),
-      new Map(),
-      new Versions(new Selection(SelectValue.Loading), [])
-    );
+    return makeState(newHost);
   }
 
   withTargetLoadingVersionsTools(newTarget: Target): State {
-    const targets = makeTargets(this.host.selected.value as Host, newTarget);
-    return new State(
-      this.host.selected.value as Host,
-      targets,
-      new SelectNone(SelectValue.Loading),
-      new Map(),
-      new Versions(new Selection(SelectValue.Loading), [])
-    );
+    return makeState(this.host.selected.value as Host, newTarget);
   }
 
   withVersionsToolsLoaded(versions: string[][], tools: string[]): State {
@@ -331,7 +311,7 @@ export class State {
     const toolsState =
       tools.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
     return new State(
-      this.host.selected.value as Host,
+      this.host.copy(),
       this.target.copy(),
       new SelectNone(toolsState, tools),
       new Map(),
@@ -347,7 +327,7 @@ export class State {
       );
     }
     return new State(
-      this.host.selected.value as Host,
+      this.host.copy(),
       this.target.copy(),
       this.toolNames.copy(),
       new Map(this.selectedTools),
@@ -360,7 +340,7 @@ export class State {
     const selectState =
       arches.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
     return new State(
-      this.host.selected.value as Host,
+      this.host.copy(),
       this.target.copy(),
       this.toolNames.copy(),
       new Map(this.selectedTools),
@@ -374,7 +354,7 @@ export class State {
       return this.withArchesLoaded([...this.arch.options]);
     }
     return new State(
-      this.host.selected.value as Host,
+      this.host.copy(),
       this.target.copy(),
       this.toolNames.copy(),
       new Map(this.selectedTools),
@@ -389,7 +369,7 @@ export class State {
     archives: Array<string>
   ): State {
     return new State(
-      this.host.selected.value as Host,
+      this.host.copy(),
       this.target.copy(),
       this.toolNames.copy(),
       new Map(this.selectedTools),
@@ -401,117 +381,56 @@ export class State {
   }
 
   withToggledModules(on: boolean): State {
-    return new State(
-      this.host.selected.value as Host,
-      this.target.copy(),
-      this.toolNames.copy(),
-      new Map(this.selectedTools),
-      this.version.copy(),
-      this.arch.copy(),
-      this.modules.copyWithAllOptions(on),
-      this.archives.copy()
-    );
+    const state = this.copy();
+    state.modules = state.modules.copyWithAllOptions(on);
+    return state;
   }
 
   withModuleSet(moduleName: string, on: boolean): State {
-    return new State(
-      this.host.selected.value as Host,
-      this.target.copy(),
-      this.toolNames.copy(),
-      new Map(this.selectedTools),
-      this.version.copy(),
-      this.arch.copy(),
-      this.modules.copyWithOptionSet(moduleName, on),
-      this.archives.copy()
-    );
+    const state = this.copy();
+    state.modules = state.modules.copyWithOptionSet(moduleName, on);
+    return state;
   }
 
   withArchiveSet(archive: string, on: boolean): State {
-    return new State(
-      this.host.selected.value as Host,
-      this.target.copy(),
-      this.toolNames.copy(),
-      new Map(this.selectedTools),
-      this.version.copy(),
-      this.arch.copy(),
-      this.modules.copy(),
-      this.archives.copyWithOptionSet(archive, on)
-    );
+    const state = this.copy();
+    state.archives = state.archives.copyWithOptionSet(archive, on);
+    return state;
   }
 
   withToggledArchives(on: boolean): State {
-    return new State(
-      this.host.selected.value as Host,
-      this.target.copy(),
-      this.toolNames.copy(),
-      new Map(this.selectedTools),
-      this.version.copy(),
-      this.arch.copy(),
-      this.modules.copy(),
-      this.archives.copyWithAllOptions(on)
-    );
+    const state = this.copy();
+    state.archives = state.archives.copyWithAllOptions(on);
+    return state;
   }
 
   withNewTool(newToolData: ToolData): State {
-    const allToolData = new Map(this.selectedTools);
-    allToolData.set(newToolData.name, newToolData);
-    return new State(
-      this.host.selected.value as Host,
-      this.target.copy(),
-      this.toolNames.copy(),
-      allToolData,
-      this.version.copy(),
-      this.arch.copy(),
-      this.modules.copy(),
-      this.archives.copy()
-    );
+    const state = this.copy();
+    state.selectedTools.set(newToolData.name, newToolData);
+    return state;
   }
 
   withoutTool(toolName: string): State {
-    const allToolData = new Map(this.selectedTools);
-    allToolData.delete(toolName);
-    return new State(
-      this.host.selected.value as Host,
-      this.target.copy(),
-      this.toolNames.copy(),
-      allToolData,
-      this.version.copy(),
-      this.arch.copy(),
-      this.modules.copy(),
-      this.archives.copy()
-    );
+    const state = this.copy();
+    state.selectedTools.delete(toolName);
+    return state;
   }
 
   withToolVariant(toolName: string, toolVariant: string, on: boolean): State {
-    const toolData = this.selectedTools.get(toolName) as ToolData;
-    const allToolData = new Map(this.selectedTools);
-    allToolData.set(toolName, toolData.copyWithVariantSet(toolVariant, on));
-    return new State(
-      this.host.selected.value as Host,
-      this.target.copy(),
-      this.toolNames.copy(),
-      allToolData,
-      this.version.copy(),
-      this.arch.copy(),
-      this.modules.copy(),
-      this.archives.copy()
+    const state = this.copy();
+    const toolData = state.selectedTools.get(toolName) as ToolData;
+    state.selectedTools.set(
+      toolName,
+      toolData.copyWithVariantSet(toolVariant, on)
     );
+    return state;
   }
 
   withToggledToolVariants(toolName: string, on: boolean): State {
-    const toolData = this.selectedTools.get(toolName) as ToolData;
-    const allToolData = new Map(this.selectedTools);
-    allToolData.set(toolName, toolData.copyWithToggledVariants(on));
-    return new State(
-      this.host.selected.value as Host,
-      this.target.copy(),
-      this.toolNames.copy(),
-      allToolData,
-      this.version.copy(),
-      this.arch.copy(),
-      this.modules.copy(),
-      this.archives.copy()
-    );
+    const state = this.copy();
+    const toolData = state.selectedTools.get(toolName) as ToolData;
+    state.selectedTools.set(toolName, toolData.copyWithToggledVariants(on));
+    return state;
   }
 
   hasOutputs(): boolean {
@@ -583,15 +502,17 @@ export class State {
   }
 }
 
-export const makeTargets = (host: Host, newTarget: Target): SelectOne => {
-  const targets = targetsForHost.get(host) as string[];
-  console.assert(targets);
-  return new SelectOne(
-    new Selection(
-      targets.includes(newTarget) ? newTarget : "desktop",
-      SelectValue.Selected
+export const makeState = (host?: Host, target?: Target): State => {
+  const [_host, _target, _targets] = get_host_target_targets(host, target);
+  return new State(
+    new SelectOne(new Selection(_host, SelectValue.Selected), hosts, false),
+    new SelectOne(
+      new Selection(_target, SelectValue.Selected),
+      _targets,
+      false
     ),
-    targets,
-    false
+    new SelectNone(SelectValue.Loading),
+    new Map(),
+    new Versions(new Selection(SelectValue.Loading), [])
   );
 };
