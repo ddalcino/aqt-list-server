@@ -347,7 +347,7 @@ export class State {
             .filter((tuple: string) => tuple.length > 0)
             .join("\n");
     if (this.modules.hasAllOff() && this.archives.hasAllOff())
-      return "Cannot run `aqt` with no archives and no modules selected."
+      return "Cannot run `aqt` with no archives and no modules selected.";
     const modulesFlag = this.modules.hasAllOn()
       ? " -m all"
       : this.modules.hasSelections()
