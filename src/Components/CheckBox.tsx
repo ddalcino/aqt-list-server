@@ -1,22 +1,21 @@
 import React from "react";
 
 interface Props {
-  key?: number;
   id: string;
   name: string;
   isChecked: boolean;
-  onChange: (name: string) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const CheckBox = (props: Props): React.ReactElement => {
-  const { key, id, name, isChecked, onChange } = props;
+const CheckBox = ({ id, name, isChecked, onChange }: Props): JSX.Element => {
   return (
-    <div key={key}>
+    <div>
       <input
         type="checkbox"
         id={id}
         checked={isChecked}
-        onClick={() => onChange(name)}
+        // onClick={(event: React.MouseEvent<HTMLInputElement, MouseEvent>) => onChange(event)}//onChange}
+        onChange={onChange}
       />
       <label htmlFor={id}>{name}</label>
     </div>

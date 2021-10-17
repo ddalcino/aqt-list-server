@@ -1,6 +1,7 @@
 // import _ from 'lodash';
 
 import { Host, hosts, get_host_target_targets, Target } from "./lib/utils";
+import _ from "lodash";
 
 export const enum SelectValue {
   NotLoaded,
@@ -125,18 +126,33 @@ export class Versions {
 export class SelectMany {
   constructor(
     public state: SelectState = new SelectState(SelectValue.NotLoaded),
-    public selections: Map<string, boolean> = new Map<string, boolean>()
+    public selections: Map<string, SelectableElement> = new Map()
   ) {}
 
   hasSelections(): boolean {
-    return [...this.selections.values()].includes(true);
+    return (
+      [...this.selections.values()].findIndex(
+        (el: SelectableElement) => el.selected
+      ) >= 0
+    );
   }
 
   hasAllOn(): boolean {
-    if (this.selections.size <= 0) {
-      return false;
-    }
-    return [...this.selections.values()].every((value: boolean) => value);
+    return (
+      !this.isEmpty() &&
+      [...this.selections.values()].every(
+        (el: SelectableElement) => el.selected
+      )
+    );
+  }
+
+  hasAllOff(): boolean {
+    return (
+      !this.isEmpty() &&
+      [...this.selections.values()].every(
+        (el: SelectableElement) => !el.selected
+      )
+    );
   }
 
   isLoading(): boolean {
@@ -149,7 +165,7 @@ export class SelectMany {
 
   optionsTurnedOn(): Array<string> {
     return [...this.selections.entries()]
-      .filter(([, isOn]) => isOn)
+      .filter(([, el]) => el.selected)
       .map(([name]) => name);
   }
 
@@ -160,7 +176,7 @@ export class SelectMany {
   copyWithOptionSet(selectedOption: string, on: boolean): SelectMany {
     console.assert(this.selections.has(selectedOption));
     const m = new Map(this.selections);
-    m.set(selectedOption, on);
+    m.set(selectedOption, { selected: on });
     return new SelectMany(new SelectState(SelectValue.Selected), m);
   }
 
@@ -171,18 +187,21 @@ export class SelectMany {
 
 const makeSelectMany = (options: Array<string>, allOn: boolean): SelectMany => {
   const m = new Map(
-    options.map((name: string): [string, boolean] => [name, allOn])
+    options.map((name: string): [string, SelectableElement] => [
+      name,
+      { selected: allOn },
+    ])
   );
   return new SelectMany(new SelectState(SelectValue.Loaded), m);
 };
 
-export interface ToolVariant {
+export type SelectableElement = { selected: boolean };
+export interface ToolVariant extends SelectableElement {
   DisplayName: string;
   Name: string;
   Description: string;
   ReleaseDate: string;
   Version: string;
-  selected: boolean;
   // UpdateFile: { CompressedSize: string; UncompressedSize: string };
 }
 
@@ -296,143 +315,6 @@ export class State {
       this.archives.copy()
     );
   }
-
-  withHostLoadingVersionsTools(newHost: Host): State {
-    return makeState(newHost);
-  }
-
-  withTargetLoadingVersionsTools(newTarget: Target): State {
-    return makeState(this.host.selected.value as Host, newTarget);
-  }
-
-  withVersionsToolsLoaded(versions: string[][], tools: string[]): State {
-    const versionsState =
-      versions.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
-    const toolsState =
-      tools.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
-    return new State(
-      this.host.copy(),
-      this.target.copy(),
-      new SelectNone(toolsState, tools),
-      new Map(),
-      new Versions(new Selection(versionsState), versions)
-    );
-  }
-
-  withVersionLoadingArches(newVersion: string): State {
-    if (newVersion === NO_SELECTION) {
-      return this.withVersionsToolsLoaded(
-        [...this.version.versions],
-        [...this.toolNames.options]
-      );
-    }
-    return new State(
-      this.host.copy(),
-      this.target.copy(),
-      this.toolNames.copy(),
-      new Map(this.selectedTools),
-      this.version.copyWithOption(newVersion),
-      new SelectOne(new Selection(SelectValue.Loading), [])
-    );
-  }
-
-  withArchesLoaded(arches: Array<string>): State {
-    const selectState =
-      arches.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
-    return new State(
-      this.host.copy(),
-      this.target.copy(),
-      this.toolNames.copy(),
-      new Map(this.selectedTools),
-      this.version.copy(),
-      new SelectOne(new Selection(selectState), arches, arches.length !== 1)
-    );
-  }
-
-  withArchLoadingModulesArchives(newArch: string): State {
-    if (newArch === NO_SELECTION) {
-      return this.withArchesLoaded([...this.arch.options]);
-    }
-    return new State(
-      this.host.copy(),
-      this.target.copy(),
-      this.toolNames.copy(),
-      new Map(this.selectedTools),
-      this.version.copy(),
-      this.arch.copyWithOption(newArch),
-      new SelectMany(new SelectState(SelectValue.Loading))
-    );
-  }
-
-  withModulesArchivesLoaded(
-    modules: Array<string>,
-    archives: Array<string>
-  ): State {
-    return new State(
-      this.host.copy(),
-      this.target.copy(),
-      this.toolNames.copy(),
-      new Map(this.selectedTools),
-      this.version.copy(),
-      this.arch.copy(),
-      makeSelectMany(modules, false),
-      makeSelectMany(archives, true)
-    );
-  }
-
-  withToggledModules(on: boolean): State {
-    const state = this.copy();
-    state.modules = state.modules.copyWithAllOptions(on);
-    return state;
-  }
-
-  withModuleSet(moduleName: string, on: boolean): State {
-    const state = this.copy();
-    state.modules = state.modules.copyWithOptionSet(moduleName, on);
-    return state;
-  }
-
-  withArchiveSet(archive: string, on: boolean): State {
-    const state = this.copy();
-    state.archives = state.archives.copyWithOptionSet(archive, on);
-    return state;
-  }
-
-  withToggledArchives(on: boolean): State {
-    const state = this.copy();
-    state.archives = state.archives.copyWithAllOptions(on);
-    return state;
-  }
-
-  withNewTool(newToolData: ToolData): State {
-    const state = this.copy();
-    state.selectedTools.set(newToolData.name, newToolData);
-    return state;
-  }
-
-  withoutTool(toolName: string): State {
-    const state = this.copy();
-    state.selectedTools.delete(toolName);
-    return state;
-  }
-
-  withToolVariant(toolName: string, toolVariant: string, on: boolean): State {
-    const state = this.copy();
-    const toolData = state.selectedTools.get(toolName) as ToolData;
-    state.selectedTools.set(
-      toolName,
-      toolData.copyWithVariantSet(toolVariant, on)
-    );
-    return state;
-  }
-
-  withToggledToolVariants(toolName: string, on: boolean): State {
-    const state = this.copy();
-    const toolData = state.selectedTools.get(toolName) as ToolData;
-    state.selectedTools.set(toolName, toolData.copyWithToggledVariants(on));
-    return state;
-  }
-
   hasOutputs(): boolean {
     return (
       this.version.selected.state.hasSelection() &&
@@ -440,10 +322,10 @@ export class State {
     );
   }
 
-  values(): { host: string; target: string; version: string; arch: string } {
+  values(): { host: Host; target: Target; version: string; arch: string } {
     return {
-      host: this.host.selected.value,
-      target: this.target.selected.value,
+      host: this.host.selected.value as Host,
+      target: this.target.selected.value as Target,
       version: this.version.selected.value,
       arch: this.arch.selected.value,
     };
@@ -460,17 +342,23 @@ export class State {
       this.selectedTools.size === 0
         ? ""
         : "\n" +
-          [...this.selectedTools.values()].map((toolData: ToolData) =>
-            toolData.installCmd(host, target)
-          );
+          [...this.selectedTools.values()]
+            .map((toolData: ToolData) => toolData.installCmd(host, target))
+            .filter((tuple: string) => tuple.length > 0)
+            .join("\n");
+    if (this.modules.hasAllOff() && this.archives.hasAllOff())
+      return "Cannot run `aqt` with no archives and no modules selected."
     const modulesFlag = this.modules.hasAllOn()
       ? " -m all"
       : this.modules.hasSelections()
       ? " -m " + this.modules.optionsTurnedOn().join(" ")
       : "";
-    const archivesFlag = this.archives.hasAllOn()
-      ? ""
-      : " --archives " + this.archives.optionsTurnedOn().join(" ");
+    const archivesFlag =
+      this.archives.hasAllOn() || this.archives.isEmpty()
+        ? ""
+        : this.archives.hasAllOff()
+        ? " --noarchives"
+        : " --archives " + this.archives.optionsTurnedOn().join(" ");
     return `aqt install-qt ${host} ${target} ${version} ${arch}${modulesFlag}${archivesFlag}${toolsLines}`;
   }
 
@@ -485,6 +373,7 @@ export class State {
       : "";
     const toolsTuples = [...this.selectedTools.values()]
       .map((toolData: ToolData) => toolData.variantTuples())
+      .filter((tuple: string) => tuple.length > 0)
       .join(" ");
     const toolsLine =
       toolsTuples.length === 0 ? "" : `\n        tools: '${toolsTuples}'`;
@@ -501,6 +390,166 @@ export class State {
     );
   }
 }
+
+type StateReducer = (state: State) => State;
+export const StateUtils = {
+  withHostLoadingVersionsTools:
+    (newHost: Host) =>
+    (state: State): State =>
+      makeState(newHost, state.target.selected.value as Target),
+
+  withTargetLoadingVersionsTools:
+    (newTarget: Target) =>
+    (state: State): State =>
+      makeState(state.host.selected.value as Host, newTarget),
+
+  withVersionsToolsLoaded: (
+    versions: string[][],
+    tools: string[]
+  ): StateReducer => {
+    const versionsState =
+      versions.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
+    const toolsState =
+      tools.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
+    return (state: State): State =>
+      new State(
+        state.host.copy(),
+        state.target.copy(),
+        new SelectNone(toolsState, tools),
+        new Map(),
+        new Versions(new Selection(versionsState), versions)
+      );
+  },
+
+  withVersionLoadingArches:
+    (newVersion: string) =>
+    (state: State): State => {
+      if (newVersion === NO_SELECTION) {
+        return StateUtils.withVersionsToolsLoaded(
+          [...state.version.versions],
+          [...state.toolNames.options]
+        )(state);
+      }
+      const newState = _.cloneDeep(state);
+      newState.version.selected = new Selection(
+        newVersion,
+        SelectValue.Selected
+      );
+      newState.arch = new SelectOne(new Selection(SelectValue.Loading), []);
+      newState.modules = new SelectMany();
+      newState.archives = new SelectMany();
+      return newState;
+    },
+
+  withArchesLoaded:
+    (arches: string[]) =>
+    (state: State): State => {
+      const selection = (() => {
+        if (arches.length === 1) return new Selection(arches[0]);
+        if (arches.length > 1) return new Selection(SelectValue.Loaded);
+        return new Selection(SelectValue.NotLoaded);
+      })();
+      const newState = _.cloneDeep(state);
+      newState.arch = new SelectOne(selection, arches);
+      return newState;
+    },
+
+  withArchLoadingModulesArchives:
+    (newArch: string) =>
+    (state: State): State => {
+      if (newArch === NO_SELECTION) {
+        return StateUtils.withArchesLoaded([...state.arch.options])(state);
+      }
+      const newState = _.cloneDeep(state);
+      newState.arch.selected = new Selection(newArch, SelectValue.Selected);
+      newState.modules = new SelectMany(new SelectState(SelectValue.Loading));
+      newState.archives = new SelectMany(new SelectState(SelectValue.Loading));
+      return newState;
+    },
+
+  withModulesArchivesLoaded:
+    (modules: string[], archives: string[]) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      newState.modules = makeSelectMany(modules, false);
+      newState.archives = makeSelectMany(archives, true);
+      return newState;
+    },
+
+  withToggledModules:
+    (on: boolean) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      newState.modules = state.modules.copyWithAllOptions(on);
+      // TODO update archives
+      return newState;
+    },
+
+  withModuleSet:
+    (moduleName: string, on: boolean) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      newState.modules = state.modules.copyWithOptionSet(moduleName, on);
+      // TODO update archives
+      return newState;
+    },
+
+  withArchiveSet:
+    (archive: string, on: boolean) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      newState.archives = state.archives.copyWithOptionSet(archive, on);
+      return newState;
+    },
+
+  withToggledArchives:
+    (on: boolean) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      newState.archives = state.archives.copyWithAllOptions(on);
+      return newState;
+    },
+
+  withNewTool:
+    (newToolData: ToolData) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      newState.selectedTools.set(newToolData.name, newToolData);
+      return newState;
+    },
+
+  withoutTool:
+    (toolName: string) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      newState.selectedTools.delete(toolName);
+      return newState;
+    },
+
+  withToolVariant:
+    (toolName: string, toolVariant: string, on: boolean) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      const toolData = state.selectedTools.get(toolName) as ToolData;
+      newState.selectedTools.set(
+        toolName,
+        toolData.copyWithVariantSet(toolVariant, on)
+      );
+      return newState;
+    },
+
+  withToggledToolVariants:
+    (toolName: string, on: boolean) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      const toolData = state.selectedTools.get(toolName) as ToolData;
+      newState.selectedTools.set(
+        toolName,
+        toolData.copyWithToggledVariants(on)
+      );
+      return newState;
+    },
+};
 
 export const makeState = (host?: Host, target?: Target): State => {
   const [_host, _target, _targets] = get_host_target_targets(host, target);

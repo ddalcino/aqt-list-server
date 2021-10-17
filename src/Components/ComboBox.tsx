@@ -1,60 +1,76 @@
 import React from "react";
-import { NO_SELECTION, SelectOne, Versions } from "../State";
+import { NO_SELECTION, SelectOne, SelectState, Versions } from "../State";
 
 interface Props {
-  content: SelectOne | Versions;
   id: string;
-  isAutofocus: boolean;
-  children: React.ReactNode;
+  isAutofocus?: boolean;
+  label: string;
+  selectState: SelectState;
+  value: string;
+  children: JSX.Element[];
+  onchange: (newValue: string) => void;
 }
 
 interface OptionProps {
   value: string;
-  isSelected: boolean;
   displayName?: string;
 }
 const Option = (props: OptionProps): JSX.Element => {
   return (
-    <option value={props.value} selected={props.isSelected}>
-      {props.displayName ?? props.value}
-    </option>
+    <option value={props.value}>{props.displayName ?? props.value}</option>
   );
 };
 
-const options = (content: SelectOne | Versions): JSX.Element[] => {
+const emptyOption = (key_id: string): JSX.Element => (
+  <Option value={NO_SELECTION} key={`${key_id}-empty`} />
+);
+
+const loadingOption = (key_id: string): JSX.Element => (
+  <Option
+    value={NO_SELECTION}
+    key={`${key_id}-loading`}
+    displayName="Loading..."
+  />
+);
+
+export const options = (content: SelectOne, key_id: string): JSX.Element[] => {
   const selectState = content.selected.state;
-  const prefix = content.allowEmpty
-    ? [<Option value={NO_SELECTION} isSelected={!selectState.hasSelection()} />]
-    : [];
+  const prefix =
+    content.allowEmpty && content.options.length !== 1
+      ? [emptyOption(key_id)]
+      : [];
 
-  if (selectState.isLoading())
-    return [
-      <Option
-        value={NO_SELECTION}
-        isSelected={true}
-        displayName="Loading..."
-      />,
-    ];
-  if (selectState.isNotLoaded())
-    return [<Option value={NO_SELECTION} isSelected={true} />];
-
-  const options = (content as SelectOne).options;
-  if (options !== undefined)
-    return options.map((option) => (
-      <Option value={option} isSelected={option === content.selected.value} />
-    ));
+  if (selectState.isLoading()) return [loadingOption(key_id)];
+  if (selectState.isNotLoaded()) return [emptyOption(key_id)];
 
   return prefix.concat(
-    (content as Versions).versions
+    content.options.map((option, index) => (
+      <Option value={option} key={`${key_id}-${index}`} />
+    ))
+  );
+};
+
+export const optionsQtVersions = (
+  content: Versions,
+  key_id: string
+): JSX.Element[] => {
+  const selectState = content.selected.state;
+  const prefix = content.allowEmpty ? [emptyOption(key_id)] : [];
+
+  if (selectState.isLoading()) return [loadingOption(key_id)];
+  if (selectState.isNotLoaded()) return [emptyOption(key_id)];
+
+  return prefix.concat(
+    content.versions
       .filter((arr) => arr.length > 0)
-      .map((minor_group) => {
+      .map((minor_group, groupIndex) => {
         const major_minor = minor_group[0].split(".").slice(0, -1).join(".");
         return (
-          <optgroup label={`Qt ${major_minor}`}>
-            {minor_group.map((version) => (
+          <optgroup label={`Qt ${major_minor}`} key={`${key_id}-${groupIndex}`}>
+            {minor_group.map((version, index) => (
               <Option
                 value={version}
-                isSelected={version === content.selected.value}
+                key={`${key_id}-${groupIndex}-${index}`}
               />
             ))}
           </optgroup>
@@ -63,20 +79,21 @@ const options = (content: SelectOne | Versions): JSX.Element[] => {
   );
 };
 
-const ComboBox = (props: Props): React.ReactElement => {
-  const { content, id, children } = props;
-  const selectState = content.selected.state;
+const ComboBox = (props: Props): JSX.Element => {
+  const { selectState, id, label, value } = props;
   return (
     <div>
-      <label htmlFor={id}>{children}</label>
+      <label htmlFor={id}>{label}</label>
       <select
         name={id}
         id={id}
         className={selectState.isLoading() ? "loading" : ""}
         disabled={selectState.isNotLoaded()}
-        autoFocus={props.isAutofocus}
+        autoFocus={props.isAutofocus ?? false}
+        value={value}
+        onChange={(event) => props.onchange(event.target.value)}
       >
-        {options(content)}
+        {props.children}
       </select>
     </div>
   );

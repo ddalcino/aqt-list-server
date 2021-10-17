@@ -4,7 +4,7 @@ interface Props {
   id: string;
   label: JSX.Element;
   command: string;
-  children: JSX.Element;
+  children?: JSX.Element;
   isDisabled: boolean;
 }
 
@@ -12,7 +12,7 @@ const copyToClipboard = async (text: string) => {
   await navigator.clipboard.writeText(text);
 };
 
-const CommandPanel = (props: Props): React.ReactElement => {
+const CommandPanel = (props: Props): JSX.Element => {
   const { id, label, command, children, isDisabled } = props;
   return (
     <div>
@@ -21,6 +21,7 @@ const CommandPanel = (props: Props): React.ReactElement => {
         <code id={id}>{command}</code>
       </pre>
       <input
+        className="clipboard-copy-btn"
         type="button"
         aria-label="copy command to clipboard"
         value="Copy command to clipboard"

@@ -1,2 +1,2 @@
-aqtinstall
+aqtinstall==2.0.0
 flask

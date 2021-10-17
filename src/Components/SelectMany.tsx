@@ -1,20 +1,24 @@
 import React from "react";
 import CheckBox from "./CheckBox";
+import { SelectableElement } from "../State";
 
-type ToggleMany = Map<string, boolean>;
+type ToggleMany = Map<string, SelectableElement>;
 interface Props {
   id: string;
   type: string;
   label: JSX.Element;
   options: ToggleMany;
-  selectAll: () => void;
+  toggleAll: (on: boolean) => void;
+  toggleOne: (on: boolean, name: string) => void;
 }
 
-const SelectMany = (props: Props): React.ReactElement => {
-  const { label, id, options, selectAll, type } = props;
-  const hasAllOn = [...options.values()].every(
-    (isChecked: boolean) => isChecked
-  );
+const SelectMany = (props: Props): JSX.Element => {
+  const { label, id, options, toggleAll, toggleOne, type } = props;
+  const hasAllOn =
+    options.size > 0 &&
+    [...options.values()].every(
+      (element: SelectableElement) => element.selected
+    );
 
   return (
     <div>
@@ -23,16 +27,16 @@ const SelectMany = (props: Props): React.ReactElement => {
         id={`select-all-${id}`}
         name={`Check All`}
         isChecked={hasAllOn}
-        onChange={() => selectAll()}
+        onChange={(event) => toggleAll(event.target.checked)}
       />
       <br />
-      {[...options.entries()].map(([name, isChecked], key) => (
+      {[...options.entries()].map(([name, element], index) => (
         <CheckBox
-          key={key}
+          key={`${id}-${index}`}
           id={`cb-${type}-${name}`}
-          name={`Check All`}
-          isChecked={hasAllOn}
-          onChange={() => selectAll()}
+          name={name}
+          isChecked={element.selected ?? false}
+          onChange={(event) => toggleOne(event.target.checked, name)}
         />
       ))}
     </div>

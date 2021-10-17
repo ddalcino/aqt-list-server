@@ -1,51 +1,32 @@
-import json
 from functools import lru_cache
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
+
+from flask import Flask, abort, jsonify, request, send_from_directory
+from flask_cors import CORS, cross_origin
 
 from aqt.exceptions import ArchiveConnectionError, ArchiveDownloadError, CliInputError
 from aqt.helper import Settings
-from aqt.metadata import (
-    ArchiveId,
-    MetadataFactory,
-    SimpleSpec,
-    ToolData,
-    Version,
-    Versions,
-)
-from flask import Flask, abort, current_app, jsonify, request, send_from_directory
+from aqt.metadata import ArchiveId, MetadataFactory, SimpleSpec, ToolData, Version, Versions
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="/build/static", static_url_path="")
+cors = CORS(app)
 Settings.load_settings()
 
 
 @lru_cache(maxsize=2048)
 def get_qt_meta(
-    archive_id: ArchiveId,
-    mod_query: Optional[Tuple[str, str]] = None,
-    arch_ver: Optional[str] = None,
-    archives_query: Optional[List[str]] = None,
+    archive_id: ArchiveId, mod_ver: Optional[str] = None, arch_ver: Optional[str] = None
 ) -> Union[List[str], Versions]:
-    return MetadataFactory(
-        archive_id,
-        modules_query=mod_query,
-        architectures_ver=arch_ver,
-        archives_query=archives_query,
-    ).getList()
+    return MetadataFactory(archive_id, modules_ver=mod_ver, architectures_ver=arch_ver).getList()
 
 
 @lru_cache(maxsize=400)
-def get_tool_meta(
-    archive_id, tool_name: Optional[str] = None
-) -> Union[List[str], ToolData]:
-    return MetadataFactory(
-        archive_id, tool_name=tool_name, is_long_listing=True
-    ).getList()
+def get_tool_meta(archive_id, tool_name: Optional[str] = None) -> Union[List[str], ToolData]:
+    return MetadataFactory(archive_id, tool_name=tool_name, is_long_listing=True).getList()
 
 
 def all_extensions(target: str, version: Version) -> List[str]:
-    if target == "desktop" and (
-        version in SimpleSpec(">=5.13,<6") or version in SimpleSpec(">=6.2")
-    ):
+    if target == "desktop" and (version in SimpleSpec(">=5.13,<6") or version in SimpleSpec(">=6.2")):
         return ["", "wasm"]
     elif target == "android" and version >= Version("6.0.0"):
         return ["x86", "x86_64", "armv7", "arm64_v8a"]
@@ -61,14 +42,14 @@ def ext_for_arch(target: str, version: Version, arch: str) -> str:
 
 
 @app.route("/list-qt/versions/<host>/<target>/")
+@cross_origin()
 def list_qt_versions(host: str, target: str):
     meta: Versions = get_qt_meta(ArchiveId("qt", host, target))
-    return jsonify(
-        versions=[[format(version) for version in row] for row in meta.versions]
-    )
+    return jsonify(versions=[[format(version) for version in row] for row in meta.versions])
 
 
 @app.route("/list-qt/arch/<host>/<target>/<ver>/")
+@cross_origin()
 def list_qt_arches(host: str, target: str, ver: str):
     meta: List[str] = []
     for ext in all_extensions(target, Version(ver)):
@@ -80,27 +61,24 @@ def list_qt_arches(host: str, target: str, ver: str):
 
 
 @app.route("/list-qt/mod/<host>/<target>/<ver>/<arch>/")
+@cross_origin()
 def list_qt_modules(host: str, target: str, ver: str, arch: str):
     ext = ext_for_arch(target, Version(ver), arch)
-    meta: List[str] = get_qt_meta(
-        ArchiveId("qt", host, target, ext), mod_query=(ver, arch)
-    )
+    meta: List[str] = get_qt_meta(ArchiveId("qt", host, target, ext), mod_ver=ver)
     return jsonify(modules=meta)
 
 
 @app.route("/list-qt/archives/<host>/<target>/<ver>/<arch>/")
+@cross_origin()
 def list_qt_archives(host: str, target: str, ver: str, arch: str):
-    modules_list = json.loads(request.args.get("modules") or "[]")
-    ext = ext_for_arch(target, Version(ver), arch)
-    archives_qt: List[str] = get_qt_meta(
-        ArchiveId("qt", host, target, ext), archives_query=[ver, arch]
+    modules = request.args.getlist("modules")
+    # ext = ext_for_arch(target, Version(ver), arch)
+    # meta: List[str] = get_qt_meta(ArchiveId("qt", host, target, ext), archives_query=[])
+    # return jsonify(archives=meta)
+    return jsonify(
+        archives=['stubbed_archive1.7z', 'stubbed_archive2.7z', 'stubbed_archive3.7z',
+                  *[f"{module}.7z" for module in modules]]
     )
-    if not modules_list:
-        return jsonify(archives_qt=archives_qt)
-    archives_modules: List[str] = get_qt_meta(
-        ArchiveId("qt", host, target, ext), archives_query=[ver, arch, *modules_list]
-    )
-    return jsonify(archives_modules=archives_modules, archives_qt=archives_qt)
 
 
 def replaceNewlines(obj: any) -> any:
@@ -110,6 +88,7 @@ def replaceNewlines(obj: any) -> any:
 
 
 @app.route("/list-tool/<host>/<target>/")
+@cross_origin()
 def list_tool(host, target):
     meta = get_tool_meta(ArchiveId(category="tools", host=host, target=target))
     if not isinstance(meta, list):
@@ -118,10 +97,9 @@ def list_tool(host, target):
 
 
 @app.route("/list-tool/<host>/<target>/<tool_name>/")
-def list_tool_variants(host, target, tool_name):
-    meta = get_tool_meta(
-        ArchiveId(category="tools", host=host, target=target), tool_name=tool_name
-    )
+@cross_origin()
+def list_tool_variant(host, target, tool_name: str):
+    meta = get_tool_meta(ArchiveId(category="tools", host=host, target=target), tool_name=tool_name)
     if not isinstance(meta, ToolData):
         abort(500)
     return jsonify(
@@ -134,25 +112,37 @@ def list_tool_variants(host, target, tool_name):
 
 @app.route("/")
 def home():
-    return current_app.send_static_file("index.html")
+    return send_from_directory(app.static_folder, "index.html")
+    # return current_app.send_static_file("index.html")
+
+
+#
+#
+# @app.route("/bundle.js")
+# def js():
+#     return current_app.send_static_file("bundle.js")
 
 
 @app.errorhandler(ValueError)
+@cross_origin()
 def handle_value_errors(e):
     return jsonify(err=f"Invalid parameter: {e}"), 400
 
 
 @app.errorhandler(CliInputError)
+@cross_origin()
 def handle_cli_input_errors(e):
     return jsonify(err=f"Invalid parameter: {e}"), 400
 
 
 @app.errorhandler(ArchiveDownloadError)
+@cross_origin()
 def handle_no_xml_file(e):
     return jsonify(err=format(e)), 502
 
 
 @app.errorhandler(ArchiveConnectionError)
+@cross_origin()
 def handle_no_connection(e):
     return jsonify(err=format(e)), 502
 
