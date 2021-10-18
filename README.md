@@ -1,3 +1,14 @@
+# Setup:
+
+```bash
+$ python -m venv venv/
+$ source ./venv/Scripts/activate
+$ pip install -r requirements.txt
+$ yarn install
+```
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

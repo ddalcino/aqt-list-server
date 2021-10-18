@@ -1,4 +1,11 @@
 {
-  "ENV": "development",
-  "BASE_URL": "http://localhost:5000"
+  "development": {
+    "BASE_URL": "http://localhost:5000"
+  },
+  "production": {
+    "BASE_URL": ""
+  },
+  "test": {
+    "BASE_URL": ""
+  }
 }

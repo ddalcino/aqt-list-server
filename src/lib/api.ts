@@ -33,7 +33,7 @@ type MetaResult =
   | Tools
   | ToolVariants;
 
-const baseurl = Config.BASE_URL;
+const baseurl: string = Config[process.env.NODE_ENV].BASE_URL;
 
 const fetch_meta = async (url: string): Promise<MetaResult> => {
   console.log(`Fetch ${baseurl}/${url}`);

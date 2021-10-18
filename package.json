@@ -10,7 +10,9 @@
     "eject": "react-scripts eject",
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
     "start": "react-scripts start",
-    "test": "react-scripts test"
+    "serve-production": "react-scripts build && source venv/bin/activate && python server/app.py",
+    "test": "react-scripts test",
+    "use-venv": "source venv/bin/activate"
   },
   "browserslist": {
     "production": [
