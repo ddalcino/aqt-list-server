@@ -12,6 +12,7 @@
     "start": "react-scripts start",
     "serve-production": "react-scripts build && source venv/bin/activate && python server/app.py",
     "test": "react-scripts test",
+    "test:nowatch": "react-scripts test --watchAll=false",
     "use-venv": "source venv/bin/activate"
   },
   "browserslist": {
@@ -55,9 +56,13 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "jest-fetch-mock": "^3.0.3",
     "prettier": "^2.4.1",
     "sass": "^1.43.2",
     "sass-loader": "^12.2.0",
     "typescript": "^4.4.4"
+  },
+  "jest": {
+    "resetMocks": false
   }
 }

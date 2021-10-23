@@ -1,11 +1,8 @@
 {
-  "development": {
-    "BASE_URL": "http://localhost:5000"
+  "BASE_URL": {
+    "development": "http://localhost:5000",
+    "production": "",
+    "test": ""
   },
-  "production": {
-    "BASE_URL": ""
-  },
-  "test": {
-    "BASE_URL": ""
-  }
+  "QT_ONLINE_REPO_BASE_URL": "https://download.qt.io/online/qtsdkrepository"
 }

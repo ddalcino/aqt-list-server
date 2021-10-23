@@ -10,13 +10,13 @@ export interface ToolVariant extends SelectableElement {
   UncompressedSize: string;
 }
 
-export const enum Host {
+export enum Host {
   windows,
   mac,
   linux,
 }
 
-export const enum Target {
+export enum Target {
   desktop,
   android,
   ios,
