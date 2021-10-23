@@ -1,4 +1,5 @@
-import { ToolData, ToolVariant } from "../State";
+import { ToolData } from "../State";
+import { ToolVariant } from "../aqt-list-qt-ts/types";
 import Config from "../config.json";
 
 interface Versions {

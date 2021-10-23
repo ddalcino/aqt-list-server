@@ -2,6 +2,7 @@
 
 import { Host, hosts, get_host_target_targets, Target } from "./lib/utils";
 import _ from "lodash";
+import { SelectableElement, ToolVariant } from "./aqt-list-qt-ts/types";
 
 export const enum SelectValue {
   NotLoaded,
@@ -194,16 +195,6 @@ const makeSelectMany = (options: Array<string>, allOn: boolean): SelectMany => {
   );
   return new SelectMany(new SelectState(SelectValue.Loaded), m);
 };
-
-export type SelectableElement = { selected: boolean };
-export interface ToolVariant extends SelectableElement {
-  DisplayName: string;
-  Name: string;
-  Description: string;
-  ReleaseDate: string;
-  Version: string;
-  // UpdateFile: { CompressedSize: string; UncompressedSize: string };
-}
 
 export class ToolData {
   constructor(

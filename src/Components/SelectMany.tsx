@@ -1,6 +1,6 @@
 import React from "react";
 import CheckBox from "./CheckBox";
-import { SelectableElement } from "../State";
+import { SelectableElement } from "../aqt-list-qt-ts/types";
 
 type ToggleMany = Map<string, SelectableElement>;
 interface Props {
