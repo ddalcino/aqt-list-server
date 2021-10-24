@@ -1,0 +1,64 @@
+{
+  "architectures": [
+    "win32_mingw53",
+    "win32_msvc2015",
+    "win64_msvc2013_64",
+    "win64_msvc2015_64",
+    "win64_msvc2017_64"
+  ],
+  "modules_by_arch": {
+    "win32_mingw53": [
+      "qtcharts",
+      "qtdatavis3d",
+      "qtnetworkauth",
+      "qtpurchasing",
+      "qtremoteobjects",
+      "qtscript",
+      "qtspeech",
+      "qtvirtualkeyboard"
+    ],
+    "win32_msvc2015": [
+      "qtcharts",
+      "qtdatavis3d",
+      "qtnetworkauth",
+      "qtpurchasing",
+      "qtremoteobjects",
+      "qtscript",
+      "qtspeech",
+      "qtvirtualkeyboard",
+      "qtwebengine"
+    ],
+    "win64_msvc2013_64": [
+      "qtcharts",
+      "qtdatavis3d",
+      "qtnetworkauth",
+      "qtpurchasing",
+      "qtremoteobjects",
+      "qtscript",
+      "qtspeech",
+      "qtvirtualkeyboard"
+    ],
+    "win64_msvc2015_64": [
+      "qtcharts",
+      "qtdatavis3d",
+      "qtnetworkauth",
+      "qtpurchasing",
+      "qtremoteobjects",
+      "qtscript",
+      "qtspeech",
+      "qtvirtualkeyboard",
+      "qtwebengine"
+    ],
+    "win64_msvc2017_64": [
+      "qtcharts",
+      "qtdatavis3d",
+      "qtnetworkauth",
+      "qtpurchasing",
+      "qtremoteobjects",
+      "qtscript",
+      "qtspeech",
+      "qtvirtualkeyboard",
+      "qtwebengine"
+    ]
+  }
+}

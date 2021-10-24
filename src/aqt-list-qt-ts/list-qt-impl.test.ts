@@ -11,13 +11,16 @@ import {
 import { Host, Target, ToolVariant } from "./types";
 import expect_win_desktop from "./test_data/windows-desktop-expect.json";
 import expect_win_620 from "./test_data/windows-620-expect.json";
+import expect_win_59 from "./test_data/windows-59-expect.json";
 import expect_vcredist from "./test_data/windows-desktop-tools_vcredist-expect.json";
 import fsPromises from "fs";
 import Config from "../config.json";
 import { SemVer } from "semver";
+import { toHumanReadableSize } from "../lib/utils";
 
-const [win_desktop_html, win_620_xml, win_desktop_vcredist_xml] = [
+const [win_desktop_html, win_59_xml, win_620_xml, win_desktop_vcredist_xml] = [
   "windows-desktop.html",
+  "windows-59-update.xml",
   "windows-620-update.xml",
   "windows-desktop-tools_vcredist-update.xml",
 ].map((filename: string) =>
@@ -32,27 +35,82 @@ test("scrapes versions from html", () => {
   expect(actual).toEqual(expected);
 });
 
-test("retrieves architectures from xml", () => {
-  const expected = expect_win_620.architectures;
-  const actual = to_arches(win_620_xml);
-  expect(actual).toEqual(expected);
+describe("retrieves arches from xml", () => {
+  it.each`
+    version    | updates_xml    | expected_arches
+    ${"5.9.0"} | ${win_59_xml}  | ${expect_win_59.architectures}
+    ${"6.2.0"} | ${win_620_xml} | ${expect_win_620.architectures}
+  `(
+    "should retrieve arches from xml for version $version",
+    ({
+      version,
+      updates_xml,
+      expected_arches,
+    }: {
+      version: string;
+      updates_xml: string;
+      expected_arches: string[];
+    }) => {
+      const actual = to_arches(updates_xml, [new SemVer(version)]);
+      expect(actual).toEqual(expected_arches);
+    }
+  );
 });
 
 describe("retrieves modules from xml", () => {
-  it.each(Object.entries(expect_win_620.modules_by_arch))(
-    `should return modules when arch is %s`,
-    (arch, expected_modules) => {
-      const actual = to_modules(win_620_xml, [arch]);
+  const join_ver_testdata = (
+    ver: SemVer,
+    arch_expected: [string, string[]][],
+    xml: string
+  ): [SemVer, string, string[], string][] =>
+    arch_expected.map(([arch, x_modules]) => [ver, arch, x_modules, xml]);
+
+  it.each(
+    join_ver_testdata(
+      new SemVer("6.2.0"),
+      Object.entries(expect_win_620.modules_by_arch),
+      win_620_xml
+    ).concat(
+      join_ver_testdata(
+        new SemVer("5.9.0"),
+        Object.entries(expect_win_59.modules_by_arch),
+        win_59_xml
+      )
+    )
+  )(
+    `should return modules when version is %s and arch is %s`,
+    (ver: SemVer, arch: string, expected_modules: string[], xml: string) => {
+      const actual = to_modules(xml, [ver, arch]);
       expect(actual).toEqual(expected_modules);
     }
   );
 });
 
 test("retrieves archives from xml", () => {
-  const expected = ["todo fill this in"];
-  const arch = "todo fill this in";
-  const actual = to_archives(win_620_xml, [arch, ["todo fill this in"]]);
-  expect(actual).toEqual(expected);
+  const win_620_base_archives = [
+    "qtbase-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
+    "qtsvg-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
+    "qtdeclarative-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
+    "qttools-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
+    "qtquickcontrols2-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
+    "qttranslations-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
+    "d3dcompiler_47-x64.7z",
+    "opengl32sw-64-mesa_11_2_2-signed.7z",
+  ];
+  const win_620_pos_archives = [
+    "qtlocation-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
+    ...win_620_base_archives,
+  ];
+
+  const [ver, arch] = [new SemVer("6.2.0"), "win64_msvc2019_64"];
+  const actual_base_arc = to_archives(win_620_xml, [ver, arch, []]);
+  expect(actual_base_arc).toEqual(win_620_base_archives);
+  const actual_base_pos_arc = to_archives(win_620_xml, [
+    ver,
+    arch,
+    ["qtpositioning"],
+  ]);
+  expect(actual_base_pos_arc).toEqual(win_620_pos_archives);
 });
 
 test("scrapes tools from html", () => {
@@ -77,8 +135,8 @@ test("retrieves tool variants from xml", () => {
         Description,
         ReleaseDate,
         Version,
-        CompressedSize,
-        UncompressedSize,
+        CompressedSize: toHumanReadableSize(CompressedSize),
+        UncompressedSize: toHumanReadableSize(UncompressedSize),
         selected: false,
       } as ToolVariant;
     }

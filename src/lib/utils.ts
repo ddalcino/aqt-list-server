@@ -33,3 +33,14 @@ export const get_host_target_targets = (
 export const copyText = async (el: HTMLElement): Promise<void> => {
   await navigator.clipboard.writeText(el.textContent as string);
 };
+
+export const toHumanReadableSize = (bytes: string): string => {
+  const numBytes = parseInt(bytes);
+  if (numBytes === 0) return "0";
+  const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+  let [amt, dividedAmt, index] = [numBytes, numBytes / 1024.0, 0];
+  while (Math.floor(dividedAmt) > 0 && index < units.length - 1) {
+    [amt, dividedAmt, index] = [dividedAmt, dividedAmt / 1024.0, index + 1];
+  }
+  return `${amt.toPrecision(4)} ${units[index]}`;
+};

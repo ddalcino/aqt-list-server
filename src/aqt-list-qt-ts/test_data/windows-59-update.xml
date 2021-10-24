@@ -1,0 +1,839 @@
+<Updates>
+    <ApplicationName>{AnyApplication}</ApplicationName>
+    <ApplicationVersion>1.0.0</ApplicationVersion>
+    <Checksum>true</Checksum>
+    <PackageUpdate>
+        <Name>qt.59.qtcharts</Name>
+        <DisplayName>Qt Charts</DisplayName>
+        <Description>The Qt Charts API lets you easily create interactive and dynamic 2D charts using C++ and/or Qt Quick.&lt;br>&lt;br>This component is available under commercial licenses from The Qt Company, or under GPL v3. For open source use, please note the additional requirements compared to LGPL v3.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>89</SortingPriority>
+        <Dependencies>qt.59.doc.qtcharts, qt.59.examples.qtcharts</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>e4b0244ee66ed0185b2495a817f793c67b872390</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtcharts.win32_mingw53</Name>
+        <DisplayName>Qt Charts for MinGW 5.3.0 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtcharts, qt.59.win32_mingw53</AutoDependOn>
+        <Dependencies>qt.59.win32_mingw53</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtcharts-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="13829007" OS="Any" UncompressedSize="97295802"/>
+        <SHA1>cc7f5ca10084923f3b302775efcc25c0ecd4d399</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtcharts.win32_msvc2015</Name>
+        <DisplayName>Qt Charts for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtcharts, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtcharts-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="5534916" OS="Any" UncompressedSize="45110523"/>
+        <SHA1>c6a4778a16618ece6bafcd67cee5b98499fb5bdd</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtcharts.win64_msvc2013_64</Name>
+        <DisplayName>Qt Charts for msvc2013 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtcharts, qt.59.win64_msvc2013_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2013_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtcharts-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="5511418" OS="Any" UncompressedSize="44277261"/>
+        <SHA1>50e8607fd8220892cb13d4521993a897b6c7fd06</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtcharts.win64_msvc2015_64</Name>
+        <DisplayName>Qt Charts for msvc2015 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtcharts, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtcharts-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="6041000" OS="Any" UncompressedSize="46394381"/>
+        <SHA1>7446596b4853afae944b4beab7a008ed55769164</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtcharts.win64_msvc2017_64</Name>
+        <DisplayName>Qt Charts for msvc2017 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtcharts, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtcharts-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="6148516" OS="Any" UncompressedSize="46957069"/>
+        <SHA1>c4d277c8c96a83bf3e401e60ef9b33e46f1ae0a9</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtdatavis3d</Name>
+        <DisplayName>Qt Data Visualization</DisplayName>
+        <Description>Qt Data Visualization is a module which provides a way to visualize data in 3D. There are C++ classes and QML types for displaying bar graphs, scatter graphs, surface graphs and ways of manipulating the 3D scene. In addition, the graphs are fully customizable with different themes.&lt;br>&lt;br>This component is available under commercial licenses from The Qt Company, or under GPL v3. For open source use, please note the additional requirements compared to LGPL v3.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>88</SortingPriority>
+        <Dependencies>qt.59.doc.qtdatavis3d, qt.59.examples.qtdatavis3d</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>957292c2edf27e6183bc392497ee7bea253b8c4b</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtdatavis3d.win32_mingw53</Name>
+        <DisplayName>Qt Data Visualization for MinGW 5.3.0 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtdatavis3d, qt.59.win32_mingw53</AutoDependOn>
+        <Dependencies>qt.59.win32_mingw53</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtdatavis3d-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="12700719" OS="Any" UncompressedSize="91249455"/>
+        <SHA1>77e5ddf1c01b357008802247a39ae92bd9dcb371</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtdatavis3d.win32_msvc2015</Name>
+        <DisplayName>Qt Data Visualization for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtdatavis3d, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtdatavis3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="4980140" OS="Any" UncompressedSize="42956182"/>
+        <SHA1>9a185f6eab042f444be262afa7f9d3436bc7d190</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtdatavis3d.win64_msvc2013_64</Name>
+        <DisplayName>Qt Data Visualization for msvc2013 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtdatavis3d, qt.59.win64_msvc2013_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2013_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtdatavis3d-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="4876190" OS="Any" UncompressedSize="41685944"/>
+        <SHA1>027f652ad79b4e5ccdd1c6f1a5876e0c72f62817</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtdatavis3d.win64_msvc2015_64</Name>
+        <DisplayName>Qt Data Visualization for msvc2015 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtdatavis3d, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtdatavis3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="5340461" OS="Any" UncompressedSize="43881912"/>
+        <SHA1>d629ec44692855d64f29b00f6e5ea52128ee1e1a</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtdatavis3d.win64_msvc2017_64</Name>
+        <DisplayName>Qt Data Visualization for msvc2017 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtdatavis3d, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtdatavis3d-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="5462422" OS="Any" UncompressedSize="44350392"/>
+        <SHA1>0c0460d26e382607b39be7e8035e4679e12ef95f</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtnetworkauth</Name>
+        <DisplayName>Qt Network Auth (TP)</DisplayName>
+        <Description>Qt Network Auth is an add-on library that enables Qt applications to use different web authentication systems.&lt;br>&lt;br>The release of Qt Network Auth with Qt 5.9 is a Technology Preview.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>10</SortingPriority>
+        <Dependencies>qt.59.doc.qtnetworkauth, qt.59.examples.qtnetworkauth</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>35529dfde15a0d179826f40e54253b621628c072</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtnetworkauth.win32_mingw53</Name>
+        <DisplayName>Qt Network Authentication for MinGW 5.3.0 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtnetworkauth, qt.59.win32_mingw53</AutoDependOn>
+        <Dependencies>qt.59.win32_mingw53</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtnetworkauth-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1384097" OS="Any" UncompressedSize="8916891"/>
+        <SHA1>5706ce5bab4c0ed43fe5fac4ce1201139794de63</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtnetworkauth.win32_msvc2015</Name>
+        <DisplayName>Qt Network Authentication for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtnetworkauth, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtnetworkauth-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1683895" OS="Any" UncompressedSize="13152029"/>
+        <SHA1>8b5a30ffd27af6cae954f6fc32dc381089c50e37</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtnetworkauth.win64_msvc2013_64</Name>
+        <DisplayName>Qt Network Authentication for msvc2013 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtnetworkauth, qt.59.win64_msvc2013_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2013_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtnetworkauth-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1759138" OS="Any" UncompressedSize="12526173"/>
+        <SHA1>78dcace69f87bef79733c850ea57496059d4ca3b</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtnetworkauth.win64_msvc2015_64</Name>
+        <DisplayName>Qt Network Authentication for msvc2015_64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtnetworkauth, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtnetworkauth-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1931343" OS="Any" UncompressedSize="13291101"/>
+        <SHA1>21cd97ef0f1ee8b5be5cd1833b18d807a890c86d</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtnetworkauth.win64_msvc2017_64</Name>
+        <DisplayName>Qt Network Authentication for msvc2017_64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtnetworkauth, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtnetworkauth-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1972681" OS="Any" UncompressedSize="13460573"/>
+        <SHA1>b5a0381ab08324d3deedb3e69a280983a739809b</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtpurchasing</Name>
+        <DisplayName>Qt Purchasing</DisplayName>
+        <Description>Qt Purchasing. Cross-platform APIs for handling in-app purchases on Android, iOS and macOS.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>87</SortingPriority>
+        <Dependencies>qt.59.doc.qtpurchasing, qt.59.examples.qtpurchasing</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>e668297316a7bc44f0509e35cc00a3cbda5fe36f</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtpurchasing.win32_mingw53</Name>
+        <DisplayName>Qt Purchasing for MinGW 5.3.0 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtpurchasing, qt.59.win32_mingw53</AutoDependOn>
+        <Dependencies>qt.59.win32_mingw53</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtpurchasing-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="732268" OS="Any" UncompressedSize="4837028"/>
+        <SHA1>2459646d41b85fbbb9b5c7f242a136759c2f4f5d</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtpurchasing.win32_msvc2015</Name>
+        <DisplayName>Qt Location for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtpurchasing, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtpurchasing-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="914881" OS="Any" UncompressedSize="7939456"/>
+        <SHA1>efe8a5aba8f3f480c9e33cab28c8acaabe63a930</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtpurchasing.win64_msvc2013_64</Name>
+        <DisplayName>Qt Purchasing for msvc2013 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtpurchasing, qt.59.win64_msvc2013_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2013_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtpurchasing-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="934516" OS="Any" UncompressedSize="7472334"/>
+        <SHA1>0a9768e3a598a209b3975ca61e51897176efbdee</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtpurchasing.win64_msvc2015_64</Name>
+        <DisplayName>Qt Purchasing for msvc2015 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtpurchasing, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtpurchasing-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="995830" OS="Any" UncompressedSize="8048846"/>
+        <SHA1>8561ff98616f87b7582a3daf73397c916b663e72</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtpurchasing.win64_msvc2017_64</Name>
+        <DisplayName>Qt Purchasing for msvc2017 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtpurchasing, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtpurchasing-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1032411" OS="Any" UncompressedSize="8285390"/>
+        <SHA1>56403ad3d8ef36943c64dc3e8deeb6ec70496c61</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtremoteobjects</Name>
+        <DisplayName>Qt Remote Objects (TP)</DisplayName>
+        <Description>Qt Remote Objects is an add-on library that provides an easy way to share Qt APIs between processes/devices.&lt;br>&lt;br>The release of Qt Remote Objects with Qt 5.9 is a Technology Preview.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>10</SortingPriority>
+        <Dependencies>qt.59.doc.qtremoteobjects, qt.59.examples.qtremoteobjects</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>1fb9d0b5842e0773cf6fbfd9021a4136b3aed4a6</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtremoteobjects.win32_mingw53</Name>
+        <DisplayName>Qt Remote Objects for MinGW 5.3.0 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtremoteobjects, qt.59.win32_mingw53</AutoDependOn>
+        <Dependencies>qt.59.win32_mingw53</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtremoteobjects-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="2945900" OS="Any" UncompressedSize="17522551"/>
+        <SHA1>daa1c72c29be14df8b71bfe3d9fdd17dbc3d1e58</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtremoteobjects.win32_msvc2015</Name>
+        <DisplayName>Qt Remote Objects for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtremoteobjects, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtremoteobjects-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="2191471" OS="Any" UncompressedSize="15595128"/>
+        <SHA1>8fffa1464b8aeb5c9a7c8c45c0f17b0cee6c6a0b</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtremoteobjects.win64_msvc2013_64</Name>
+        <DisplayName>Qt Remote Objects for msvc2013 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtremoteobjects, qt.59.win64_msvc2013_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2013_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtremoteobjects-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1944404" OS="Any" UncompressedSize="14246472"/>
+        <SHA1>f8400da51da132794e6ae840334460d3d850b933</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtremoteobjects.win64_msvc2015_64</Name>
+        <DisplayName>Qt Remote Objects for msvc2015_64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtremoteobjects, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtremoteobjects-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="2312796" OS="Any" UncompressedSize="16004680"/>
+        <SHA1>621c5626a6771125459692ef00795c339ad3d222</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtremoteobjects.win64_msvc2017_64</Name>
+        <DisplayName>Qt Remote Objects for msvc2017_64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtremoteobjects, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtremoteobjects-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="2388617" OS="Any" UncompressedSize="16401480"/>
+        <SHA1>b11d1055027f820f1746afa43af32136549f63fc</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtscript</Name>
+        <DisplayName>Qt Script (Deprecated)</DisplayName>
+        <Description>Qt Script (Deprecated) Prebuilt Components for Qt 5.9.0.&lt;br>&lt;br>This component contains Third-Party Content licensed under LGPLv2.0. Please note the additional requirements of the license.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>9</SortingPriority>
+        <Dependencies>qt.59.doc.qtscript, qt.59.examples.qtscript</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>50857a939fa84df176dcedae4ea3b596eca8580c</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtscript.win32_mingw53</Name>
+        <DisplayName>Qt Script for MinGW 5.3.0 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtscript, qt.59.win32_mingw53</AutoDependOn>
+        <Dependencies>qt.59.win32_mingw53</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtscript-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="22849465" OS="Any" UncompressedSize="157137016"/>
+        <SHA1>120121e0878c65a64542fd55bd08690c0a609d5a</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtscript.win32_msvc2015</Name>
+        <DisplayName>Qt Script for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtscript, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtscript-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="7420032" OS="Any" UncompressedSize="56540419"/>
+        <SHA1>4f5ec769aa116cbbb4d66436f0bb6e8c001335c4</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtscript.win64_msvc2013_64</Name>
+        <DisplayName>Qt Script for msvc2013 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtscript, qt.59.win64_msvc2013_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2013_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtscript-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="6108191" OS="Any" UncompressedSize="51006849"/>
+        <SHA1>44cb6c507791507a0987b2aac3b40c37bd06f98f</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtscript.win64_msvc2015_64</Name>
+        <DisplayName>Qt Script for msvc2015 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtscript, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtscript-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="7343440" OS="Any" UncompressedSize="54312759"/>
+        <SHA1>579312a33994bd2649defaa3786171955ff116e5</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtscript.win64_msvc2017_64</Name>
+        <DisplayName>Qt Script for msvc2017 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtscript, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtscript-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="7098301" OS="Any" UncompressedSize="52511543"/>
+        <SHA1>915bfcf078c7d5412709f24e6f56072829fed740</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtspeech</Name>
+        <DisplayName>Qt Speech (TP)</DisplayName>
+        <Description>The Qt Speech module allows using text to speech engines.&lt;br>&lt;br>The release of Qt Speech with Qt 5.9 is a Technology Preview.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>10</SortingPriority>
+        <Dependencies>qt.59.doc.qtspeech, qt.59.examples.qtspeech</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>fbcceaf1ad520232d4f521f0ae641f505f70eb53</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtspeech.win32_mingw53</Name>
+        <DisplayName>Qt Speech for MinGW 5.3.0 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtspeech, qt.59.win32_mingw53</AutoDependOn>
+        <Dependencies>qt.59.win32_mingw53</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtspeech-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="756039" OS="Any" UncompressedSize="4631562"/>
+        <SHA1>1ef5b02779c1a7ed4641be15d324c8739d64eae1</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtspeech.win32_msvc2015</Name>
+        <DisplayName>Qt Speech for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtspeech, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtspeech-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1359012" OS="Any" UncompressedSize="10063243"/>
+        <SHA1>d1f79fcd98d9a6a531d49d384c18f84a593af97a</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtspeech.win64_msvc2013_64</Name>
+        <DisplayName>Qt Speech for msvc2013 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtspeech, qt.59.win64_msvc2013_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2013_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtspeech-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1297417" OS="Any" UncompressedSize="9641939"/>
+        <SHA1>e70c42ff5b81945850ae4bf9b4feb65a9ee6f5e0</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtspeech.win64_msvc2015_64</Name>
+        <DisplayName>Qt Speech for msvc2015_64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtspeech, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtspeech-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1398202" OS="Any" UncompressedSize="10184147"/>
+        <SHA1>5d61fbfdfe35c80ab0e86afd774e9020ca8d52dc</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtspeech.win64_msvc2017_64</Name>
+        <DisplayName>Qt Speech for msvc2017_64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtspeech, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtspeech-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="1444266" OS="Any" UncompressedSize="10523603"/>
+        <SHA1>6d9d88bdbc796495107a2f4e5f587250ef9c1d93</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtvirtualkeyboard</Name>
+        <DisplayName>Qt Virtual Keyboard</DisplayName>
+        <Description>The Qt Virtual Keyboard is a Qt Quick virtual keyboard that you can plug in to your platform or application. You can extend it with your own layouts and styles.&lt;br>&lt;br>This component is available under commercial licenses from The Qt Company, or under GPL v3. For open source use, please note the additional requirements compared to LGPL v3.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>85</SortingPriority>
+        <Dependencies>qt.59.doc.qtvirtualkeyboard, qt.59.examples.qtvirtualkeyboard</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>d998b48cb7a386e15a12734d5b5dd655b8c6f8c7</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtvirtualkeyboard.win32_mingw53</Name>
+        <DisplayName>Qt Virtual Keyboard for MinGW 5.3.0 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtvirtualkeyboard, qt.59.win32_mingw53</AutoDependOn>
+        <Dependencies>qt.59.win32_mingw53</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtvirtualkeyboard-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="3345509" OS="Any" UncompressedSize="20581611"/>
+        <SHA1>15861bdd0addc263b76794ffe07aa2fee2fbced2</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtvirtualkeyboard.win32_msvc2015</Name>
+        <DisplayName>Qt Virtual Keyboard for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtvirtualkeyboard, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtvirtualkeyboard-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="2059286" OS="Any" UncompressedSize="14964231"/>
+        <SHA1>4e2b0d7a9101e0d3d100a33227bad4a57851e530</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtvirtualkeyboard.win64_msvc2013_64</Name>
+        <DisplayName>Qt Virtual Keyboard for msvc2013 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtvirtualkeyboard, qt.59.win64_msvc2013_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2013_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtvirtualkeyboard-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="2047135" OS="Any" UncompressedSize="15004167"/>
+        <SHA1>cc7b16ceee5e58797a89381db2cd4d6bfc625472</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtvirtualkeyboard.win64_msvc2015_64</Name>
+        <DisplayName>Qt Virtual Keyboard for msvc2015 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtvirtualkeyboard, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtvirtualkeyboard-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="2125289" OS="Any" UncompressedSize="15258119"/>
+        <SHA1>09a2feda890084398cd6bbb971273956af125f8a</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtvirtualkeyboard.win64_msvc2017_64</Name>
+        <DisplayName>Qt Virtual Keyboard for msvc2017 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtvirtualkeyboard, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtvirtualkeyboard-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="2172602" OS="Any" UncompressedSize="15578631"/>
+        <SHA1>bbcf50e66a49ce7ac8105d083adc8e72cb8d6165</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtwebengine</Name>
+        <DisplayName>Qt WebEngine</DisplayName>
+        <Description>The Qt WebEngine module integrates the fast moving Chromium web platform into Qt and provides a convenient API for both Qt Widgets and Qt Quick to utilize Chromium's web capabilities. Qt WebEngine takes full benefit of the whole Qt graphics stack integration allowing seamless mix and overlay of native Qt controls with web content and OpenGL shaders.&lt;br>&lt;br>This component contains Third-Party Content licensed under LGPLv2.1. Please note the additional requirements of the license.</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Default>false</Default>
+        <SortingPriority>13</SortingPriority>
+        <Dependencies>qt.59.doc.qtwebengine, qt.59.examples.qtwebengine</Dependencies>
+        <DownloadableArchives/>
+        <UpdateFile CompressedSize="0" OS="Any" UncompressedSize="0"/>
+        <SHA1>265de65e4846c46f9975616221a8bffb33dce92b</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtwebengine.win32_msvc2015</Name>
+        <DisplayName>Qt WebEngine for msvc2015 32-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtwebengine, qt.59.win32_msvc2015</AutoDependOn>
+        <Dependencies>qt.59.win32_msvc2015</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="127574257" OS="Any" UncompressedSize="1450912794"/>
+        <SHA1>b4132d6ac7bc6faebc537294ab287eb8441f197d</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtwebengine.win64_msvc2015_64</Name>
+        <DisplayName>Qt WebEngine for msvc2015 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtwebengine, qt.59.win64_msvc2015_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2015_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="236804404" OS="Any" UncompressedSize="2582774348"/>
+        <SHA1>55cc6f1335f0b01380ebe6713c80cdb3be57d394</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.qtwebengine.win64_msvc2017_64</Name>
+        <DisplayName>Qt WebEngine for msvc2017 64-bit</DisplayName>
+        <Description/>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <AutoDependOn>qt.59.qtwebengine, qt.59.win64_msvc2017_64</AutoDependOn>
+        <Dependencies>qt.59.win64_msvc2017_64</Dependencies>
+        <Virtual>true</Virtual>
+        <Script>installscript.qs</Script>
+        <SortingPriority/>
+        <DownloadableArchives>qtwebengine-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="230880527" OS="Any" UncompressedSize="2422384204"/>
+        <SHA1>aab17296859736d5c1b570ca663115d23dc15452</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.win32_mingw53</Name>
+        <DisplayName>MinGW 5.3.0 32 bit</DisplayName>
+        <Description>Qt 5.9.0 Prebuilt Components for MinGW 5.3.0 32-bit</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Dependencies>qt.tools.qtcreator, qt.tools.win32_mingw530, qt.59.doc, qt.59.examples</Dependencies>
+        <Default>false</Default>
+        <Script>installscript.qs</Script>
+        <SortingPriority>590</SortingPriority>
+        <DownloadableArchives>qtbase-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtconnectivity-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtactiveqt-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtmultimedia-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qttranslations-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtgraphicaleffects-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtsvg-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtdeclarative-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtwinextras-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtimageformats-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qttools-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtxmlpatterns-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtsensors-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtwebsockets-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtwebchannel-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtlocation-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtserialport-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtquickcontrols-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtquickcontrols2-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qt3d-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtcanvas3d-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtserialbus-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtscxml-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, qtgamepad-Windows-Windows_7-Mingw53-Windows-Windows_7-X86.7z, i686-5.3.0-release-posix-dwarf-rt_v4-rev0-runtime.7z, opengl32sw-32-mesa_12_0_rc2.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="518049751" OS="Any" UncompressedSize="3379390075"/>
+        <SHA1>79ebbd6f95a356875f98edd7aee99b219db411eb</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.win32_msvc2015</Name>
+        <DisplayName>msvc2015 32-bit</DisplayName>
+        <Description>Qt 5.9.0 Prebuilt Components for msvc2015 32-bit</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Dependencies>qt.tools.qtcreator, qt.59.doc, qt.59.examples</Dependencies>
+        <Default>false</Default>
+        <Script>installscript.qs</Script>
+        <SortingPriority>588</SortingPriority>
+        <DownloadableArchives>qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtconnectivity-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtactiveqt-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtmultimedia-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qttranslations-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtgraphicaleffects-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtsvg-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtdeclarative-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtwinextras-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtimageformats-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qttools-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtxmlpatterns-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtsensors-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtwebsockets-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtwebchannel-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtlocation-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtserialport-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtquickcontrols-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtquickcontrols2-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qt3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtcanvas3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtwebview-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtserialbus-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtscxml-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, qtgamepad-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z, d3dcompiler_47-x86.7z, opengl32sw-32-mesa_12_0_rc2.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="334962009" OS="Any" UncompressedSize="2605810882"/>
+        <SHA1>196bea4eea8eef3055cffb4d64a4936bc3070e8e</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.win64_msvc2013_64</Name>
+        <DisplayName>msvc2013 64-bit</DisplayName>
+        <Description>Qt 5.9.0 Prebuilt Components for msvc2013 64-bit</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Dependencies>qt.tools.qtcreator, qt.59.doc, qt.59.examples</Dependencies>
+        <Default>false</Default>
+        <Script>installscript.qs</Script>
+        <SortingPriority>588</SortingPriority>
+        <DownloadableArchives>qtbase-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtconnectivity-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtactiveqt-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtmultimedia-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qttranslations-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtgraphicaleffects-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtsvg-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtdeclarative-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtwinextras-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtimageformats-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qttools-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtxmlpatterns-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtsensors-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtwebsockets-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtwebchannel-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtlocation-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtserialport-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtquickcontrols-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtquickcontrols2-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qt3d-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtcanvas3d-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtserialbus-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtscxml-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, qtgamepad-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z, d3dcompiler_47-x64.7z, opengl32sw-64-mesa_12_0_rc2.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="306249215" OS="Any" UncompressedSize="2425643721"/>
+        <SHA1>cdc54936453aae4872ce60b6246923ba0f8cec64</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.win64_msvc2015_64</Name>
+        <DisplayName>msvc2015 64-bit</DisplayName>
+        <Description>Qt 5.9.0 Prebuilt Components for msvc2015 64-bit</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Dependencies>qt.tools.qtcreator, qt.59.doc, qt.59.examples</Dependencies>
+        <Default>false</Default>
+        <Script>installscript.qs</Script>
+        <SortingPriority>588</SortingPriority>
+        <DownloadableArchives>qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtconnectivity-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtactiveqt-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtmultimedia-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qttranslations-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtgraphicaleffects-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtsvg-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtdeclarative-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtwinextras-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtimageformats-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qttools-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtxmlpatterns-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtsensors-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtwebsockets-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtwebchannel-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtlocation-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtserialport-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtquickcontrols-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtquickcontrols2-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qt3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtcanvas3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtwebview-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtserialbus-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtscxml-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, qtgamepad-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z, d3dcompiler_47-x64.7z, opengl32sw-64-mesa_12_0_rc2.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="356248122" OS="Any" UncompressedSize="2690730364"/>
+        <SHA1>fd910b579971cfd983a295bda5bfd298f448042a</SHA1>
+    </PackageUpdate>
+    <PackageUpdate>
+        <Name>qt.59.win64_msvc2017_64</Name>
+        <DisplayName>msvc2017 64-bit</DisplayName>
+        <Description>Qt 5.9.0 Prebuilt Components for msvc2017 64-bit</Description>
+        <Version>5.9.0-0-201705291821</Version>
+        <ReleaseDate>2017-05-29</ReleaseDate>
+        <Dependencies>qt.tools.qtcreator, qt.59.doc, qt.59.examples</Dependencies>
+        <Default>false</Default>
+        <Script>installscript.qs</Script>
+        <SortingPriority>588</SortingPriority>
+        <DownloadableArchives>qtbase-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtconnectivity-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtactiveqt-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtmultimedia-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qttranslations-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtgraphicaleffects-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtsvg-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtdeclarative-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtwinextras-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtimageformats-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qttools-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtxmlpatterns-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtsensors-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtwebsockets-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtwebchannel-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtlocation-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtserialport-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtquickcontrols-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtquickcontrols2-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qt3d-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtcanvas3d-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtwebview-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtserialbus-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtscxml-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, qtgamepad-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z, d3dcompiler_47-x64.7z, opengl32sw-64-mesa_12_0_rc2.7z</DownloadableArchives>
+        <UpdateFile CompressedSize="362158844" OS="Any" UncompressedSize="2712589196"/>
+        <SHA1>77f5105a6b22ddeb20dd1c5854a7bb69d07e086d</SHA1>
+    </PackageUpdate>
+    <MetadataName>2020-08-21-1950_meta.7z</MetadataName>
+    <SHA1>6666f0ee3791a29cfcbc88f68b542fbce5a6dd71</SHA1>
+</Updates>
