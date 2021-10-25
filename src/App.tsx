@@ -4,7 +4,14 @@ import CommandPanel from "./Components/CommandPanel";
 import ToolSelectPanel from "./Components/ToolSelectPanel";
 import SelectMany from "./Components/SelectMany";
 import { makeState, NO_SELECTION, StateUtils as S, ToolData } from "./State";
-import { Host, Target } from "./lib/utils";
+import {
+  Host,
+  hostFromStr,
+  HostString,
+  Target,
+  targetFromStr,
+  TargetString,
+} from "./lib/types";
 import {
   fetch_arches,
   fetch_archives,
@@ -12,8 +19,9 @@ import {
   fetch_tool_variants,
   fetch_tools,
   fetch_versions,
-} from "./lib/api";
+} from "./lib/api"; //"./aqt-list-qt-ts/list-qt";
 import "./app.scss";
+import { SemVer } from "semver";
 
 const App = (): JSX.Element => {
   const [state, setState] = useState(makeState());
@@ -31,13 +39,13 @@ const App = (): JSX.Element => {
     arch: string
   ) => {
     const [modules, archives] = await Promise.all([
-      fetch_modules(host, target, version, arch),
-      fetch_archives(host, target, version, arch, []),
+      fetch_modules(host, target, new SemVer(version), arch),
+      fetch_archives(host, target, new SemVer(version), arch, []),
     ]);
     setState(S.withModulesArchivesLoaded(modules, archives));
   };
   const loadArches = async (host: Host, target: Target, version: string) => {
-    const arches = await fetch_arches(host, target, version);
+    const arches = await fetch_arches(host, target, new SemVer(version));
     setState(S.withArchesLoaded(arches)); // will set arch automatically if only 1 arch available
     if (arches.length === 1) {
       // chain load of arches when only one option exists
@@ -45,16 +53,16 @@ const App = (): JSX.Element => {
     }
   };
   const loadTool = async (host: Host, target: Target, toolName: string) => {
-    const toolData = await fetch_tool_variants(host, target, toolName);
-    setState(S.withNewTool(toolData));
+    const variants = await fetch_tool_variants(host, target, toolName);
+    setState(S.withNewTool(ToolData.fromPackageUpdates(toolName, variants)));
   };
   const isInvalid = (option: string) => option === NO_SELECTION || !option;
 
   // If versions is marked 'Loading...', we should load it:
   if (state.version.selected.state.isLoading())
     loadVersionsTools(
-      state.host.selected.value as Host,
-      state.target.selected.value as Target
+      hostFromStr(state.host.selected.value as HostString),
+      targetFromStr(state.target.selected.value as TargetString)
     );
 
   return (
@@ -67,10 +75,16 @@ const App = (): JSX.Element => {
           version={state.version}
           arch={state.arch}
           changeHost={async (host: string) =>
-            setState(S.withHostLoadingVersionsTools(host as Host))
+            setState(
+              S.withHostLoadingVersionsTools(hostFromStr(host as HostString))
+            )
           }
           changeTarget={async (target: string) =>
-            setState(S.withTargetLoadingVersionsTools(target as Target))
+            setState(
+              S.withTargetLoadingVersionsTools(
+                targetFromStr(target as TargetString)
+              )
+            )
           }
           changeVersion={async (version: string) => {
             setState(S.withVersionLoadingArches(version));

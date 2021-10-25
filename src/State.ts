@@ -1,8 +1,20 @@
 // import _ from 'lodash';
 
-import { Host, hosts, get_host_target_targets, Target } from "./lib/utils";
+import { hosts, get_host_target_targets } from "./lib/utils";
 import _ from "lodash";
-import { SelectableElement, ToolVariant } from "./aqt-list-qt-ts/types";
+import {
+  Host,
+  Target,
+  SelectableElement,
+  ToolVariant,
+  hostFromStr,
+  targetFromStr,
+  hostToStr,
+  targetToStr,
+  HostString,
+  TargetString,
+  PackageUpdate,
+} from "./lib/types";
 
 export const enum SelectValue {
   NotLoaded,
@@ -262,6 +274,21 @@ export class ToolData {
       )
       .join(" ");
   }
+  public static fromPackageUpdates(
+    tool_name: string,
+    variants: PackageUpdate[]
+  ): ToolData {
+    return new ToolData(
+      tool_name,
+      false,
+      new Map<string, ToolVariant>(
+        variants.map((variant) => [
+          variant.Name,
+          { ...variant, selected: false } as ToolVariant,
+        ])
+      )
+    );
+  }
 }
 
 export class ToolSelector {
@@ -315,8 +342,8 @@ export class State {
 
   values(): { host: Host; target: Target; version: string; arch: string } {
     return {
-      host: this.host.selected.value as Host,
-      target: this.target.selected.value as Target,
+      host: hostFromStr(this.host.selected.value as HostString),
+      target: targetFromStr(this.target.selected.value as TargetString),
       version: this.version.selected.value,
       arch: this.arch.selected.value,
     };
@@ -334,7 +361,9 @@ export class State {
         ? ""
         : "\n" +
           [...this.selectedTools.values()]
-            .map((toolData: ToolData) => toolData.installCmd(host, target))
+            .map((toolData: ToolData) =>
+              toolData.installCmd(hostToStr(host), targetToStr(target))
+            )
             .filter((tuple: string) => tuple.length > 0)
             .join("\n");
     if (this.modules.hasAllOff() && this.archives.hasAllOff())
@@ -350,7 +379,9 @@ export class State {
         : this.archives.hasAllOff()
         ? " --noarchives"
         : " --archives " + this.archives.optionsTurnedOn().join(" ");
-    return `aqt install-qt ${host} ${target} ${version} ${arch}${modulesFlag}${archivesFlag}${toolsLines}`;
+    return `aqt install-qt ${hostToStr(host)} ${targetToStr(
+      target
+    )} ${version} ${arch}${modulesFlag}${archivesFlag}${toolsLines}`;
   }
 
   toInstallQtAction(): string {
@@ -387,12 +418,18 @@ export const StateUtils = {
   withHostLoadingVersionsTools:
     (newHost: Host) =>
     (state: State): State =>
-      makeState(newHost, state.target.selected.value as Target),
+      makeState(
+        newHost,
+        targetFromStr(state.target.selected.value as TargetString)
+      ),
 
   withTargetLoadingVersionsTools:
     (newTarget: Target) =>
     (state: State): State =>
-      makeState(state.host.selected.value as Host, newTarget),
+      makeState(
+        hostFromStr(state.host.selected.value as HostString),
+        newTarget
+      ),
 
   withVersionsToolsLoaded: (
     versions: string[][],
@@ -545,10 +582,14 @@ export const StateUtils = {
 export const makeState = (host?: Host, target?: Target): State => {
   const [_host, _target, _targets] = get_host_target_targets(host, target);
   return new State(
-    new SelectOne(new Selection(_host, SelectValue.Selected), hosts, false),
     new SelectOne(
-      new Selection(_target, SelectValue.Selected),
-      _targets,
+      new Selection(hostToStr(_host), SelectValue.Selected),
+      hosts.map(hostToStr),
+      false
+    ),
+    new SelectOne(
+      new Selection(targetToStr(_target), SelectValue.Selected),
+      _targets.map(targetToStr),
       false
     ),
     new SelectNone(SelectValue.Loading),

@@ -1,5 +1,5 @@
 import fetchMock from "jest-fetch-mock";
-import { Host, Target } from "./types";
+import { Host, Target } from "../lib/types";
 import { SemVer } from "semver";
 import { fetch_arches, fetch_versions } from "./list-qt";
 import expect_win_620 from "./test_data/windows-620-expect.json";

@@ -51,6 +51,9 @@ export enum Host {
   mac,
   linux,
 }
+export type HostString = keyof typeof Host;
+export const hostToStr = (h: Host): string => Host[h];
+export const hostFromStr = (h: keyof typeof Host): Host => Host[h];
 
 export enum Target {
   desktop,
@@ -58,3 +61,6 @@ export enum Target {
   ios,
   winrt,
 }
+export type TargetString = keyof typeof Target;
+export const targetToStr = (t: Target): string => Target[t];
+export const targetFromStr = (t: keyof typeof Target): Target => Target[t];

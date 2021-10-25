@@ -1,4 +1,4 @@
-import { Host, Target, ToolVariant } from "./types";
+import { Host, PackageUpdate, Target } from "../lib/types";
 import { SemVer } from "semver";
 import {
   to_arches,
@@ -103,8 +103,8 @@ export const fetch_tool_variants = (
   host: Host,
   target: Target,
   tool_name: string
-): Promise<ToolVariant[]> =>
-  generic_fetch_data<ToolVariant[], [Host, Target, string], []>(
+): Promise<PackageUpdate[]> =>
+  generic_fetch_data<PackageUpdate[], [Host, Target, string], []>(
     to_tools_updates_xml,
     to_tool_variants
   )([host, target, tool_name], []).then((result) => result.unwrap());

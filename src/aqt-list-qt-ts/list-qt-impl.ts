@@ -1,10 +1,4 @@
-import {
-  Host,
-  PackageUpdate,
-  Target,
-  ToolVariant,
-  toPackageUpdate,
-} from "./types";
+import { Host, PackageUpdate, Target, toPackageUpdate } from "../lib/types";
 import semver, { SemVer } from "semver";
 import Config from "../config.json";
 import * as cheerio from "cheerio";
@@ -170,21 +164,10 @@ export const to_tools = (html: string): string[] => {
     .map((href: string) => (href.endsWith("/") ? href.slice(0, -1) : href));
 };
 
-export const to_tool_variants = (xml: string): ToolVariant[] =>
-  scrape_package_updates(xml)
-    .filter((pkg: PackageUpdate) => pkg.DownloadableArchives.length)
-    .map(
-      (pkg: PackageUpdate): ToolVariant => ({
-        DisplayName: pkg.DisplayName,
-        Name: pkg.Name,
-        Description: pkg.Description,
-        ReleaseDate: pkg.ReleaseDate,
-        Version: pkg.Version,
-        CompressedSize: pkg.CompressedSize,
-        UncompressedSize: pkg.UncompressedSize,
-        selected: false,
-      })
-    );
+export const to_tool_variants = (xml: string): PackageUpdate[] =>
+  scrape_package_updates(xml).filter(
+    (pkg: PackageUpdate) => pkg.DownloadableArchives.length
+  );
 
 export const to_url = ([host, target]: [Host, Target]): string => {
   const arch = host === Host.windows ? "x86" : "x64";
@@ -214,4 +197,4 @@ export const to_tools_updates_xml = ([host, target, tool_name]: [
   Host,
   Target,
   string
-]) => `${to_url([host, target])}${tool_name}/Updates.xml`;
+]): string => `${to_url([host, target])}${tool_name}/Updates.xml`;

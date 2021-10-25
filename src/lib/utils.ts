@@ -1,23 +1,22 @@
-export type Host = "windows" | "mac" | "linux";
-export type Target = "desktop" | "android" | "ios" | "winrt";
+import { Host, Target } from "./types";
 
-export const hosts: Readonly<Host[]> = ["windows", "mac", "linux"];
+export const hosts: Readonly<Host[]> = [Host.windows, Host.mac, Host.linux];
 const targetsForHost = (host: Host): Target[] => {
   switch (host) {
-    case "linux":
-      return ["desktop", "android"];
-    case "mac":
-      return ["desktop", "android", "ios"];
-    case "windows":
-      return ["desktop", "android", "winrt"];
+    case Host.linux:
+      return [Target.desktop, Target.android];
+    case Host.mac:
+      return [Target.desktop, Target.android, Target.ios];
+    case Host.windows:
+      return [Target.desktop, Target.android, Target.winrt];
   }
 };
 
 const hostOs = (): Host => {
   const app_ver = navigator.appVersion;
-  if (app_ver.indexOf("Win") !== -1) return "windows";
-  if (app_ver.indexOf("Mac") !== -1) return "mac";
-  return "linux";
+  if (app_ver.indexOf("Win") !== -1) return Host.windows;
+  if (app_ver.indexOf("Mac") !== -1) return Host.mac;
+  return Host.linux;
 };
 
 export const get_host_target_targets = (
@@ -26,7 +25,8 @@ export const get_host_target_targets = (
 ): [Host, Target, Target[]] => {
   const host_os: Host = host && hosts.includes(host) ? host : hostOs();
   const targets = targetsForHost(host_os);
-  const target_sdk = target && targets.includes(target) ? target : "desktop";
+  const target_sdk =
+    target && targets.includes(target) ? target : Target.desktop;
   return [host_os, target_sdk, targets];
 };
 

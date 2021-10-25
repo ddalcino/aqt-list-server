@@ -8,7 +8,7 @@ import {
   to_url,
   to_versions,
 } from "./list-qt-impl";
-import { Host, Target, ToolVariant } from "./types";
+import { Host, PackageUpdate, Target } from "../lib/types";
 import expect_win_desktop from "./test_data/windows-desktop-expect.json";
 import expect_win_620 from "./test_data/windows-620-expect.json";
 import expect_win_59 from "./test_data/windows-59-expect.json";
@@ -127,6 +127,7 @@ test("retrieves tool variants from xml", () => {
         Description,
         ReleaseDate,
         Version,
+        DownloadableArchives,
         UpdateFile: { CompressedSize, UncompressedSize },
       } = variant;
       return {
@@ -137,8 +138,12 @@ test("retrieves tool variants from xml", () => {
         Version,
         CompressedSize: toHumanReadableSize(CompressedSize),
         UncompressedSize: toHumanReadableSize(UncompressedSize),
-        selected: false,
-      } as ToolVariant;
+        DownloadableArchives: DownloadableArchives.split(", "),
+        Dependencies: [],
+        AutoDependOn: [],
+
+        // selected: false,
+      } as PackageUpdate;
     }
   );
   const actual = to_tool_variants(win_desktop_vcredist_xml);

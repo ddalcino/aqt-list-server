@@ -1,6 +1,6 @@
-import { ToolData } from "../State";
-import { ToolVariant } from "../aqt-list-qt-ts/types";
+import { Host, Target, hostToStr, targetToStr, PackageUpdate } from "./types";
 import Config from "../config.json";
+import { SemVer } from "semver";
 
 interface Versions {
   versions: Array<Array<string>>;
@@ -22,8 +22,8 @@ interface Tools {
   tools: Array<string>;
 }
 
-interface ToolVariants {
-  tool_variants: ToolVariant[];
+interface PackageUpdates {
+  tool_variants: PackageUpdate[];
 }
 
 type MetaResult =
@@ -32,7 +32,7 @@ type MetaResult =
   | Modules
   | Archives
   | Tools
-  | ToolVariants;
+  | PackageUpdates;
 
 const baseurl: string = Config.BASE_URL[process.env.NODE_ENV];
 
@@ -55,67 +55,62 @@ const fetch_meta = async (url: string): Promise<MetaResult> => {
 };
 
 const fetch_versions = async (
-  host: string,
-  target: string
+  host: Host,
+  target: Target
 ): Promise<string[][]> => {
-  return fetch_meta(`list-qt/versions/${host}/${target}/`).then(
-    (meta) => (meta as Versions).versions
-  );
+  return fetch_meta(
+    `list-qt/versions/${hostToStr(host)}/${targetToStr(target)}/`
+  ).then((meta) => (meta as Versions).versions);
 };
 
 const fetch_arches = (
-  host: string,
-  target: string,
-  ver: string
+  host: Host,
+  target: Target,
+  ver: SemVer
 ): Promise<string[]> =>
-  fetch_meta(`list-qt/arch/${host}/${target}/${ver}/`).then(
-    (meta) => (meta as Architectures).architectures
-  );
+  fetch_meta(
+    `list-qt/arch/${hostToStr(host)}/${targetToStr(target)}/${ver.format()}/`
+  ).then((meta) => (meta as Architectures).architectures);
 
 const fetch_modules = (
-  host: string,
-  target: string,
-  ver: string,
+  host: Host,
+  target: Target,
+  ver: SemVer,
   arch: string
 ): Promise<string[]> =>
-  fetch_meta(`list-qt/mod/${host}/${target}/${ver}/${arch}/`).then(
-    (meta) => (meta as Modules).modules
-  );
+  fetch_meta(
+    `list-qt/mod/${hostToStr(host)}/${targetToStr(
+      target
+    )}/${ver.format()}/${arch}/`
+  ).then((meta) => (meta as Modules).modules);
 
 const fetch_archives = (
-  host: string,
-  target: string,
-  ver: string,
+  host: Host,
+  target: Target,
+  ver: SemVer,
   arch: string,
   modules: string[]
 ): Promise<string[]> => {
   const query = modules.length > 0 ? `?modules=${modules.join(",")}` : "";
-  const url = `list-qt/archives/${host}/${target}/${ver}/${arch}/${query}`;
+  const url = `list-qt/archives/${hostToStr(host)}/${targetToStr(
+    target
+  )}/${ver.format()}/${arch}/${query}`;
   return fetch_meta(url).then((meta) => (meta as Archives).archives);
 };
 
-const fetch_tools = (host: string, target: string): Promise<string[]> =>
-  fetch_meta(`list-tool/${host}/${target}/`).then(
+const fetch_tools = (host: Host, target: Target): Promise<string[]> =>
+  fetch_meta(`list-tool/${hostToStr(host)}/${targetToStr(target)}/`).then(
     (meta) => (meta as Tools).tools
   );
 
 const fetch_tool_variants = (
-  host: string,
-  target: string,
+  host: Host,
+  target: Target,
   tool_name: string
-): Promise<ToolData> =>
-  fetch_meta(`list-tool/${host}/${target}/${tool_name}/`).then((meta) => {
-    return new ToolData(
-      tool_name,
-      false,
-      new Map<string, ToolVariant>(
-        (meta as ToolVariants).tool_variants.map((variant) => [
-          variant.Name,
-          variant,
-        ])
-      )
-    );
-  });
+): Promise<PackageUpdate[]> =>
+  fetch_meta(
+    `list-tool/${hostToStr(host)}/${targetToStr(target)}/${tool_name}/`
+  ).then((meta) => (meta as PackageUpdates).tool_variants);
 
 export {
   fetch_versions,

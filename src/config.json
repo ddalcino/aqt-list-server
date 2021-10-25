@@ -4,5 +4,10 @@
     "production": "",
     "test": ""
   },
-  "QT_ONLINE_REPO_BASE_URL": "https://download.qt.io/online/qtsdkrepository"
+  "QT_ONLINE_REPO_BASE_URL": "https://download.qt.io/online/qtsdkrepository",
+  "MIRROR_URLS": [
+    "https://ftp.jaist.ac.jp/pub/qtproject",
+    "https://ftp1.nluug.nl/languages/qt",
+    "https://mirrors.dotsrc.org/qtproject"
+  ]
 }
