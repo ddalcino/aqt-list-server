@@ -12,6 +12,7 @@ on:
       - gh-pages
     paths:
       - 'server/**'
+      - 'public/cache/last_updated.json'
 
 jobs:
   test:
