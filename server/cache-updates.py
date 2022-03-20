@@ -10,7 +10,6 @@ import bs4
 from aqt.helper import Settings, ssplit
 from aqt.metadata import ArchiveId
 from defusedxml import ElementTree
-from ordered_set import OrderedSet
 
 fetch_http = aqt.metadata.MetadataFactory.fetch_http
 IGNORED_FOLDERS = ("Parent Directory", "extras_src")  # "preview_main_node", "licenses")
