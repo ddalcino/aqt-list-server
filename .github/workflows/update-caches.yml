@@ -49,7 +49,7 @@ jobs:
 
           # Optional. Option used by `git-status` to determine if the repository is
           # dirty. See https://git-scm.com/docs/git-status#_options
-          status_options: '--untracked-files=no'
+          #status_options: '--untracked-files=no'
 
           # Optional. Options used by `git-add`.
           # See https://git-scm.com/docs/git-add#_options
