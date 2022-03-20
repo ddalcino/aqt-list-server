@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: 3.9
       - name: Install deps
-        run: python -m pip install aqtinstall==2.06 bs4 defusedxml
+        run: python -m pip install aqtinstall==2.0.6 bs4 defusedxml
       - name: Generate and/or update caches
         run: python ./server/cache-updates.py
       - name: Commit cache updates
