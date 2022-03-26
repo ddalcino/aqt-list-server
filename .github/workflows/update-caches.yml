@@ -41,7 +41,7 @@ jobs:
           # See https://git-scm.com/docs/git-commit#_options
           commit_options: '--no-verify --signoff'
 
-          file_pattern: public/cache/**/*.json public/cache/*.json
+          file_pattern: public/cache/**/*.json public/cache/last_updated.json
 
           # Optional commit user and author settings
           commit_user_name: Qt Repo Watch Bot # defaults to "GitHub Actions"
