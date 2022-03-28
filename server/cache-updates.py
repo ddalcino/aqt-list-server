@@ -110,13 +110,21 @@ def update_xml_files():
     cache_root = Path(__file__).parent.parent / "public/cache"
     for host, target in iterate_hosts_targets():
         LOGGER.info(banner_message(f"Entering {host}/{target}"))
-        tools = set()  # set(directory.get("tools", []))
-        qts = set()  # set(directory.get("qt", []))
+        dir_file = cache_root / host / target / "directory.json"
+        if not dir_file.parent.is_dir():
+            dir_file.parent.mkdir(parents=True)
+        old_directory = json.loads(dir_file.read_text()) if dir_file.exists() else {}
+        old_dir = {key: set(old_directory.get(key, [])) for key in ("tools", "qt")}
+        new_dir = {"tools": set(), "qt": set()}
+
         # Download html file:
         html_path = ArchiveId("qt", host, target).to_url()
         for folder, date in iterate_folders(fetch_http(html_path)):
+            json_file = cache_root / host / target / f"{folder}.json"
+            key = "tools" if folder.startswith("tools") else "qt"
             if date <= last_update:
-                (tools if folder.startswith("tools") else qts).add(folder)
+                if json_file.exists():
+                    new_dir[key].add(folder)
                 continue
             LOGGER.info(f"Update for {html_path}{folder}")
             # Download the xml file
@@ -125,27 +133,23 @@ def update_xml_files():
             content = xml_to_modules(xml_data)
             if not content:
                 continue
-            json_file = cache_root / host / target / f"{folder}.json"
             json_file.write_text(json.dumps(content))
             if date > most_recent:
                 most_recent = date
-            (tools if folder.startswith("tools") else qts).add(folder)
+            new_dir[key].add(folder)
 
-        dir_file = cache_root / host / target / "directory.json"
-        if not dir_file.parent.is_dir():
-            dir_file.parent.mkdir(parents=True)
-        old_directory = json.loads(dir_file.read_text()) if dir_file.exists() else {}
         # Prune cache of files that no longer exist in the qt repo
-        for key, new_set in (("qt", qts), ("tools", tools)):
-            old_set = set(old_directory.get(key, []))
-            removed = old_set.difference(new_set)
+        for key in ("tools", "qt"):
+            removed = old_dir[key].difference(new_dir[key])
             # Prune removed json files
             for folder in removed:
                 file_to_remove = cache_root / host / target / f"{folder}.json"
+                if not file_to_remove.exists():
+                    continue
                 LOGGER.info(f"Removing {file_to_remove}")
                 file_to_remove.unlink()
 
-        dir_file.write_text(json.dumps({"tools": sorted(tools), "qt": sorted(qts)}))
+        dir_file.write_text(json.dumps({key: sorted(new_dir[key]) for key in ("tools", "qt")}))
     save_date_of_last_update(most_recent)
 
 
