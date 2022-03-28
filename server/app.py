@@ -1,9 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Optional, Union, Tuple
-
-from flask import Flask, abort, jsonify, request, send_from_directory
-from flask_cors import CORS, cross_origin
+from typing import List, Optional, Tuple, Union
 
 from aqt.exceptions import ArchiveConnectionError, ArchiveDownloadError, CliInputError
 from aqt.helper import Settings
@@ -15,6 +12,8 @@ from aqt.metadata import (
     Version,
     Versions,
 )
+from flask import Flask, abort, jsonify, request, send_from_directory
+from flask_cors import CORS, cross_origin
 
 app = Flask(
     __name__,
