@@ -30,9 +30,7 @@ def iterate_hosts_targets() -> Generator[Tuple[str, str], None, None]:
             yield host, target
 
 
-def iterate_folders(
-    html_doc: str, filter_category: str = ""
-) -> Generator[Tuple[str, datetime], None, None]:
+def iterate_folders(html_doc: str) -> Generator[Tuple[str, datetime], None, None]:
     def table_row_to_folder(tr: bs4.element.Tag) -> Optional[Tuple[str, datetime]]:
         try:
             folder: str = tr.find_all("td")[1].a.contents[0].rstrip("/")
@@ -51,7 +49,7 @@ def iterate_folders(
         if (
             folder not in IGNORED_FOLDERS
             and "backup" not in folder
-            and folder.startswith(filter_category)
+            and (folder.startswith("tools") or folder.startswith("qt"))
         ):
             yield content
 
@@ -111,17 +109,14 @@ def update_xml_files():
     most_recent = last_update
     cache_root = Path(__file__).parent.parent / "public/cache"
     for host, target in iterate_hosts_targets():
-        print(banner_message(f"Entering {host}/{target}"))
-        dir_file = cache_root / host / target / "directory.json"
-        if not dir_file.parent.is_dir():
-            dir_file.parent.mkdir(parents=True)
-        directory = json.loads(dir_file.read_text()) if dir_file.exists() else {}
-        tools = set(directory.get("tools", []))
-        qts = set(directory.get("qt", []))
+        LOGGER.info(banner_message(f"Entering {host}/{target}"))
+        tools = set()  # set(directory.get("tools", []))
+        qts = set()  # set(directory.get("qt", []))
         # Download html file:
         html_path = ArchiveId("qt", host, target).to_url()
         for folder, date in iterate_folders(fetch_http(html_path)):
             if date <= last_update:
+                (tools if folder.startswith("tools") else qts).add(folder)
                 continue
             LOGGER.info(f"Update for {html_path}{folder}")
             # Download the xml file
@@ -135,6 +130,21 @@ def update_xml_files():
             if date > most_recent:
                 most_recent = date
             (tools if folder.startswith("tools") else qts).add(folder)
+
+        dir_file = cache_root / host / target / "directory.json"
+        if not dir_file.parent.is_dir():
+            dir_file.parent.mkdir(parents=True)
+        old_directory = json.loads(dir_file.read_text()) if dir_file.exists() else {}
+        # Prune cache of files that no longer exist in the qt repo
+        for key, new_set in (("qt", qts), ("tools", tools)):
+            old_set = set(old_directory.get(key, []))
+            removed = old_set.difference(new_set)
+            # Prune removed json files
+            for folder in removed:
+                file_to_remove = cache_root / host / target / f"{folder}.json"
+                LOGGER.info(f"Removing {file_to_remove}")
+                file_to_remove.unlink()
+
         dir_file.write_text(json.dumps({"tools": sorted(tools), "qt": sorted(qts)}))
     save_date_of_last_update(most_recent)
 
@@ -151,4 +161,3 @@ def human_readable_amt(num_bytes: int) -> str:
 if __name__ == "__main__":
     Settings.load_settings()
     update_xml_files()
-
