@@ -23,7 +23,10 @@ export const get_host_target_targets = (
   host?: Host,
   target?: Target
 ): [Host, Target, Target[]] => {
-  const host_os: Host = host && hosts.includes(host) ? host : hostOs();
+  const host_os: Host =
+    host !== null && host !== undefined && hosts.includes(host)
+      ? host
+      : hostOs();
   const targets = targetsForHost(host_os);
   const target_sdk =
     target && targets.includes(target) ? target : Target.desktop;
