@@ -5,7 +5,7 @@
     "test": ""
   },
   "QT_ONLINE_REPO_BASE_URL": "https://download.qt.io/online/qtsdkrepository",
-  "QT_JSON_CACHE_BASE_URL": "https://ddalcino.github.io/aqt-list-server/public/cache",
+  "QT_JSON_CACHE_BASE_URL": "https://ddalcino.github.io/aqt-list-server/cache",
   "MIRROR_URLS": [
     "https://ftp.jaist.ac.jp/pub/qtproject",
     "https://ftp1.nluug.nl/languages/qt",
