@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Web application to run aqt list-qt and list-tool in the browser",
+  "homepage": "https://ddalcino.github.io/aqt-list-server",
   "license": "MIT",
   "author": "David Dalcino <ddalcino@gmail.com>",
   "scripts": {
