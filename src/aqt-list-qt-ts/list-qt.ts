@@ -3,13 +3,13 @@ import { SemVer } from "semver";
 import {
   to_arches,
   to_modules,
-  to_qt_nowasm_updates_xml,
-  to_qt_wasm_updates_xml,
-  to_qt_updates_xml,
+  to_qt_nowasm_updates_json,
+  to_qt_wasm_updates_json,
+  to_qt_updates_json,
   to_tool_variants,
   to_tools,
-  to_tools_updates_xml,
-  to_url,
+  to_tools_updates_json,
+  to_directory,
   to_versions,
   to_archives,
 } from "./list-qt-impl";
@@ -40,7 +40,7 @@ export const fetch_versions = (
   host: Host,
   target: Target
 ): Promise<string[][]> =>
-  generic_fetch_data<string[][], [Host, Target], []>(to_url, to_versions)(
+  generic_fetch_data<string[][], [Host, Target], []>(to_directory, to_versions)(
     [host, target],
     []
   ).then((result) => result.unwrap());
@@ -51,7 +51,7 @@ export const fetch_arches = async (
   version: SemVer
 ): Promise<string[]> => {
   const [without_wasm, with_wasm] = await Promise.all(
-    [to_qt_nowasm_updates_xml, to_qt_wasm_updates_xml].map((url_generator) =>
+    [to_qt_nowasm_updates_json, to_qt_wasm_updates_json].map((url_generator) =>
       generic_fetch_data<string[], [Host, Target, SemVer], [SemVer]>(
         url_generator,
         to_arches
@@ -73,7 +73,7 @@ export const fetch_modules = (
   arch: string
 ): Promise<string[]> =>
   generic_fetch_data<string[], [Host, Target, SemVer], [SemVer, string]>(
-    to_qt_updates_xml(arch),
+    to_qt_updates_json(arch),
     to_modules
   )([host, target, version], [version, arch]).then((result) => result.unwrap());
 
@@ -88,13 +88,13 @@ export const fetch_archives = async (
     string[],
     [Host, Target, SemVer],
     [SemVer, string, string[]]
-  >(to_qt_updates_xml(arch), to_archives)(
+  >(to_qt_updates_json(arch), to_archives)(
     [host, target, version],
     [version, arch, modules]
   ).then((result) => result.unwrap());
 
 export const fetch_tools = (host: Host, target: Target): Promise<string[]> =>
-  generic_fetch_data<string[], [Host, Target], []>(to_url, to_tools)(
+  generic_fetch_data<string[], [Host, Target], []>(to_directory, to_tools)(
     [host, target],
     []
   ).then((result) => result.unwrap());
@@ -105,6 +105,6 @@ export const fetch_tool_variants = (
   tool_name: string
 ): Promise<PackageUpdate[]> =>
   generic_fetch_data<PackageUpdate[], [Host, Target, string], []>(
-    to_tools_updates_xml,
+    to_tools_updates_json,
     to_tool_variants
   )([host, target, tool_name], []).then((result) => result.unwrap());

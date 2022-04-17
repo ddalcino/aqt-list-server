@@ -2,10 +2,10 @@ import {
   to_arches,
   to_archives,
   to_modules,
-  to_qt_updates_xml,
+  to_qt_updates_json,
   to_tool_variants,
   to_tools,
-  to_url,
+  to_directory,
   to_versions,
 } from "./list-qt-impl";
 import { Host, PackageUpdate, Target } from "../lib/types";
@@ -18,11 +18,16 @@ import Config from "../config.json";
 import { SemVer } from "semver";
 import { toHumanReadableSize } from "../lib/utils";
 
-const [win_desktop_html, win_59_xml, win_620_xml, win_desktop_vcredist_xml] = [
-  "windows-desktop.html",
-  "windows-59-update.xml",
-  "windows-620-update.xml",
-  "windows-desktop-tools_vcredist-update.xml",
+const [
+  win_desktop_directory,
+  win_59_json,
+  win_620_json,
+  win_desktop_vcredist_json,
+] = [
+  "windows-desktop-directory.json",
+  "windows-59-update.json",
+  "windows-620-update.json",
+  "windows-desktop-tools_vcredist-update.json",
 ].map((filename: string) =>
   fsPromises.readFileSync(`src/aqt-list-qt-ts/test_data/${filename}`).toString()
 );
@@ -31,68 +36,67 @@ test("scrapes versions from html", () => {
   const expected = expect_win_desktop.qt.qt.map((major_minor_row: string) =>
     major_minor_row.split(" ")
   );
-  const actual = to_versions(win_desktop_html);
+  const actual = to_versions(win_desktop_directory);
   expect(actual).toEqual(expected);
 });
 
-describe("retrieves arches from xml", () => {
+describe("retrieves arches from json", () => {
   it.each`
-    version    | updates_xml    | expected_arches
-    ${"5.9.0"} | ${win_59_xml}  | ${expect_win_59.architectures}
-    ${"6.2.0"} | ${win_620_xml} | ${expect_win_620.architectures}
+    version    | updates_json    | expected_arches
+    ${"5.9.0"} | ${win_59_json}  | ${expect_win_59.architectures}
+    ${"6.2.0"} | ${win_620_json} | ${expect_win_620.architectures}
   `(
-    "should retrieve arches from xml for version $version",
+    "should retrieve arches from json for version $version",
     ({
       version,
-      updates_xml,
+      updates_json,
       expected_arches,
     }: {
       version: string;
-      updates_xml: string;
+      updates_json: string;
       expected_arches: string[];
     }) => {
-      const actual = to_arches(updates_xml, [new SemVer(version)]);
+      const actual = to_arches(updates_json, [new SemVer(version)]);
       expect(actual).toEqual(expected_arches);
     }
   );
 });
 
-describe("retrieves modules from xml", () => {
+describe("retrieves modules from json", () => {
   const join_ver_testdata = (
     ver: SemVer,
     arch_expected: [string, string[]][],
-    xml: string
+    json: string
   ): [SemVer, string, string[], string][] =>
-    arch_expected.map(([arch, x_modules]) => [ver, arch, x_modules, xml]);
+    arch_expected.map(([arch, x_modules]) => [ver, arch, x_modules, json]);
 
   it.each(
     join_ver_testdata(
       new SemVer("6.2.0"),
       Object.entries(expect_win_620.modules_by_arch),
-      win_620_xml
+      win_620_json
     ).concat(
       join_ver_testdata(
         new SemVer("5.9.0"),
         Object.entries(expect_win_59.modules_by_arch),
-        win_59_xml
+        win_59_json
       )
     )
   )(
     `should return modules when version is %s and arch is %s`,
-    (ver: SemVer, arch: string, expected_modules: string[], xml: string) => {
-      const actual = to_modules(xml, [ver, arch]);
+    (ver: SemVer, arch: string, expected_modules: string[], json: string) => {
+      const actual = to_modules(json, [ver, arch]);
       expect(actual).toEqual(expected_modules);
     }
   );
 });
 
-test("retrieves archives from xml", () => {
+test("retrieves archives from json", () => {
   const win_620_base_archives = [
     "qtbase-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
     "qtsvg-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
     "qtdeclarative-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
     "qttools-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
-    "qtquickcontrols2-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
     "qttranslations-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z",
     "d3dcompiler_47-x64.7z",
     "opengl32sw-64-mesa_11_2_2-signed.7z",
@@ -103,9 +107,9 @@ test("retrieves archives from xml", () => {
   ];
 
   const [ver, arch] = [new SemVer("6.2.0"), "win64_msvc2019_64"];
-  const actual_base_arc = to_archives(win_620_xml, [ver, arch, []]);
+  const actual_base_arc = to_archives(win_620_json, [ver, arch, []]);
   expect(actual_base_arc).toEqual(win_620_base_archives);
-  const actual_base_pos_arc = to_archives(win_620_xml, [
+  const actual_base_pos_arc = to_archives(win_620_json, [
     ver,
     arch,
     ["qtpositioning"],
@@ -115,11 +119,11 @@ test("retrieves archives from xml", () => {
 
 test("scrapes tools from html", () => {
   const expected = expect_win_desktop.tools;
-  const actual = to_tools(win_desktop_html);
-  expect(actual).toEqual(expected);
+  const actual = to_tools(win_desktop_directory);
+  expect(actual.sort()).toEqual(expected.sort());
 });
 
-test("retrieves tool variants from xml", () => {
+test.skip("retrieves tool variants from json", () => {
   const expected = Object.entries(expect_vcredist.modules_data).map(
     ([name, variant]) => {
       const {
@@ -146,22 +150,22 @@ test("retrieves tool variants from xml", () => {
       } as PackageUpdate;
     }
   );
-  const actual = to_tool_variants(win_desktop_vcredist_xml);
+  const actual = to_tool_variants(win_desktop_vcredist_json);
   expect(actual).toEqual(expected);
 });
 
-const BASE_URL = Config.QT_ONLINE_REPO_BASE_URL;
+const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;
 describe("constructs url for directory", () => {
   it.each`
     host            | target            | result
-    ${Host.windows} | ${Target.desktop} | ${BASE_URL + "/windows_x86/desktop/"}
-    ${Host.windows} | ${Target.android} | ${BASE_URL + "/windows_x86/android/"}
-    ${Host.windows} | ${Target.winrt}   | ${BASE_URL + "/windows_x86/winrt/"}
-    ${Host.linux}   | ${Target.desktop} | ${BASE_URL + "/linux_x64/desktop/"}
-    ${Host.linux}   | ${Target.android} | ${BASE_URL + "/linux_x64/android/"}
-    ${Host.mac}     | ${Target.desktop} | ${BASE_URL + "/mac_x64/desktop/"}
-    ${Host.mac}     | ${Target.android} | ${BASE_URL + "/mac_x64/android/"}
-    ${Host.mac}     | ${Target.ios}     | ${BASE_URL + "/mac_x64/ios/"}
+    ${Host.windows} | ${Target.desktop} | ${BASE_URL + "/windows/desktop/directory.json"}
+    ${Host.windows} | ${Target.android} | ${BASE_URL + "/windows/android/directory.json"}
+    ${Host.windows} | ${Target.winrt}   | ${BASE_URL + "/windows/winrt/directory.json"}
+    ${Host.linux}   | ${Target.desktop} | ${BASE_URL + "/linux/desktop/directory.json"}
+    ${Host.linux}   | ${Target.android} | ${BASE_URL + "/linux/android/directory.json"}
+    ${Host.mac}     | ${Target.desktop} | ${BASE_URL + "/mac/desktop/directory.json"}
+    ${Host.mac}     | ${Target.android} | ${BASE_URL + "/mac/android/directory.json"}
+    ${Host.mac}     | ${Target.ios}     | ${BASE_URL + "/mac/ios/directory.json"}
   `(
     `should return url when host is %s, target is %s`,
     ({
@@ -173,12 +177,12 @@ describe("constructs url for directory", () => {
       target: Target;
       result: string;
     }) => {
-      const actual = to_url([host, target]);
+      const actual = to_directory([host, target]);
       expect(actual).toEqual(result);
     }
   );
 });
-describe("constructs url for Updates.xml", () => {
+describe("constructs url for Updates.json", () => {
   it.each`
     version      | arch          | expected_folder
     ${"5.9.0"}   | ${"wasm_32"}  | ${"qt5_59_wasm"}
@@ -201,13 +205,13 @@ describe("constructs url for Updates.xml", () => {
       expected_folder: string;
     }) => {
       const [host, target] = [Host.windows, Target.desktop];
-      const actual = to_qt_updates_xml(arch)([
+      const actual = to_qt_updates_json(arch)([
         host,
         target,
         new SemVer(version),
       ]);
       expect(actual).toEqual(
-        `${BASE_URL}/windows_x86/desktop/${expected_folder}/Updates.xml`
+        `${BASE_URL}/windows/desktop/${expected_folder}.json`
       );
     }
   );

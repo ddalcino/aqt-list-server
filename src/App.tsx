@@ -19,7 +19,7 @@ import {
   fetch_tool_variants,
   fetch_tools,
   fetch_versions,
-} from "./lib/api"; //"./aqt-list-qt-ts/list-qt";
+} from "./aqt-list-qt-ts/list-qt";
 import "./app.scss";
 import { SemVer } from "semver";
 

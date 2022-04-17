@@ -6,8 +6,11 @@ import expect_win_620 from "./test_data/windows-620-expect.json";
 import expect_win_desktop from "./test_data/windows-desktop-expect.json";
 import fsPromises from "fs";
 
-const [win_desktop_html] = ["windows-desktop.html"].map((filename: string) =>
-  fsPromises.readFileSync(`src/aqt-list-qt-ts/test_data/${filename}`).toString()
+const [win_desktop_dir_json] = ["windows-desktop-directory.json"].map(
+  (filename: string) =>
+    fsPromises
+      .readFileSync(`src/aqt-list-qt-ts/test_data/${filename}`)
+      .toString()
 );
 
 beforeEach(() => {
@@ -16,7 +19,7 @@ beforeEach(() => {
 });
 
 test.skip("fetch versions via HTTP", async () => {
-  fetchMock.mockResponse(win_desktop_html, { status: 200 });
+  fetchMock.mockResponse(win_desktop_dir_json, { status: 200 });
 
   const [host, target] = [Host.windows, Target.desktop];
   const actual = await fetch_versions(host, target);

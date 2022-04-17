@@ -22,6 +22,11 @@ export interface PackageUpdate {
   Dependencies: string[];
   AutoDependOn: string[];
 }
+
+export interface PackageUpdates {
+  [key: string]: PackageUpdate;
+}
+
 export const toPackageUpdate = (obj: {
   DisplayName?: string;
   Name?: string;

@@ -1,69 +1,14 @@
-import { Host, PackageUpdate, Target, toPackageUpdate } from "../lib/types";
+import { Host, PackageUpdate, PackageUpdates, Target } from "../lib/types";
 import semver, { SemVer } from "semver";
 import Config from "../config.json";
-import * as cheerio from "cheerio";
-import { toHumanReadableSize } from "../lib/utils";
 
-const BASE_URL = Config.QT_ONLINE_REPO_BASE_URL;
+const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;
 
-const scrape_table_hrefs = (html: string): string[] => {
-  const hrefs: string[] = [];
-  const $ = cheerio.load(html);
-  $("tbody > tr > td > a").each((_, el) => {
-    hrefs.push(el.attribs["href"]);
-  });
-  return hrefs;
-};
-
-const scrape_package_updates = (xml: string): PackageUpdate[] => {
-  const getHumanReadableSize = (tag: Element, attr: string): string =>
-    toHumanReadableSize(tag.attributes.getNamedItem(attr)?.value ?? "");
-  const toArray = (tag: Element): string[] =>
-    tag.textContent?.split(", ").filter((s) => s.length) ?? [];
-
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xml, "application/xml");
-  const updates: PackageUpdate[] = [];
-  for (const el of doc.querySelectorAll("PackageUpdate").values()) {
-    let pkgUpdate = {};
-    for (const tag of el.children) {
-      pkgUpdate = (() => {
-        switch (tag.tagName) {
-          case "DisplayName":
-            return { ...pkgUpdate, DisplayName: tag.textContent };
-          case "Name":
-            return { ...pkgUpdate, Name: tag.textContent };
-          case "Description":
-            return { ...pkgUpdate, Description: tag.textContent };
-          case "ReleaseDate":
-            return { ...pkgUpdate, ReleaseDate: tag.textContent };
-          case "Version":
-            return { ...pkgUpdate, Version: tag.textContent };
-          case "UpdateFile":
-            return {
-              ...pkgUpdate,
-              UncompressedSize: getHumanReadableSize(tag, "UncompressedSize"),
-              CompressedSize: getHumanReadableSize(tag, "CompressedSize"),
-            };
-          case "DownloadableArchives":
-            return {
-              ...pkgUpdate,
-              DownloadableArchives: toArray(tag),
-            };
-          default:
-            return pkgUpdate;
-        }
-      })();
-    }
-    updates.push(toPackageUpdate(pkgUpdate));
-  }
-  return updates;
-};
-
-export const to_versions = (html: string): string[][] => {
-  const versions = scrape_table_hrefs(html)
-    .filter((href: string) => href.startsWith("qt"))
-    .map((href: string) => href.match(/^qt\d_(\d+)\/$/))
+export const to_versions = (directory_json: string): string[][] => {
+  const directory: { qt: string[]; tools: string[] } =
+    JSON.parse(directory_json);
+  const versions = directory.qt
+    .map((name: string) => name.match(/^qt\d_(\d+)$/))
     .reduce<string[]>((accum, match: RegExpMatchArray | null) => {
       if (match !== null) accum.push(match[1]);
       return accum;
@@ -74,7 +19,7 @@ export const to_versions = (html: string): string[][] => {
       if (ver.length > 3) return chop_at(1, 3);
       if (ver.length === 3) return chop_at(1, 2);
       if (ver.length === 2) return new SemVer(`${ver[0]}.${ver[1]}.0`);
-      throw new Error("Regex should makes this unreachable");
+      throw new Error("Regex should make this unreachable");
     })
     .sort(semver.compare);
 
@@ -103,9 +48,13 @@ const version_nodot = (version: SemVer): string =>
     ? `${version.major}${version.minor}`
     : `${version.major}${version.minor}${version.patch}`;
 
-export const to_arches = (xml: string, [actual_ver]: [SemVer]): string[] => {
+export const to_arches = (
+  updates: string,
+  [actual_ver]: [SemVer]
+): string[] => {
   const ver_nodot = version_nodot(actual_ver);
-  return scrape_package_updates(xml)
+  const _updates: PackageUpdates = JSON.parse(updates);
+  return Object.values(_updates)
     .filter((pkg: PackageUpdate) => pkg.DownloadableArchives.length)
     .reduce<string[]>((accum, pkg: PackageUpdate) => {
       const [ver, arch] = pkg.Name.split(".").slice(-2);
@@ -116,7 +65,7 @@ export const to_arches = (xml: string, [actual_ver]: [SemVer]): string[] => {
 };
 
 export const to_modules = (
-  xml: string,
+  updates: string,
   [actual_ver, arch]: [SemVer, string]
 ): string[] => {
   const ver_nodot = version_nodot(actual_ver);
@@ -128,7 +77,8 @@ export const to_modules = (
       ver_nodot +
       ".(addons.)?(.+)$"
   );
-  return scrape_package_updates(xml)
+  const _updates: PackageUpdates = JSON.parse(updates);
+  return Object.values(_updates)
     .filter((pkg: PackageUpdate) => pkg.DownloadableArchives.length)
     .reduce<string[]>((accum, pkg: PackageUpdate) => {
       const mod_arch = pkg.Name.match(pattern)?.[4];
@@ -142,11 +92,12 @@ export const to_modules = (
 };
 
 export const to_archives = (
-  xml: string,
+  updates: string,
   [ver, arch, modules]: [SemVer, string, string[]]
 ): string[] => {
   const ver_nodot = version_nodot(ver);
-  return scrape_package_updates(xml)
+  const _updates: PackageUpdates = JSON.parse(updates);
+  return Object.values(_updates)
     .filter((pkg: PackageUpdate) => {
       const [mod, _arch] = pkg.Name.split(".").slice(-2);
       return (
@@ -158,43 +109,48 @@ export const to_archives = (
     .flatMap((pkg: PackageUpdate) => pkg.DownloadableArchives);
 };
 
-export const to_tools = (html: string): string[] => {
-  return scrape_table_hrefs(html)
+export const to_tools = (directory_json: string): string[] => {
+  const directory: { qt: string[]; tools: string[] } =
+    JSON.parse(directory_json);
+  return directory.tools
     .filter((href: string) => href.startsWith("tools_"))
     .map((href: string) => (href.endsWith("/") ? href.slice(0, -1) : href));
 };
 
-export const to_tool_variants = (xml: string): PackageUpdate[] =>
-  scrape_package_updates(xml).filter(
+export const to_tool_variants = (updates: string): PackageUpdate[] => {
+  const _updates: PackageUpdates = JSON.parse(updates);
+  return Object.values(_updates).filter(
     (pkg: PackageUpdate) => pkg.DownloadableArchives.length
   );
-
-export const to_url = ([host, target]: [Host, Target]): string => {
-  const arch = host === Host.windows ? "x86" : "x64";
-  return `${BASE_URL}/${Host[host]}_${arch}/${Target[target]}/`;
 };
 
-const _to_qt_updates_xml = (
+const to_url = ([host, target]: [Host, Target]): string =>
+  `${BASE_URL}/${Host[host]}/${Target[target]}`;
+
+export const to_directory = ([host, target]: [Host, Target]): string =>
+  `${to_url([host, target])}/directory.json`;
+
+const _to_qt_updates_json = (
   [host, target, version]: [Host, Target, SemVer],
   is_wasm = false
 ): string => {
   const ver_nodot = `qt${version.major}_${version_nodot(version)}`;
   const ext = is_wasm ? "_wasm" : "";
-  return `${to_url([host, target])}${ver_nodot}${ext}/Updates.xml`;
+  return `${to_url([host, target])}/${ver_nodot}${ext}.json`;
 };
 
-export const to_qt_wasm_updates_xml = (args: [Host, Target, SemVer]): string =>
-  _to_qt_updates_xml(args, true);
-export const to_qt_nowasm_updates_xml = (
+export const to_qt_wasm_updates_json = (args: [Host, Target, SemVer]): string =>
+  _to_qt_updates_json(args, true);
+export const to_qt_nowasm_updates_json = (
   args: [Host, Target, SemVer]
-): string => _to_qt_updates_xml(args, false);
-export const to_qt_updates_xml =
+): string => _to_qt_updates_json(args, false);
+export const to_qt_updates_json =
   (arch: string) =>
   (args: [Host, Target, SemVer]): string =>
-    _to_qt_updates_xml(args, arch.includes("wasm"));
+    _to_qt_updates_json(args, arch.includes("wasm"));
 
-export const to_tools_updates_xml = ([host, target, tool_name]: [
+export const to_tools_updates_json = ([host, target, tool_name]: [
   Host,
   Target,
   string
-]): string => `${to_url([host, target])}${tool_name}/Updates.xml`;
+]): string => `${to_url([host, target])}/${tool_name}.json`;

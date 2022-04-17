@@ -8,7 +8,7 @@
   "scripts": {
     "build": "react-scripts build",
     "eject": "react-scripts eject",
-    "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint --fix src/ --ext .js,.jsx,.ts,.tsx",
     "start": "react-scripts start",
     "serve-production": "react-scripts build && source venv/bin/activate && python server/app.py",
     "test": "react-scripts test",
