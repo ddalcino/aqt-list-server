@@ -24,7 +24,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: yarn ci, build and test
         run: |
-          yarn ci
+          yarn install --immutable --immutable-cache --check-cache
           yarn run build --if-present
           yarn test
       - name: deploy to gh-pages
