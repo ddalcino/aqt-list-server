@@ -37,7 +37,7 @@ type MetaResult =
 const baseurl: string = Config.BASE_URL[process.env.NODE_ENV];
 
 const fetch_meta = async (url: string): Promise<MetaResult> => {
-  console.log(`Fetch ${baseurl}/${url}`);
+  // console.log(`Fetch ${baseurl}/${url}`);
   return await fetch(`${baseurl}/${url}`, {
     method: "GET",
     cache: "force-cache",
