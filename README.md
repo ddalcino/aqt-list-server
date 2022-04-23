@@ -37,13 +37,16 @@ the above-described re-implementation of `aqt list-qt`.
 
 # Setup:
 
-First, make sure you have [nodejs](https://nodejs.org/en/) and 
+First, make sure you have [python](https://www.python.org), [nodejs](https://nodejs.org/) and 
 [yarn](https://yarnpkg.com/) installed.
 
 Install this project's dependencies with:
 ```bash
+pip install aqtinstall
 yarn install 
 ```
+
+Note that Python and aqtinstall are only required for running the functional tests.
 
 ## Available Scripts
 
