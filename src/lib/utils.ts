@@ -1,7 +1,7 @@
 import { Host, Target } from "./types";
 
 export const hosts: Readonly<Host[]> = [Host.windows, Host.mac, Host.linux];
-const targetsForHost = (host: Host): Target[] => {
+export const targetsForHost = (host: Host): Target[] => {
   switch (host) {
     case Host.linux:
       return [Target.desktop, Target.android];
