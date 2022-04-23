@@ -1,14 +1,3 @@
 {
-  "BASE_URL": {
-    "development": "http://localhost:5000",
-    "production": "",
-    "test": ""
-  },
-  "QT_ONLINE_REPO_BASE_URL": "https://download.qt.io/online/qtsdkrepository",
-  "QT_JSON_CACHE_BASE_URL": "https://ddalcino.github.io/qt-repo-cache/public",
-  "MIRROR_URLS": [
-    "https://ftp.jaist.ac.jp/pub/qtproject",
-    "https://ftp1.nluug.nl/languages/qt",
-    "https://mirrors.dotsrc.org/qtproject"
-  ]
+  "QT_JSON_CACHE_BASE_URL": "https://ddalcino.github.io/qt-repo-cache/public"
 }

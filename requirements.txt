@@ -1,5 +1,0 @@
-aqtinstall >= 2.0.6
-flask
-flask_cors
-gunicorn
-

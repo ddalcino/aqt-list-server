@@ -2,7 +2,7 @@
   "name": "aqt-list-app",
   "version": "0.1.0",
   "private": true,
-  "description": "Web application to run aqt list-qt and list-tool in the browser",
+  "description": "Web application to emulate aqt list-qt and list-tool in the browser, without a backend",
   "homepage": "https://ddalcino.github.io/aqt-list-server",
   "license": "MIT",
   "author": "David Dalcino <ddalcino@gmail.com>",
@@ -11,10 +11,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint --fix src/ --ext .js,.jsx,.ts,.tsx",
     "start": "react-scripts start",
-    "serve-production": "react-scripts build && source venv/bin/activate && python server/app.py",
     "test": "react-scripts test",
-    "test:nowatch": "react-scripts test --watchAll=false",
-    "use-venv": "source venv/bin/activate"
+    "test:nowatch": "react-scripts test --watchAll=false"
   },
   "browserslist": {
     "production": [
