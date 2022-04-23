@@ -1,23 +1,58 @@
-# WIP
+# aqt list server
+
+[![codecov](https://codecov.io/gh/ddalcino/aqt-list-server/branch/main/graph/badge.svg?token=8SVNX4YCGE)](
+  https://codecov.io/gh/ddalcino/aqt-list-server
+)
+
+This project is meant to provide a web-based GUI interface to help users find 
+out what options are available for [aqtinstall](https://github.com/miurahr/aqtinstall) 
+and [install-qt-action](https://github.com/jurplel/install-qt-action).
+`aqtinstall` provides CLI-only tools called `aqt list-qt` and `aqt list-tool`,
+but these tools must be installed locally in order to be used.
+This project assumes that many users of `aqtinstall` and `install-qt-action`
+have no interest in installing the `aqtinstall` locally, because they intend
+to use it as part of a CI/CD workflow.
+Those users will be able to use this project instead of those CLI-based tools.
+
+This project is meant as a convenience for users of `aqtinstall` and `install-qt-action`.
+Please refer to [the `aqtinstall` documentation](https://aqtinstall.readthedocs.io/en/latest/)
+for definitive information on how `aqtinstall` should be used.
+
+## Technical design
+This project includes a Typescript re-implementation of `aqt list-qt` and
+`aqt list-tool`, at `src/aqt-list-qt-ts`.
+Instead of accessing data directly from download.qt.io, it reads cached .json
+files at https://github.com/ddalcino/qt-repo-cache that are updated daily.
+This cache is meant to make access fast and available from any website, without
+the need for any backend server.
+The CORS policy at download.qt.io prevents any browser-based implementation
+of `aqt list-qt` from reading HTML and XML files directly from download.qt.io,
+which means that 
+It is possible that this data is stale or incorrect; if you discover any 
+inaccuracies, you are strongly encouraged to [file an issue](https://github.com/ddalcino/aqt-list-server/issues)!
+
+This project includes a frontend written in React, boostrapped with 
+[Create React App](https://github.com/facebook/create-react-app), that consumes
+the above-described re-implementation of `aqt list-qt`.
 
 # Setup:
 
+First, make sure you have [nodejs](https://nodejs.org/en/) and 
+[yarn](https://yarnpkg.com/) installed.
+
+Install this project's dependencies with:
 ```bash
-$ python -m venv venv/
-$ source ./venv/Scripts/activate
-$ pip install -r requirements.txt
-$ yarn install
+yarn install 
 ```
-
-
-
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
 In the project directory, you can run:
+
+### `yarn lint`
+Runs code auto-formatting and linting tasks. 
+Strongly recommended: set up your editor to run this when you save your code.
+This project will fail to transpile if the code is not properly formatted.
 
 ### `yarn start`
 
