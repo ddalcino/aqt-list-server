@@ -12,8 +12,13 @@ import Config from "../config.json";
 const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;
 
 export const to_versions = (directory: Directory): string[][] => {
+  const should_include_folder = (name: string): boolean =>
+    ["_preview", "_src_doc_examples"].reduce(
+      (accum: boolean, ext: string) => accum && !name.endsWith(ext),
+      true
+    );
   const raw_versions = directory.qt
-    .filter((name: string) => !name.endsWith("_src_doc_examples"))
+    .filter(should_include_folder)
     .map((name: string) => name.match(/^qt\d_(\d+)/))
     .reduce<Set<string>>((accum, match: RegExpMatchArray | null) => {
       if (match !== null) accum.add(match[1]);
