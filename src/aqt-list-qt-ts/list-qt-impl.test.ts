@@ -2,35 +2,24 @@ import {
   to_arches,
   to_archives,
   to_modules,
-  to_qt_updates_json,
+  to_updates_urls_by_arch,
   to_tool_variants,
   to_tools,
   to_directory,
   to_versions,
 } from "./list-qt-impl";
-import { Host, PackageUpdate, Target } from "../lib/types";
+import { Host, PackageUpdate, RawPackageUpdates, Target } from "../lib/types";
+import win_desktop_directory from "./test_data/windows-desktop-directory.json";
 import expect_win_desktop from "./test_data/windows-desktop-expect.json";
+import win_620_json from "./test_data/windows-620-update.json";
 import expect_win_620 from "./test_data/windows-620-expect.json";
+import win_59_json from "./test_data/windows-59-update.json";
 import expect_win_59 from "./test_data/windows-59-expect.json";
+import win_desktop_vcredist_json from "./test_data/windows-desktop-tools_vcredist-update.json";
 import expect_vcredist from "./test_data/windows-desktop-tools_vcredist-expect.json";
-import fsPromises from "fs";
 import Config from "../config.json";
 import { SemVer } from "semver";
 import { toHumanReadableSize } from "../lib/utils";
-
-const [
-  win_desktop_directory,
-  win_59_json,
-  win_620_json,
-  win_desktop_vcredist_json,
-] = [
-  "windows-desktop-directory.json",
-  "windows-59-update.json",
-  "windows-620-update.json",
-  "windows-desktop-tools_vcredist-update.json",
-].map((filename: string) =>
-  fsPromises.readFileSync(`src/aqt-list-qt-ts/test_data/${filename}`).toString()
-);
 
 test("scrapes versions from html", () => {
   const expected = expect_win_desktop.qt.qt.map((major_minor_row: string) =>
@@ -53,7 +42,7 @@ describe("retrieves arches from json", () => {
       expected_arches,
     }: {
       version: string;
-      updates_json: string;
+      updates_json: RawPackageUpdates;
       expected_arches: string[];
     }) => {
       const actual = to_arches(updates_json, [new SemVer(version)]);
@@ -66,9 +55,9 @@ describe("retrieves modules from json", () => {
   const join_ver_testdata = (
     ver: SemVer,
     arch_expected: [string, string[]][],
-    json: string
-  ): [SemVer, string, string[], string][] =>
-    arch_expected.map(([arch, x_modules]) => [ver, arch, x_modules, json]);
+    updates: RawPackageUpdates
+  ): [SemVer, string, string[], RawPackageUpdates][] =>
+    arch_expected.map(([arch, x_modules]) => [ver, arch, x_modules, updates]);
 
   it.each(
     join_ver_testdata(
@@ -84,8 +73,13 @@ describe("retrieves modules from json", () => {
     )
   )(
     `should return modules when version is %s and arch is %s`,
-    (ver: SemVer, arch: string, expected_modules: string[], json: string) => {
-      const actual = to_modules(json, [ver, arch]);
+    (
+      ver: SemVer,
+      arch: string,
+      expected_modules: string[],
+      updates: RawPackageUpdates
+    ) => {
+      const actual = to_modules(updates, [ver, arch]);
       expect(actual).toEqual(expected_modules);
     }
   );
@@ -107,7 +101,11 @@ test("retrieves archives from json", () => {
   ];
 
   const [ver, arch] = [new SemVer("6.2.0"), "win64_msvc2019_64"];
-  const actual_base_arc = to_archives(win_620_json, [ver, arch, []]);
+  const actual_base_arc = to_archives(win_620_json as RawPackageUpdates, [
+    ver,
+    arch,
+    [],
+  ]);
   expect(actual_base_arc).toEqual(win_620_base_archives);
   const actual_base_pos_arc = to_archives(win_620_json, [
     ver,
@@ -205,7 +203,7 @@ describe("constructs url for Updates.json", () => {
       expected_folder: string;
     }) => {
       const [host, target] = [Host.windows, Target.desktop];
-      const actual = to_qt_updates_json(arch)([
+      const actual = to_updates_urls_by_arch(arch)([
         host,
         target,
         new SemVer(version),

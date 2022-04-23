@@ -1,18 +1,25 @@
-import { Host, PackageUpdate, PackageUpdates, Target } from "../lib/types";
+import {
+  Directory,
+  Host,
+  PackageUpdate,
+  RawPackageUpdates,
+  Target,
+  to_package_updates,
+} from "../lib/types";
 import semver, { SemVer } from "semver";
 import Config from "../config.json";
 
 const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;
 
-export const to_versions = (directory_json: string): string[][] => {
-  const directory: { qt: string[]; tools: string[] } =
-    JSON.parse(directory_json);
-  const versions = directory.qt
-    .map((name: string) => name.match(/^qt\d_(\d+)$/))
-    .reduce<string[]>((accum, match: RegExpMatchArray | null) => {
-      if (match !== null) accum.push(match[1]);
+export const to_versions = (directory: Directory): string[][] => {
+  const raw_versions = directory.qt
+    .filter((name: string) => !name.endsWith("_src_doc_examples"))
+    .map((name: string) => name.match(/^qt\d_(\d+)/))
+    .reduce<Set<string>>((accum, match: RegExpMatchArray | null) => {
+      if (match !== null) accum.add(match[1]);
       return accum;
-    }, [])
+    }, new Set());
+  const versions = Array.from(raw_versions)
     .map((ver: string) => {
       const chop_at = (a: number, b: number) =>
         new SemVer(`${ver.slice(0, a)}.${ver.slice(a, b)}.${ver.slice(b)}`);
@@ -49,12 +56,11 @@ const version_nodot = (version: SemVer): string =>
     : `${version.major}${version.minor}${version.patch}`;
 
 export const to_arches = (
-  updates: string,
+  updates: RawPackageUpdates,
   [actual_ver]: [SemVer]
 ): string[] => {
   const ver_nodot = version_nodot(actual_ver);
-  const _updates: PackageUpdates = JSON.parse(updates);
-  return Object.values(_updates)
+  return to_package_updates(updates)
     .filter((pkg: PackageUpdate) => pkg.DownloadableArchives.length)
     .reduce<string[]>((accum, pkg: PackageUpdate) => {
       const [ver, arch] = pkg.Name.split(".").slice(-2);
@@ -65,7 +71,7 @@ export const to_arches = (
 };
 
 export const to_modules = (
-  updates: string,
+  updates: RawPackageUpdates,
   [actual_ver, arch]: [SemVer, string]
 ): string[] => {
   const ver_nodot = version_nodot(actual_ver);
@@ -77,8 +83,7 @@ export const to_modules = (
       ver_nodot +
       ".(addons.)?(.+)$"
   );
-  const _updates: PackageUpdates = JSON.parse(updates);
-  return Object.values(_updates)
+  return to_package_updates(updates)
     .filter((pkg: PackageUpdate) => pkg.DownloadableArchives.length)
     .reduce<string[]>((accum, pkg: PackageUpdate) => {
       const mod_arch = pkg.Name.match(pattern)?.[4];
@@ -92,12 +97,11 @@ export const to_modules = (
 };
 
 export const to_archives = (
-  updates: string,
+  updates: RawPackageUpdates,
   [ver, arch, modules]: [SemVer, string, string[]]
 ): string[] => {
   const ver_nodot = version_nodot(ver);
-  const _updates: PackageUpdates = JSON.parse(updates);
-  return Object.values(_updates)
+  return to_package_updates(updates)
     .filter((pkg: PackageUpdate) => {
       const [mod, _arch] = pkg.Name.split(".").slice(-2);
       return (
@@ -109,17 +113,16 @@ export const to_archives = (
     .flatMap((pkg: PackageUpdate) => pkg.DownloadableArchives);
 };
 
-export const to_tools = (directory_json: string): string[] => {
-  const directory: { qt: string[]; tools: string[] } =
-    JSON.parse(directory_json);
+export const to_tools = (directory: Directory): string[] => {
   return directory.tools
     .filter((href: string) => href.startsWith("tools_"))
     .map((href: string) => (href.endsWith("/") ? href.slice(0, -1) : href));
 };
 
-export const to_tool_variants = (updates: string): PackageUpdate[] => {
-  const _updates: PackageUpdates = JSON.parse(updates);
-  return Object.values(_updates).filter(
+export const to_tool_variants = (
+  updates: RawPackageUpdates
+): PackageUpdate[] => {
+  return to_package_updates(updates).filter(
     (pkg: PackageUpdate) => pkg.DownloadableArchives.length
   );
 };
@@ -130,24 +133,57 @@ const to_url = ([host, target]: [Host, Target]): string =>
 export const to_directory = ([host, target]: [Host, Target]): string =>
   `${to_url([host, target])}/directory.json`;
 
-const _to_qt_updates_json = (
+const updates_url = (
   [host, target, version]: [Host, Target, SemVer],
-  is_wasm = false
+  ext?: string
 ): string => {
   const ver_nodot = `qt${version.major}_${version_nodot(version)}`;
-  const ext = is_wasm ? "_wasm" : "";
-  return `${to_url([host, target])}/${ver_nodot}${ext}.json`;
+  const _ext = ext ? `_${ext}` : "";
+  return `${to_url([host, target])}/${ver_nodot}${_ext}.json`;
 };
 
-export const to_qt_wasm_updates_json = (args: [Host, Target, SemVer]): string =>
-  _to_qt_updates_json(args, true);
-export const to_qt_nowasm_updates_json = (
-  args: [Host, Target, SemVer]
-): string => _to_qt_updates_json(args, false);
-export const to_qt_updates_json =
+const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
+  const [_, target, version] = args;
+  if (arch.includes("wasm")) {
+    return "wasm";
+  }
+  if (version.major >= 6 && target == Target.android) {
+    if (!arch.startsWith("android_")) {
+      return "";
+    }
+    const suffix = arch.substring("android_".length);
+    if (!["arm64_v8a", "armv7", "x86_64", "x86"].includes(suffix)) {
+      return "";
+    }
+    return suffix;
+  }
+};
+
+const updates_url_wasm = (args: [Host, Target, SemVer]): string =>
+  updates_url(args, "wasm");
+const updates_url_nowasm = (args: [Host, Target, SemVer]): string =>
+  updates_url(args);
+export const to_updates_urls_by_arch =
   (arch: string) =>
   (args: [Host, Target, SemVer]): string =>
-    _to_qt_updates_json(args, arch.includes("wasm"));
+    updates_url(args, choose_ext_for_arch(args, arch));
+
+export const to_updates_urls = (
+  host: Host,
+  target: Target,
+  version: SemVer
+): string[] => {
+  const args: [Host, Target, SemVer] = [host, target, version];
+  if (target === Target.android && version.major >= 6) {
+    return ["arm64_v8a", "armv7", "x86", "x86_64"].map((suffix) =>
+      updates_url(args, suffix)
+    );
+  } else if (target === Target.desktop && version.compare("5.13.0") > 0) {
+    return [updates_url_nowasm(args), updates_url_wasm(args)];
+  } else {
+    return [updates_url_nowasm(args)];
+  }
+};
 
 export const to_tools_updates_json = ([host, target, tool_name]: [
   Host,

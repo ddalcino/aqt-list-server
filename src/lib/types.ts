@@ -22,23 +22,27 @@ export interface PackageUpdate {
   Dependencies: string[];
   AutoDependOn: string[];
 }
-
-export interface PackageUpdates {
-  [key: string]: PackageUpdate;
+export interface RawPackageUpdate {
+  DisplayName?: string | null | undefined;
+  Name?: string | null | undefined;
+  Description?: string | null | undefined;
+  ReleaseDate?: string | null | undefined;
+  Version?: string | null | undefined;
+  CompressedSize?: string | null | undefined;
+  UncompressedSize?: string | null | undefined;
+  DownloadableArchives?: string[] | null | undefined;
+  Dependencies?: string[] | null | undefined;
+  AutoDependOn?: string[] | null | undefined;
 }
 
-export const toPackageUpdate = (obj: {
-  DisplayName?: string;
-  Name?: string;
-  Description?: string;
-  ReleaseDate?: string;
-  Version?: string;
-  CompressedSize?: string;
-  UncompressedSize?: string;
-  DownloadableArchives?: string[];
-  Dependencies?: string[];
-  AutoDependOn?: string[];
-}): PackageUpdate => ({
+export interface RawPackageUpdates {
+  [key: string]: RawPackageUpdate;
+}
+export const to_package_updates = (
+  updates: RawPackageUpdates
+): PackageUpdate[] => Object.values(updates).map(toPackageUpdate);
+
+export const toPackageUpdate = (obj: RawPackageUpdate): PackageUpdate => ({
   DisplayName: obj.DisplayName ?? "",
   Name: obj.Name ?? "",
   Description: obj.Description ?? "",
@@ -50,6 +54,8 @@ export const toPackageUpdate = (obj: {
   Dependencies: obj.Dependencies ?? [],
   AutoDependOn: obj.AutoDependOn ?? [],
 });
+
+export type Directory = { qt: string[]; tools: string[] };
 
 export enum Host {
   windows,
