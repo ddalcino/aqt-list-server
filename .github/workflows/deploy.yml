@@ -18,17 +18,19 @@ jobs:
         node-version: [16.x] # We will deploy with only one version of node
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: yarn ci, build and test
+      - name: yarn install, build and test
         run: |
           yarn install --immutable --immutable-cache --check-cache
           yarn run build --if-present
-          yarn test
+          yarn test --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
       - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
