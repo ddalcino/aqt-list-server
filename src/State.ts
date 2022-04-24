@@ -238,6 +238,13 @@ export class ToolData {
     );
     return new ToolData(this.name, this.isLoading, variants);
   }
+  hasSelectedVariants(): boolean {
+    return (
+      [...this.variants.values()].findIndex(
+        (variant: ToolVariant) => variant.selected
+      ) >= 0
+    );
+  }
 
   installCmd(host: string, target: string): string {
     if (
@@ -254,24 +261,17 @@ export class ToolData {
       )
       .join("\n");
   }
-  variantTuples(isFilterBadVersions = true): string {
-    const versionOk = (version: string): boolean => {
-      if (!isFilterBadVersions) return true;
-      return (
-        null !==
-        version.match(
-          /^\d+\.\d+\.\d+(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$/
-        )
-      );
-    };
+  variantTuples(): string {
+    if (
+      [...this.variants.values()].every(
+        (variant: ToolVariant) => variant.selected
+      )
+    )
+      return this.name;
+
     return [...this.variants.values()]
-      .filter(
-        (variant: ToolVariant) => variant.selected && versionOk(variant.Version)
-      )
-      .map(
-        (variant: ToolVariant) =>
-          `${this.name},${variant.Version},${variant.Name}`
-      )
+      .filter((variant: ToolVariant) => variant.selected)
+      .map((variant: ToolVariant) => `${this.name},${variant.Name}`)
       .join(" ");
   }
   public static fromPackageUpdates(
@@ -333,10 +333,18 @@ export class State {
       this.archives.copy()
     );
   }
+  hasSelectedTools(): boolean {
+    return (
+      [...this.selectedTools.values()].findIndex((toolData: ToolData) =>
+        toolData.hasSelectedVariants()
+      ) >= 0
+    );
+  }
   hasOutputs(): boolean {
     return (
-      this.version.selected.state.hasSelection() &&
-      this.arch.selected.state.hasSelection()
+      this.hasSelectedTools() ||
+      (this.version.selected.state.hasSelection() &&
+        this.arch.selected.state.hasSelection())
     );
   }
 
@@ -350,11 +358,6 @@ export class State {
   }
 
   toAqtInstallCmd(): string {
-    if (!this.version.selected.state.hasSelection()) {
-      return "Please select a version.";
-    } else if (!this.arch.selected.state.hasSelection()) {
-      return "Please select an architecture.";
-    }
     const { host, target, version, arch } = this.values();
     const toolsLines =
       this.selectedTools.size === 0
@@ -366,6 +369,16 @@ export class State {
             )
             .filter((tuple: string) => tuple.length > 0)
             .join("\n");
+    if (
+      toolsLines.trim().length > 0 &&
+      !this.arch.selected.state.hasSelection()
+    ) {
+      return toolsLines.trim();
+    } else if (!this.version.selected.state.hasSelection()) {
+      return "Please select a Qt version or a tool.";
+    } else if (!this.arch.selected.state.hasSelection()) {
+      return "Please select a Qt architecture or a tool.";
+    }
     if (this.modules.hasAllOff() && this.archives.hasAllOff())
       return "Cannot run `aqt` with no archives and no modules selected.";
     const modulesFlag = this.modules.hasAllOn()
@@ -385,30 +398,49 @@ export class State {
   }
 
   toInstallQtAction(): string {
-    if (!this.version.selected.state.hasSelection()) {
-      return "Please select a version.";
-    } else if (!this.arch.selected.state.hasSelection()) {
-      return "Please select an architecture.";
-    }
-    const modulesLine = this.modules.hasSelections()
-      ? `\n        modules: '${this.modules.optionsTurnedOn().join(" ")}'`
-      : "";
     const toolsTuples = [...this.selectedTools.values()]
       .map((toolData: ToolData) => toolData.variantTuples())
       .filter((tuple: string) => tuple.length > 0)
       .join(" ");
     const toolsLine =
       toolsTuples.length === 0 ? "" : `\n        tools: '${toolsTuples}'`;
+    if (
+      toolsLine.trim().length > 0 &&
+      !this.arch.selected.state.hasSelection()
+    ) {
+      return (
+        `    - name: Install Qt
+      uses: jurplel/install-qt-action@master
+      with:
+        aqtversion: '==2.1.*'
+        host: '${this.host.selected.value}'
+        target: '${this.target.selected.value}'
+        toolsOnly: 'true'` + toolsLine
+      );
+    } else if (!this.version.selected.state.hasSelection()) {
+      return "Please select a Qt version or a tool.";
+    } else if (!this.arch.selected.state.hasSelection()) {
+      return "Please select a Qt architecture or a tool.";
+    }
+    const modulesLine = this.modules.hasSelections()
+      ? `\n        modules: '${this.modules.optionsTurnedOn().join(" ")}'`
+      : "";
+    const archivesLine =
+      !this.archives.hasAllOn() && this.archives.hasSelections()
+        ? `\n        archives: '${this.archives.optionsTurnedOn().join(" ")}'`
+        : "";
     return (
       `    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@master
       with:
+        aqtversion: '==2.1.*'
         version: '${this.version.selected.value}'
         host: '${this.host.selected.value}'
         target: '${this.target.selected.value}'
         arch: '${this.arch.selected.value}'` +
       modulesLine +
-      toolsLine
+      toolsLine +
+      archivesLine
     );
   }
 }

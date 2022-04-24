@@ -148,9 +148,7 @@ describe("list-qt.ts", () => {
       ];
       const ext = arch === "wasm_32" ? ["--extension", "wasm"] : [];
       const actual_modules = (await fetch_modules(...args)).sort();
-      const actual_archives = (await fetch_archives(...args, []))
-        .map((str: string) => str.split("-")[0])
-        .sort();
+      const actual_archives = (await fetch_archives(...args, [])).sort();
       const m_args = [
         "list-qt",
         host,

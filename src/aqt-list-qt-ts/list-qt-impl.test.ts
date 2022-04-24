@@ -106,13 +106,17 @@ test("retrieves archives from json", () => {
     arch,
     [],
   ]);
-  expect(actual_base_arc).toEqual(win_620_base_archives);
+  expect(actual_base_arc).toEqual(
+    win_620_base_archives.map((s) => s.split("-")[0])
+  );
   const actual_base_pos_arc = to_archives(win_620_json, [
     ver,
     arch,
     ["qtpositioning"],
   ]);
-  expect(actual_base_pos_arc).toEqual(win_620_pos_archives);
+  expect(actual_base_pos_arc).toEqual(
+    win_620_pos_archives.map((s) => s.split("-")[0])
+  );
 });
 
 test("scrapes tools from html", () => {

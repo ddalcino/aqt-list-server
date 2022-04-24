@@ -115,7 +115,8 @@ export const to_archives = (
           pkg.Name.endsWith(`${ver_nodot}.${arch}`))
       );
     })
-    .flatMap((pkg: PackageUpdate) => pkg.DownloadableArchives);
+    .flatMap((pkg: PackageUpdate) => pkg.DownloadableArchives)
+    .map((archive: string) => archive.split("-")[0]);
 };
 
 export const to_tools = (directory: Directory): string[] => {
