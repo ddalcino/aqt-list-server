@@ -3,9 +3,7 @@ name: Deploy React Application
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 
@@ -39,6 +37,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
       - name: deploy to gh-pages
+        if: github.ref == 'refs/heads/master' && github.actor == github.repository.owner
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
