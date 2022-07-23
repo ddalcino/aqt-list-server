@@ -1,4 +1,4 @@
-name: Deploy React Application
+name: Build, Test, and (maybe) Deploy React Application
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
