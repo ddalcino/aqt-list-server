@@ -14,6 +14,7 @@ import {
   hostFromStr,
   HostString,
   hostToStr,
+  PackageUpdate,
   Target,
   targetFromStr,
   TargetString,
@@ -147,7 +148,12 @@ describe("list-qt.ts", () => {
         arch,
       ];
       const ext = arch === "wasm_32" ? ["--extension", "wasm"] : [];
-      const actual_modules = (await fetch_modules(...args)).sort();
+      const actual_modules = (await fetch_modules(...args))
+        .map((pkg: PackageUpdate): string => {
+          const parts = pkg.Name.split(".");
+          return parts[parts.length - 2];
+        })
+        .sort();
       const actual_archives = (await fetch_archives(...args, [])).sort();
       const m_args = [
         "list-qt",

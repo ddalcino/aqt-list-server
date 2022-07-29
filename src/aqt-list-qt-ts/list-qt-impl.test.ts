@@ -79,7 +79,12 @@ describe("retrieves modules from json", () => {
       expected_modules: string[],
       updates: RawPackageUpdates
     ) => {
-      const actual = to_modules(updates, [ver, arch]);
+      const actual = to_modules(updates, [ver, arch]).map(
+        (pkg: PackageUpdate): string => {
+          const parts = pkg.Name.split(".");
+          return parts[parts.length - 2];
+        }
+      );
       expect(actual).toEqual(expected_modules);
     }
   );
