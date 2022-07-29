@@ -1,15 +1,3 @@
-export type SelectableElement = { selected: boolean };
-
-export interface ToolVariant extends SelectableElement {
-  DisplayName: string;
-  Name: string;
-  Description: string;
-  ReleaseDate: string;
-  Version: string;
-  CompressedSize: string;
-  UncompressedSize: string;
-}
-
 export interface PackageUpdate {
   DisplayName: string;
   Name: string;
@@ -22,6 +10,24 @@ export interface PackageUpdate {
   Dependencies: string[];
   AutoDependOn: string[];
 }
+
+export interface SelectableElement {
+  pkg: PackageUpdate | null;
+  name: string;
+  selected: boolean;
+}
+
+export const seToolInstallName = (se: SelectableElement): string | null =>
+  se.pkg === null ? null : se.pkg.Name;
+
+export const seModuleInstallName = (se: SelectableElement): string | null => {
+  if (se.pkg === null) {
+    return null;
+  }
+  const parts = se.pkg.Name.split(".");
+  return parts[parts.length - 2];
+};
+
 export interface RawPackageUpdate {
   DisplayName?: string | null | undefined;
   Name?: string | null | undefined;

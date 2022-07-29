@@ -9,6 +9,7 @@ test.skip("renders a checkbox", () => {
     <CheckBox
       id={id}
       name={name}
+      pkg={null}
       isChecked={isChecked}
       onChange={() => {
         hasFiredCallback = true;

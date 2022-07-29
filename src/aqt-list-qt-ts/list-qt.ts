@@ -82,8 +82,8 @@ export const fetch_modules = (
   target: Target,
   version: SemVer,
   arch: string
-): Promise<string[]> =>
-  generic_fetch_data<string[], [SemVer, string], RawPackageUpdates>(
+): Promise<PackageUpdate[]> =>
+  generic_fetch_data<PackageUpdate[], [SemVer, string], RawPackageUpdates>(
     to_updates_urls_by_arch(arch)([host, target, version]),
     to_modules
   )([version, arch]).then((result) => result.unwrap());

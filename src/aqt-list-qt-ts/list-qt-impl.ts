@@ -78,7 +78,7 @@ export const to_arches = (
 export const to_modules = (
   updates: RawPackageUpdates,
   [actual_ver, arch]: [SemVer, string]
-): string[] => {
+): PackageUpdate[] => {
   const ver_nodot = version_nodot(actual_ver);
   //(r"^(preview\.)?qt\.(qt" + str(version.major) + r"\.)?" + qt_ver_str + r"\.(.+)$")
   const pattern = new RegExp(
@@ -86,19 +86,25 @@ export const to_modules = (
       actual_ver.major +
       ".)?" +
       ver_nodot +
-      ".(addons.)?(.+)$"
+      ".(addons.)?(.+)." +
+      arch +
+      "$"
   );
   return to_package_updates(updates)
     .filter((pkg: PackageUpdate) => pkg.DownloadableArchives.length)
-    .reduce<string[]>((accum, pkg: PackageUpdate) => {
-      const mod_arch = pkg.Name.match(pattern)?.[4];
-      if (mod_arch) {
-        const chop_at = mod_arch.lastIndexOf(".");
-        if (chop_at > 0 && arch === mod_arch.slice(chop_at + 1))
-          accum.push(mod_arch.slice(0, chop_at));
-      }
-      return accum;
-    }, Array<string>());
+    .filter((pkg: PackageUpdate): boolean => {
+      const module = pkg.Name.match(pattern)?.[4];
+      return module !== undefined && (module as string).length > 0;
+    });
+  //   .reduce<PackageUpdate[]>((accum, pkg: PackageUpdate) => {
+  //   const mod_arch = pkg.Name.match(pattern)?.[4];
+  //   if (mod_arch) {
+  //     const chop_at = mod_arch.lastIndexOf(".");
+  //     if (chop_at > 0 && arch === mod_arch.slice(chop_at + 1))
+  //       accum.push(mod_arch.slice(0, chop_at));
+  //   }
+  //   return accum;
+  // }, Array<PackageUpdate>());
 };
 
 export const to_archives = (

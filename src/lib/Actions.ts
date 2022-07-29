@@ -1,5 +1,5 @@
 import { State, ToolData, StateUtils as S } from "../State";
-import { Host, Target } from "./types";
+import { Host, PackageUpdate, Target } from "./types";
 
 export const enum ActionT {
   chooseHost,
@@ -55,7 +55,7 @@ export const setArchitecture = (arch: string): Action => ({
 });
 
 export const loadedModulesArchives = (
-  modules: string[],
+  modules: PackageUpdate[],
   archives: string[]
 ): Action => ({
   type: ActionT.loadedModulesArchives,

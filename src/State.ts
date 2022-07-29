@@ -6,7 +6,6 @@ import {
   Host,
   Target,
   SelectableElement,
-  ToolVariant,
   hostFromStr,
   targetFromStr,
   hostToStr,
@@ -14,6 +13,8 @@ import {
   HostString,
   TargetString,
   PackageUpdate,
+  seToolInstallName,
+  seModuleInstallName,
 } from "./lib/types";
 
 export const enum SelectValue {
@@ -179,7 +180,7 @@ export class SelectMany {
   optionsTurnedOn(): Array<string> {
     return [...this.selections.entries()]
       .filter(([, el]) => el.selected)
-      .map(([name]) => name);
+      .map(([name, el]) => seModuleInstallName(el) || name);
   }
 
   copy(): SelectMany {
@@ -189,7 +190,10 @@ export class SelectMany {
   copyWithOptionSet(selectedOption: string, on: boolean): SelectMany {
     console.assert(this.selections.has(selectedOption));
     const m = new Map(this.selections);
-    m.set(selectedOption, { selected: on });
+    const { pkg, name } = this.selections.get(
+      selectedOption
+    ) as SelectableElement;
+    m.set(selectedOption, { pkg: pkg, name: name, selected: on });
     return new SelectMany(new SelectState(SelectValue.Selected), m);
   }
 
@@ -198,12 +202,28 @@ export class SelectMany {
   }
 }
 
-const makeSelectMany = (options: Array<string>, allOn: boolean): SelectMany => {
+const makeSelectMany = (
+  options: string[] | PackageUpdate[],
+  allOn: boolean
+): SelectMany => {
+  const isString = (option: string | PackageUpdate): boolean =>
+    typeof option === "string";
   const m = new Map(
-    options.map((name: string): [string, SelectableElement] => [
-      name,
-      { selected: allOn },
-    ])
+    options.map((option: string | PackageUpdate): [string, SelectableElement] =>
+      isString(option)
+        ? [
+            option as string,
+            { pkg: null, name: option as string, selected: allOn },
+          ]
+        : [
+            (option as PackageUpdate).DisplayName,
+            {
+              pkg: option as PackageUpdate,
+              name: (option as PackageUpdate).DisplayName,
+              selected: allOn,
+            },
+          ]
+    )
   );
   return new SelectMany(new SelectState(SelectValue.Loaded), m);
 };
@@ -212,7 +232,7 @@ export class ToolData {
   constructor(
     public name: string,
     public isLoading: boolean,
-    public variants: Map<string, ToolVariant>
+    public variants: Map<string, SelectableElement>
   ) {}
 
   copy(): ToolData {
@@ -229,8 +249,8 @@ export class ToolData {
   _copy(
     shouldSelect: (variantName: string, existingSelected: boolean) => boolean
   ): ToolData {
-    const variants = new Map<string, ToolVariant>();
-    this.variants.forEach((value: ToolVariant, variantName: string) =>
+    const variants = new Map<string, SelectableElement>();
+    this.variants.forEach((value: SelectableElement, variantName: string) =>
       variants.set(variantName, {
         ...value,
         selected: shouldSelect(variantName, value.selected),
@@ -241,7 +261,7 @@ export class ToolData {
   hasSelectedVariants(): boolean {
     return (
       [...this.variants.values()].findIndex(
-        (variant: ToolVariant) => variant.selected
+        (variant: SelectableElement) => variant.selected
       ) >= 0
     );
   }
@@ -249,42 +269,51 @@ export class ToolData {
   installCmd(host: string, target: string): string {
     if (
       [...this.variants.values()].every(
-        (variant: ToolVariant) => variant.selected
+        (variant: SelectableElement) => variant.selected
       )
     )
       return `aqt install-tool ${host} ${target} ${this.name}`;
     return [...this.variants.values()]
-      .filter((variant: ToolVariant) => variant.selected)
+      .filter((variant: SelectableElement) => variant.selected)
       .map(
-        (variant: ToolVariant) =>
-          `aqt install-tool ${host} ${target} ${this.name} ${variant.Name}`
+        (variant: SelectableElement) =>
+          `aqt install-tool ${host} ${target} ${this.name} ${seToolInstallName(
+            variant
+          )}`
       )
       .join("\n");
   }
   variantTuples(): string {
     if (
       [...this.variants.values()].every(
-        (variant: ToolVariant) => variant.selected
+        (variant: SelectableElement) => variant.selected
       )
     )
       return this.name;
 
     return [...this.variants.values()]
-      .filter((variant: ToolVariant) => variant.selected)
-      .map((variant: ToolVariant) => `${this.name},${variant.Name}`)
+      .filter((variant: SelectableElement) => variant.selected)
+      .map(
+        (variant: SelectableElement) =>
+          `${this.name},${seToolInstallName(variant)}`
+      )
       .join(" ");
   }
   public static fromPackageUpdates(
     tool_name: string,
-    variants: PackageUpdate[]
+    pkgUpdates: PackageUpdate[]
   ): ToolData {
     return new ToolData(
       tool_name,
       false,
-      new Map<string, ToolVariant>(
-        variants.map((variant) => [
-          variant.Name,
-          { ...variant, selected: false } as ToolVariant,
+      new Map<string, SelectableElement>(
+        pkgUpdates.map((pkgUpdate) => [
+          pkgUpdate.Name,
+          {
+            pkg: pkgUpdate,
+            name: pkgUpdate.Name,
+            selected: false,
+          } as SelectableElement,
         ])
       )
     );
@@ -410,7 +439,7 @@ export class State {
     ) {
       return (
         `    - name: Install Qt
-      uses: jurplel/install-qt-action@master
+      uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==2.1.*'
         host: '${this.host.selected.value}'
@@ -431,7 +460,7 @@ export class State {
         : "";
     return (
       `    - name: Install Qt
-      uses: jurplel/install-qt-action@master
+      uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==2.1.*'
         version: '${this.version.selected.value}'
@@ -528,7 +557,7 @@ export const StateUtils = {
     },
 
   withModulesArchivesLoaded:
-    (modules: string[], archives: string[]) =>
+    (modules: PackageUpdate[], archives: string[]) =>
     (state: State): State => {
       const newState = _.cloneDeep(state);
       newState.modules = makeSelectMany(modules, false);

@@ -26,6 +26,7 @@ const SelectMany = (props: Props): JSX.Element => {
       <CheckBox
         id={`select-all-${id}`}
         name={`Check All`}
+        pkg={null}
         isChecked={hasAllOn}
         onChange={(event) => toggleAll(event.target.checked)}
       />
@@ -35,6 +36,7 @@ const SelectMany = (props: Props): JSX.Element => {
           key={`${id}-${index}`}
           id={`cb-${type}-${name}`}
           name={name}
+          pkg={element.pkg}
           isChecked={element.selected ?? false}
           onChange={(event) => toggleOne(event.target.checked, name)}
         />
