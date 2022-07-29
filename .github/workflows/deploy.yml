@@ -37,7 +37,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
       - name: deploy to gh-pages
-        if: github.ref == 'refs/heads/main' && github.actor == github.repository.owner
+        if: github.ref == 'refs/heads/main' && github.actor == github.repository_owner
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
