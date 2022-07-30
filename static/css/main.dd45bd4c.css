@@ -1,0 +1,2 @@
+.horizontal-flow{display:flex;flex-direction:row}.horizontal-flow>div{flex-grow:1;margin:1em}.vertical-flow{display:flex;flex-direction:column}.vertical-flow>div{margin:1em}body{font-family:SansSerif,sans-serif}pre{background-color:#d3d3d3;border-left:.2em solid blue;overflow-x:auto;padding:1em}pre code{white-space:pre-wrap}.clipboard-copy-btn{cursor:pointer}.clipboard-copy-btn:disabled,select:disabled{cursor:not-allowed}select.loading{cursor:wait}
+/*# sourceMappingURL=main.dd45bd4c.css.map*/
