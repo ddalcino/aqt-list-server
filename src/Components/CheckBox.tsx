@@ -17,7 +17,7 @@ const CheckBox = ({
   isChecked,
   onChange,
 }: Props): JSX.Element => (
-  <div>
+  <div style={{ display: "flex" }}>
     <input
       type="checkbox"
       id={id}

@@ -8,11 +8,13 @@ interface Props {
 const PackageDetailPanel = ({ pkg }: Props): JSX.Element => (
   <details>
     <summary>{pkg.DisplayName}</summary>
+    {pkg.Description ? (
+      <div>
+        <strong>Description:</strong> {pkg.Description}
+      </div>
+    ) : null}
     <div>
-      <strong>
-        {pkg.Description ? "Description:" : "Fully Qualified Name"}
-      </strong>{" "}
-      {pkg.Description || pkg.Name}
+      <strong>Fully Qualified Name</strong> {pkg.Name}
     </div>
     <div>
       <strong>Release Date:</strong> {pkg.ReleaseDate}
