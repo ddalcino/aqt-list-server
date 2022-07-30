@@ -47,3 +47,9 @@ select:disabled {
 select.loading {
   cursor: wait;
 }
+
+.top-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
