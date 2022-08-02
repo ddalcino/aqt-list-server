@@ -22,6 +22,7 @@ import {
 } from "./aqt-list-qt-ts/list-qt";
 import "./app.scss";
 import { SemVer } from "semver";
+import ComboBox, { options } from "./Components/ComboBox";
 
 const App = (): JSX.Element => {
   const [state, setState] = useState(makeState());
@@ -147,6 +148,17 @@ const App = (): JSX.Element => {
         command={state.toAqtInstallCmd()}
         isDisabled={!state.hasOutputs()}
       />
+      <ComboBox
+        id="install-action-version"
+        label="Choose a version of jurplel/install-qt-action:"
+        selectState={state.installActionVersion.selected.state}
+        value={state.installActionVersion.selected.value}
+        onchange={(version: string) =>
+          setState(S.withInstallActionVersion(version))
+        }
+      >
+        {options(state.installActionVersion, "install-action-version")}
+      </ComboBox>
       <CommandPanel
         id="action-yaml"
         label={
