@@ -283,19 +283,31 @@ export class ToolData {
       )
       .join("\n");
   }
-  variantTuples(): string {
+  variantTuples(actionVersion: number): string {
+    // For aqt < 2; jurplel/install-qt-action < 3
+    const action2ToolsTuple = (variant: PackageUpdate): string =>
+      `${this.name},${variant.Version},${variant.Name}`;
+    // For aqt >= 2; jurplel/install-qt-action >= 3
+    const action3ToolsTuple = (variant: PackageUpdate): string =>
+      `${this.name},${variant.Name}`;
+
     if (
       [...this.variants.values()].every(
         (variant: SelectableElement) => variant.selected
-      )
+      ) &&
+      actionVersion >= 3
     )
       return this.name;
 
     return [...this.variants.values()]
-      .filter((variant: SelectableElement) => variant.selected)
-      .map(
+      .filter(
         (variant: SelectableElement) =>
-          `${this.name},${seToolInstallName(variant)}`
+          variant.selected && variant?.pkg !== null
+      )
+      .map((variant: SelectableElement) =>
+        actionVersion >= 3
+          ? action3ToolsTuple(variant.pkg as PackageUpdate)
+          : action2ToolsTuple(variant.pkg as PackageUpdate)
       )
       .join(" ");
   }
@@ -347,7 +359,12 @@ export class State {
       []
     ),
     public modules: SelectMany = new SelectMany(),
-    public archives: SelectMany = new SelectMany()
+    public archives: SelectMany = new SelectMany(),
+    public installActionVersion: SelectOne = new SelectOne(
+      new Selection("3"),
+      ["2", "3"],
+      false
+    )
   ) {}
 
   copy(): State {
@@ -359,7 +376,8 @@ export class State {
       this.version.copy(),
       this.arch.copy(),
       this.modules.copy(),
-      this.archives.copy()
+      this.archives.copy(),
+      this.installActionVersion.copy()
     );
   }
   hasSelectedTools(): boolean {
@@ -427,8 +445,13 @@ export class State {
   }
 
   toInstallQtAction(): string {
+    const installQtActionVersion = parseInt(
+      this.installActionVersion.selected.value
+    );
     const toolsTuples = [...this.selectedTools.values()]
-      .map((toolData: ToolData) => toolData.variantTuples())
+      .map((toolData: ToolData) =>
+        toolData.variantTuples(installQtActionVersion)
+      )
       .filter((tuple: string) => tuple.length > 0)
       .join(" ");
     const toolsLine =
@@ -439,7 +462,7 @@ export class State {
     ) {
       return (
         `    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v${installQtActionVersion}
       with:
         aqtversion: '==2.1.*'
         host: '${this.host.selected.value}'
@@ -460,7 +483,7 @@ export class State {
         : "";
     return (
       `    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v${installQtActionVersion}
       with:
         aqtversion: '==2.1.*'
         version: '${this.version.selected.value}'
@@ -604,6 +627,14 @@ export const StateUtils = {
     (state: State): State => {
       const newState = _.cloneDeep(state);
       newState.selectedTools.set(newToolData.name, newToolData);
+      return newState;
+    },
+
+  withInstallActionVersion:
+    (newInstallActionVersion: string) =>
+    (state: State): State => {
+      const newState = _.cloneDeep(state);
+      newState.installActionVersion.selected.value = newInstallActionVersion;
       return newState;
     },
 
