@@ -88,17 +88,37 @@ export const fetch_modules = (
     to_modules
   )([version, arch]).then((result) => result.unwrap());
 
+export const fetch_archive_info = async (
+  host: Host,
+  target: Target,
+  version: SemVer,
+  arch: string,
+  modules: string[]
+): Promise<Map<string, string>> =>
+  generic_fetch_data<
+    Map<string, string>,
+    [SemVer, string, string[]],
+    RawPackageUpdates
+  >(
+    to_updates_urls_by_arch(arch)([host, target, version]),
+    to_archives
+  )([version, arch, modules]).then((result) => result.unwrap());
 export const fetch_archives = async (
   host: Host,
   target: Target,
   version: SemVer,
   arch: string,
   modules: string[]
-): Promise<string[]> =>
-  generic_fetch_data<string[], [SemVer, string, string[]], RawPackageUpdates>(
-    to_updates_urls_by_arch(arch)([host, target, version]),
-    to_archives
-  )([version, arch, modules]).then((result) => result.unwrap());
+): Promise<string[]> => {
+  const archiveInfo = await fetch_archive_info(
+    host,
+    target,
+    version,
+    arch,
+    modules
+  );
+  return [...archiveInfo.keys()].sort();
+};
 
 export const fetch_tools = (host: Host, target: Target): Promise<string[]> =>
   generic_fetch_data<string[], [], Directory>(

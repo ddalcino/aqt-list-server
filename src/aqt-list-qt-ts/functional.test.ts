@@ -68,6 +68,7 @@ describe("list-qt.ts", () => {
           ])
         )[0]
           .split("\n")
+          .filter((s: string) => !s.includes("preview"))
           .sort();
         expect(actual).toEqual(expected);
       });
@@ -155,25 +156,11 @@ describe("list-qt.ts", () => {
         })
         .sort();
       const actual_archives = (await fetch_archives(...args, [])).sort();
-      const m_args = [
-        "list-qt",
-        host,
-        target,
-        "--modules",
-        version,
-        arch,
-      ].concat(ext);
-      const a_args = [
-        "list-qt",
-        host,
-        target,
-        "--archives",
-        version,
-        arch,
-      ].concat(ext);
+      const m_args = ["list-qt", host, target, "--modules", version, arch];
+      const a_args = ["list-qt", host, target, "--archives", version, arch];
       const [expect_modules, expect_archives] = await Promise.all([
-        get_aqt_output(m_args),
-        get_aqt_output(a_args),
+        get_aqt_output(m_args.concat(ext)),
+        get_aqt_output(a_args.concat(ext)),
       ]);
 
       expect(actual_modules).toEqual(expect_modules);

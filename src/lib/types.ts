@@ -9,6 +9,7 @@ export interface PackageUpdate {
   DownloadableArchives: string[];
   Dependencies: string[];
   AutoDependOn: string[];
+  ArchiveSizes: Map<string, string>;
 }
 
 export interface SelectableElement {
@@ -36,9 +37,10 @@ export interface RawPackageUpdate {
   Version?: string | null | undefined;
   CompressedSize?: string | null | undefined;
   UncompressedSize?: string | null | undefined;
-  DownloadableArchives?: string[] | null | undefined;
+  DownloadableArchives?: string | string[] | null | undefined;
   Dependencies?: string[] | null | undefined;
   AutoDependOn?: string[] | null | undefined;
+  ArchiveSizes?: Record<string, string>; // { [key: string]: string } | null | undefined;
 }
 
 export interface RawPackageUpdates {
@@ -48,6 +50,40 @@ export const to_package_updates = (
   updates: RawPackageUpdates
 ): PackageUpdate[] => Object.values(updates).map(toPackageUpdate);
 
+const toStringArray = (o: string | string[] | null | undefined): string[] => {
+  if (typeof o === "string" || o instanceof String) {
+    return o.split(",").map((s: string) => s.trim());
+  } else if (Array.isArray(o)) {
+    return o;
+  } else {
+    return [];
+  }
+};
+const toArchiveSizes = (obj: RawPackageUpdate): Map<string, string> => {
+  const trimExcess = (archive: string) => archive.split("-")[0];
+  if (obj.ArchiveSizes !== null && obj.ArchiveSizes !== undefined) {
+    return new Map<string, string>(
+      Object.entries(obj.ArchiveSizes).map(([k, v]: [string, string]) => [
+        trimExcess(k),
+        v,
+      ])
+    );
+  }
+  // Otherwise, there's probably only one archive whose size is obj.CompressedSize:
+  const firstArchive = Array.isArray(obj.DownloadableArchives)
+    ? obj.DownloadableArchives[0]
+    : obj.DownloadableArchives;
+  if (
+    typeof firstArchive === "string" &&
+    typeof obj.CompressedSize === "string"
+  ) {
+    return new Map<string, string>([
+      [trimExcess(firstArchive), obj.CompressedSize],
+    ]);
+  }
+  return new Map<string, string>();
+};
+
 export const toPackageUpdate = (obj: RawPackageUpdate): PackageUpdate => ({
   DisplayName: obj.DisplayName ?? "",
   Name: obj.Name ?? "",
@@ -56,9 +92,10 @@ export const toPackageUpdate = (obj: RawPackageUpdate): PackageUpdate => ({
   Version: obj.Version ?? "",
   CompressedSize: obj.CompressedSize ?? "",
   UncompressedSize: obj.UncompressedSize ?? "",
-  DownloadableArchives: obj.DownloadableArchives ?? [],
+  DownloadableArchives: toStringArray(obj.DownloadableArchives),
   Dependencies: obj.Dependencies ?? [],
   AutoDependOn: obj.AutoDependOn ?? [],
+  ArchiveSizes: toArchiveSizes(obj),
 });
 
 export type Directory = { qt: string[]; tools: string[] };
