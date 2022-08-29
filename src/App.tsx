@@ -14,7 +14,7 @@ import {
 } from "./lib/types";
 import {
   fetch_arches,
-  fetch_archives,
+  fetch_archive_info,
   fetch_modules,
   fetch_tool_variants,
   fetch_tools,
@@ -41,7 +41,7 @@ const App = (): JSX.Element => {
   ) => {
     const [modules, archives] = await Promise.all([
       fetch_modules(host, target, new SemVer(version), arch),
-      fetch_archives(host, target, new SemVer(version), arch, []),
+      fetch_archive_info(host, target, new SemVer(version), arch, []),
     ]);
     setState(S.withModulesArchivesLoaded(modules, archives));
   };

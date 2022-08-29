@@ -6,6 +6,7 @@ interface Props {
   id: string;
   name: string;
   pkg: PackageUpdate | null;
+  size: string | null;
   isChecked: boolean;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -14,6 +15,7 @@ const CheckBox = ({
   id,
   name,
   pkg,
+  size,
   isChecked,
   onChange,
 }: Props): JSX.Element => (
@@ -27,7 +29,13 @@ const CheckBox = ({
       style={{ display: "inline-block" }}
     />
     <label htmlFor={id} style={{ display: "inline-block" }}>
-      {pkg !== null ? <PackageDetailPanel pkg={pkg} /> : name}
+      {pkg !== null ? (
+        <PackageDetailPanel pkg={pkg} />
+      ) : size !== null ? (
+        `${name} (${size})`
+      ) : (
+        name
+      )}
     </label>
     {/*<label htmlFor={id}>{pkg !== null ? pkg.DisplayName : name}</label>*/}
     {/*{pkg !== null ? <PackageDetailPanel pkg={pkg} /> : ""}*/}

@@ -56,7 +56,7 @@ export const setArchitecture = (arch: string): Action => ({
 
 export const loadedModulesArchives = (
   modules: PackageUpdate[],
-  archives: string[]
+  archives: Map<string, string>
 ): Action => ({
   type: ActionT.loadedModulesArchives,
   reduce: S.withModulesArchivesLoaded(modules, archives),

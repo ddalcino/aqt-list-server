@@ -63,12 +63,12 @@ describe("retrieves modules from json", () => {
     join_ver_testdata(
       new SemVer("6.2.0"),
       Object.entries(expect_win_620.modules_by_arch),
-      win_620_json
+      win_620_json as unknown as RawPackageUpdates
     ).concat(
       join_ver_testdata(
         new SemVer("5.9.0"),
         Object.entries(expect_win_59.modules_by_arch),
-        win_59_json
+        win_59_json as unknown as RawPackageUpdates
       )
     )
   )(
@@ -106,21 +106,19 @@ test("retrieves archives from json", () => {
   ];
 
   const [ver, arch] = [new SemVer("6.2.0"), "win64_msvc2019_64"];
-  const actual_base_arc = to_archives(win_620_json as RawPackageUpdates, [
-    ver,
-    arch,
-    [],
-  ]);
-  expect(actual_base_arc).toEqual(
-    win_620_base_archives.map((s) => s.split("-")[0])
+  const actual_base_arc = to_archives(
+    win_620_json as unknown as RawPackageUpdates,
+    [ver, arch, []]
   );
-  const actual_base_pos_arc = to_archives(win_620_json, [
-    ver,
-    arch,
-    ["qtpositioning"],
-  ]);
-  expect(actual_base_pos_arc).toEqual(
-    win_620_pos_archives.map((s) => s.split("-")[0])
+  expect([...actual_base_arc.keys()].sort()).toEqual(
+    win_620_base_archives.map((s) => s.split("-")[0]).sort()
+  );
+  const actual_base_pos_arc = to_archives(
+    win_620_json as unknown as RawPackageUpdates,
+    [ver, arch, ["qtpositioning"]]
+  );
+  expect([...actual_base_pos_arc.keys()].sort()).toEqual(
+    win_620_pos_archives.map((s) => s.split("-")[0]).sort()
   );
 });
 
@@ -152,7 +150,7 @@ test.skip("retrieves tool variants from json", () => {
         DownloadableArchives: DownloadableArchives.split(", "),
         Dependencies: [],
         AutoDependOn: [],
-
+        ArchiveSizes: new Map<string, string>(),
         // selected: false,
       } as PackageUpdate;
     }

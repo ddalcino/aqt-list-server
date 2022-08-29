@@ -107,12 +107,27 @@ export const to_modules = (
   // }, Array<PackageUpdate>());
 };
 
+// const retrieve_archive_info = (pkg_update: PackageUpdate): {filename_7z: string, size: string}[] => {
+//   if
+//   return [];
+// };
+
+type StringMap = Map<string, string>;
+const flattenMaps = (maps: StringMap[]): StringMap => {
+  return maps.reduce((accum: StringMap, m: StringMap) => {
+    m.forEach((value: string, key: string) => {
+      accum.set(key, value);
+    });
+    return accum;
+  }, new Map<string, string>());
+};
+
 export const to_archives = (
   updates: RawPackageUpdates,
   [ver, arch, modules]: [SemVer, string, string[]]
-): string[] => {
+): Map<string, string> => {
   const ver_nodot = version_nodot(ver);
-  return to_package_updates(updates)
+  const maps = to_package_updates(updates)
     .filter((pkg: PackageUpdate) => {
       const [mod, _arch] = pkg.Name.split(".").slice(-2);
       return (
@@ -121,8 +136,8 @@ export const to_archives = (
           pkg.Name.endsWith(`${ver_nodot}.${arch}`))
       );
     })
-    .flatMap((pkg: PackageUpdate) => pkg.DownloadableArchives)
-    .map((archive: string) => archive.split("-")[0]);
+    .map((pkg: PackageUpdate) => pkg.ArchiveSizes);
+  return flattenMaps(maps);
 };
 
 export const to_tools = (directory: Directory): string[] => {
