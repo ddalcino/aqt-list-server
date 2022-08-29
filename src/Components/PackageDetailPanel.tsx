@@ -5,9 +5,14 @@ interface Props {
   pkg: PackageUpdate;
 }
 
+const nickname = (fullname: string): string =>
+  fullname.split(".").at(-2) || fullname;
+
 const PackageDetailPanel = ({ pkg }: Props): JSX.Element => (
   <details>
-    <summary>{pkg.DisplayName}</summary>
+    <summary>
+      <strong>{nickname(pkg.Name)}:</strong> {pkg.DisplayName}
+    </summary>
     {pkg.Description ? (
       <div>
         <strong>Description:</strong> {pkg.Description}

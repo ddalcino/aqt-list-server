@@ -193,7 +193,7 @@ export class SelectMany {
     const { pkg, name } = this.selections.get(
       selectedOption
     ) as SelectableElement;
-    m.set(selectedOption, { pkg: pkg, name: name, selected: on });
+    m.set(selectedOption, { pkg: pkg, size: null, name: name, selected: on });
     return new SelectMany(new SelectState(SelectValue.Selected), m);
   }
 
@@ -203,29 +203,46 @@ export class SelectMany {
 }
 
 const makeSelectMany = (
-  options: string[] | PackageUpdate[],
+  options: string[] | PackageUpdate[] | Map<string, string>,
   allOn: boolean
 ): SelectMany => {
-  const isString = (option: string | PackageUpdate): boolean =>
-    typeof option === "string";
-  const m = new Map(
-    options.map((option: string | PackageUpdate): [string, SelectableElement] =>
-      isString(option)
-        ? [
-            option as string,
-            { pkg: null, name: option as string, selected: allOn },
-          ]
-        : [
-            (option as PackageUpdate).DisplayName,
-            {
-              pkg: option as PackageUpdate,
-              name: (option as PackageUpdate).DisplayName,
-              selected: allOn,
-            },
-          ]
-    )
-  );
-  return new SelectMany(new SelectState(SelectValue.Loaded), m);
+  if (options instanceof Map) {
+    const m = [...options.entries()].map(
+      ([option, size]): [string, SelectableElement] => [
+        option,
+        {
+          pkg: null,
+          size,
+          name: option,
+          selected: allOn,
+        },
+      ]
+    );
+    return new SelectMany(new SelectState(SelectValue.Loaded), new Map(m));
+  } else {
+    const m = options.map(
+      (
+        option: string | PackageUpdate | Map<string, string>
+      ): [string, SelectableElement] => {
+        const name =
+          typeof option === "string"
+            ? option
+            : (option as PackageUpdate).DisplayName;
+        const pkg =
+          typeof option === "string" ? null : (option as PackageUpdate);
+        return [
+          name,
+          {
+            pkg,
+            size: null,
+            name,
+            selected: allOn,
+          },
+        ];
+      }
+    );
+    return new SelectMany(new SelectState(SelectValue.Loaded), new Map(m));
+  }
 };
 
 export class ToolData {
@@ -580,7 +597,7 @@ export const StateUtils = {
     },
 
   withModulesArchivesLoaded:
-    (modules: PackageUpdate[], archives: string[]) =>
+    (modules: PackageUpdate[], archives: Map<string, string>) =>
     (state: State): State => {
       const newState = _.cloneDeep(state);
       newState.modules = makeSelectMany(modules, false);

@@ -14,6 +14,7 @@ export interface PackageUpdate {
 
 export interface SelectableElement {
   pkg: PackageUpdate | null;
+  size: string | null;
   name: string;
   selected: boolean;
 }
