@@ -15,7 +15,6 @@ import {
 import {
   fetch_arches,
   fetch_archive_info,
-  fetch_archives,
   fetch_modules,
   fetch_tool_variants,
   fetch_tools,
