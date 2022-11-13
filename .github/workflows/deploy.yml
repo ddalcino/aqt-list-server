@@ -18,13 +18,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install aqtinstall - requirement for functional tests
@@ -35,7 +35,7 @@ jobs:
           yarn run build --if-present
           yarn test --coverage
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
       - name: deploy to gh-pages
         if: github.ref == 'refs/heads/main' && github.actor == github.repository_owner
         uses: peaceiris/actions-gh-pages@v3
