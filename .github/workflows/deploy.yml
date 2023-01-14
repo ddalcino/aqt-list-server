@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install aqtinstall - requirement for functional tests
-        run: pip install aqtinstall
+        run: pip install aqtinstall==3.1.*
       - name: yarn install, build and test
         run: |
           yarn install --immutable --immutable-cache --check-cache
