@@ -76,27 +76,26 @@ describe("list-qt.ts", () => {
   );
 
   it.each`
-    host         | target       | version     | hard_expect
-    ${"windows"} | ${"desktop"} | ${"5.9.0"}  | ${""}
-    ${"windows"} | ${"desktop"} | ${"5.13.0"} | ${""}
-    ${"windows"} | ${"desktop"} | ${"5.13.1"} | ${"wasm"}
-    ${"windows"} | ${"desktop"} | ${"5.15.2"} | ${"wasm"}
-    ${"windows"} | ${"desktop"} | ${"6.2.4"}  | ${"wasm"}
-    ${"windows"} | ${"android"} | ${"5.9.0"}  | ${""}
-    ${"windows"} | ${"android"} | ${"5.13.1"} | ${""}
-    ${"windows"} | ${"android"} | ${"5.15.2"} | ${""}
-    ${"windows"} | ${"android"} | ${"6.2.4"}  | ${"android_arm64_v8a android_armv7 android_x86 android_x86_64"}
-    ${"mac"}     | ${"ios"}     | ${"5.9.0"}  | ${""}
-    ${"mac"}     | ${"ios"}     | ${"5.13.1"} | ${""}
-    ${"mac"}     | ${"ios"}     | ${"5.15.2"} | ${""}
-    ${"mac"}     | ${"ios"}     | ${"6.2.4"}  | ${""}
+    host         | target       | version
+    ${"windows"} | ${"desktop"} | ${"5.9.0"}
+    ${"windows"} | ${"desktop"} | ${"5.13.0"}
+    ${"windows"} | ${"desktop"} | ${"5.13.1"}
+    ${"windows"} | ${"desktop"} | ${"5.15.2"}
+    ${"windows"} | ${"desktop"} | ${"6.2.4"}
+    ${"windows"} | ${"android"} | ${"5.9.0"}
+    ${"windows"} | ${"android"} | ${"5.13.1"}
+    ${"windows"} | ${"android"} | ${"5.15.2"}
+    ${"windows"} | ${"android"} | ${"6.2.4"}
+    ${"mac"}     | ${"ios"}     | ${"5.9.0"}
+    ${"mac"}     | ${"ios"}     | ${"5.13.1"}
+    ${"mac"}     | ${"ios"}     | ${"5.15.2"}
+    ${"mac"}     | ${"ios"}     | ${"6.2.4"}
   `(
-    "should retrieve arches for $host $target $version",
+    "should retrieve architectures for $host $target $version",
     async ({
       host,
       target,
       version,
-      hard_expect,
     }: {
       host: HostString;
       target: TargetString;
@@ -108,18 +107,10 @@ describe("list-qt.ts", () => {
         targetFromStr(target),
         new SemVer(version)
       );
-      const expected = await (async (): Promise<string[]> => {
-        if (hard_expect.length > 0 && hard_expect !== "wasm") {
-          return hard_expect.split(" ");
-        }
-        const appended = hard_expect === "wasm" ? ["wasm_32"] : [];
-        return (
-          await get_aqt_output(["list-qt", host, target, "--arch", version])
-        ).concat(appended);
-      })();
+      const expected = await get_aqt_output(["list-qt", host, target, "--arch", version]);
 
-      expect(actual).toEqual(expected);
-    }
+      expect(actual.sort()).toEqual(expected.sort());
+    }, 10 * 1000  // 10 second timeout: it takes 6 seconds to run `aqt list-qt <host> android --arch 6.2.4`
   );
 
   it.each`
@@ -148,7 +139,6 @@ describe("list-qt.ts", () => {
         new SemVer(version),
         arch,
       ];
-      const ext = arch === "wasm_32" ? ["--extension", "wasm"] : [];
       const actual_modules = (await fetch_modules(...args))
         .map((pkg: PackageUpdate): string => {
           const parts = pkg.Name.split(".");
@@ -156,11 +146,9 @@ describe("list-qt.ts", () => {
         })
         .sort();
       const actual_archives = (await fetch_archives(...args, [])).sort();
-      const m_args = ["list-qt", host, target, "--modules", version, arch];
-      const a_args = ["list-qt", host, target, "--archives", version, arch];
       const [expect_modules, expect_archives] = await Promise.all([
-        get_aqt_output(m_args.concat(ext)),
-        get_aqt_output(a_args.concat(ext)),
+        get_aqt_output(["list-qt", host, target, "--modules", version, arch]),
+        get_aqt_output(["list-qt", host, target, "--archives", version, arch]),
       ]);
 
       expect(actual_modules).toEqual(expect_modules);
