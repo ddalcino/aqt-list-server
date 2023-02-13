@@ -2,7 +2,7 @@ import {
   fetch_arches,
   fetch_archives,
   fetch_modules,
-  fetch_tool_variants,
+  // fetch_tool_variants,
   fetch_tools,
   fetch_versions,
 } from "./list-qt";
@@ -107,10 +107,17 @@ describe("list-qt.ts", () => {
         targetFromStr(target),
         new SemVer(version)
       );
-      const expected = await get_aqt_output(["list-qt", host, target, "--arch", version]);
+      const expected = await get_aqt_output([
+        "list-qt",
+        host,
+        target,
+        "--arch",
+        version,
+      ]);
 
       expect(actual.sort()).toEqual(expected.sort());
-    }, 10 * 1000  // 10 second timeout: it takes 6 seconds to run `aqt list-qt <host> android --arch 6.2.4`
+    },
+    10 * 1000 // 10 second timeout: it takes 6 seconds to run `aqt list-qt <host> android --arch 6.2.4`
   );
 
   it.each`
