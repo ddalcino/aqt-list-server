@@ -16,6 +16,7 @@ import {
   seToolInstallName,
   seModuleInstallName,
 } from "./lib/types";
+import Config from "./config.json";
 
 export const enum SelectValue {
   NotLoaded,
@@ -486,7 +487,7 @@ export class State {
         `    - name: Install Qt
       uses: jurplel/install-qt-action@v${installQtActionVersion}
       with:
-        aqtversion: '==2.1.*'
+        aqtversion: '==${Config.RECOMMEND_AQT_VERSION}'
         host: '${this.host.selected.value}'
         target: '${this.target.selected.value}'
         toolsOnly: 'true'` + toolsLine
@@ -507,7 +508,7 @@ export class State {
       `    - name: Install Qt
       uses: jurplel/install-qt-action@v${installQtActionVersion}
       with:
-        aqtversion: '==2.1.*'
+        aqtversion: '==${Config.RECOMMEND_AQT_VERSION}'
         version: '${this.version.selected.value}'
         host: '${this.host.selected.value}'
         target: '${this.target.selected.value}'
