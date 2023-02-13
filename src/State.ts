@@ -190,10 +190,10 @@ export class SelectMany {
   copyWithOptionSet(selectedOption: string, on: boolean): SelectMany {
     console.assert(this.selections.has(selectedOption));
     const m = new Map(this.selections);
-    const { pkg, name } = this.selections.get(
+    const { pkg, name, size } = this.selections.get(
       selectedOption
     ) as SelectableElement;
-    m.set(selectedOption, { pkg: pkg, size: null, name: name, selected: on });
+    m.set(selectedOption, { pkg: pkg, size: size, name: name, selected: on });
     return new SelectMany(new SelectState(SelectValue.Selected), m);
   }
 

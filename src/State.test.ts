@@ -59,6 +59,7 @@ const makeLoadedState = () =>
     StateUtils.withArchLoadingModulesArchives(arch),
     StateUtils.withModulesArchivesLoaded(modules, archives),
   ]);
+
 describe("withVersionsToolsLoaded", () => {
   it("adds versions and tools to state", () => {
     const state = apply(
@@ -124,23 +125,57 @@ describe("withToggledModules", () => {
 });
 
 describe("withToggledArchives", () => {
-  it("selects all archives", () => {
-    const state = StateUtils.withToggledArchives(true)(makeLoadedState());
+  it("turns off all archives", () => {
+    const state = StateUtils.withToggledArchives(false)(makeLoadedState());
+
+    const allArchives = state2archives(state);
+    expect(allArchives).toEqual(archives);
+    expect(state.archives.hasAllOff()).toEqual(true);
+    expect(state.archives.hasAllOn()).toEqual(false);
+  });
+  it("reselects all archives", () => {
+    const state = apply(makeLoadedState(), [
+      StateUtils.withToggledArchives(false),
+      StateUtils.withToggledArchives(true),
+    ]);
 
     const allArchives = state2archives(state);
     expect(allArchives).toEqual(archives);
     expect(state.archives.hasAllOff()).toEqual(false);
     expect(state.archives.hasAllOn()).toEqual(true);
   });
-  it("deselects all archives", () => {
-    const state = apply(makeLoadedState(), [
-      StateUtils.withToggledArchives(true),
-      StateUtils.withToggledArchives(false),
-    ]);
+});
 
-    const allArchives = state2archives(state);
-    expect(allArchives).toEqual(archives);
-    expect(state.archives.hasAllOff()).toEqual(true);
+describe("withArchiveSet", () => {
+  it("deselects one archive", () => {
+    const archiveName = "qtdeclarative";
+    const state = StateUtils.withArchiveSet(
+      archiveName,
+      false
+    )(makeLoadedState());
+
+    const actual = state2archives(state);
+    expect(actual).toEqual(archives);
+    expect(state.archives.hasAllOff()).toEqual(false);
     expect(state.archives.hasAllOn()).toEqual(false);
+    expect(state.archives.state.isNotLoaded()).toEqual(false);
+    expect(state.archives.state.hasSelection()).toEqual(true);
+    expect(state.archives.selections.get(archiveName)?.selected).toEqual(false);
+    expect(state.archives.selections.get("qtbase")?.selected).toEqual(true);
+  });
+});
+
+describe("withModuleSet", () => {
+  it("selects one module", () => {
+    const moduleName = "qt.qt6.620.addons.qtcharts.win64_mingw81";
+    const state = StateUtils.withModuleSet(moduleName, true)(makeLoadedState());
+
+    const actual = state2modules(state);
+    expect(actual).toEqual(modules);
+    expect(state.modules.hasAllOff()).toEqual(false);
+    expect(state.modules.hasAllOn()).toEqual(false);
+    expect(state.modules.state.isNotLoaded()).toEqual(false);
+    expect(state.modules.state.hasSelection()).toEqual(true);
+    expect(state.modules.selections.get(moduleName)?.selected).toEqual(true);
   });
 });
