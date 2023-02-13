@@ -1,6 +1,6 @@
 {
   "name": "aqt-list-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Web application to emulate aqt list-qt and list-tool in the browser, without a backend",
   "homepage": "https://ddalcino.github.io/aqt-list-server",
