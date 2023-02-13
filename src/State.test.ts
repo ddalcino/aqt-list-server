@@ -43,6 +43,14 @@ const pipe =
     funcs.reduce((accum: State, func: StateReducer) => func(accum), state);
 
 const apply = (state: State, funcs: StateReducer[]) => pipe(funcs)(state);
+
+const state2modules = (state: State) =>
+  Array.from(state.modules.selections.values()).map((v) => v.pkg);
+const state2archives = (state: State) =>
+  new Map(
+    Array.from(state.archives.selections.values()).map((v) => [v.name, v.size])
+  );
+
 const makeLoadedState = () =>
   apply(makeState(hostFromStr("windows"), targetFromStr("desktop")), [
     StateUtils.withVersionsToolsLoaded(versions, tools),
@@ -51,6 +59,7 @@ const makeLoadedState = () =>
     StateUtils.withArchLoadingModulesArchives(arch),
     StateUtils.withModulesArchivesLoaded(modules, archives),
   ]);
+
 describe("withVersionsToolsLoaded", () => {
   it("adds versions and tools to state", () => {
     const state = apply(
@@ -85,9 +94,7 @@ describe("withModulesArchivesLoaded", () => {
   it("adds modules and archives", () => {
     const state = makeLoadedState();
 
-    const actual = Array.from(state.modules.selections.values()).map(
-      (v) => v.pkg
-    );
+    const actual = state2modules(state);
     expect(actual).toEqual(modules);
     expect(state.modules.hasAllOff()).toEqual(true);
     expect(state.modules.state.isNotLoaded()).toEqual(false);
@@ -99,9 +106,7 @@ describe("withToggledModules", () => {
   it("selects all modules", () => {
     const state = StateUtils.withToggledModules(true)(makeLoadedState());
 
-    const allModules = Array.from(state.modules.selections.values()).map(
-      (v) => v.pkg
-    );
+    const allModules = state2modules(state);
     expect(allModules).toEqual(modules);
     expect(state.modules.hasAllOff()).toEqual(false);
     expect(state.modules.hasAllOn()).toEqual(true);
@@ -112,11 +117,65 @@ describe("withToggledModules", () => {
       StateUtils.withToggledModules(false),
     ]);
 
-    const allModules = Array.from(state.modules.selections.values()).map(
-      (v) => v.pkg
-    );
+    const allModules = state2modules(state);
     expect(allModules).toEqual(modules);
     expect(state.modules.hasAllOff()).toEqual(true);
     expect(state.modules.hasAllOn()).toEqual(false);
+  });
+});
+
+describe("withToggledArchives", () => {
+  it("turns off all archives", () => {
+    const state = StateUtils.withToggledArchives(false)(makeLoadedState());
+
+    const allArchives = state2archives(state);
+    expect(allArchives).toEqual(archives);
+    expect(state.archives.hasAllOff()).toEqual(true);
+    expect(state.archives.hasAllOn()).toEqual(false);
+  });
+  it("reselects all archives", () => {
+    const state = apply(makeLoadedState(), [
+      StateUtils.withToggledArchives(false),
+      StateUtils.withToggledArchives(true),
+    ]);
+
+    const allArchives = state2archives(state);
+    expect(allArchives).toEqual(archives);
+    expect(state.archives.hasAllOff()).toEqual(false);
+    expect(state.archives.hasAllOn()).toEqual(true);
+  });
+});
+
+describe("withArchiveSet", () => {
+  it("deselects one archive", () => {
+    const archiveName = "qtdeclarative";
+    const state = StateUtils.withArchiveSet(
+      archiveName,
+      false
+    )(makeLoadedState());
+
+    const actual = state2archives(state);
+    expect(actual).toEqual(archives);
+    expect(state.archives.hasAllOff()).toEqual(false);
+    expect(state.archives.hasAllOn()).toEqual(false);
+    expect(state.archives.state.isNotLoaded()).toEqual(false);
+    expect(state.archives.state.hasSelection()).toEqual(true);
+    expect(state.archives.selections.get(archiveName)?.selected).toEqual(false);
+    expect(state.archives.selections.get("qtbase")?.selected).toEqual(true);
+  });
+});
+
+describe("withModuleSet", () => {
+  it("selects one module", () => {
+    const moduleName = "qt.qt6.620.addons.qtcharts.win64_mingw81";
+    const state = StateUtils.withModuleSet(moduleName, true)(makeLoadedState());
+
+    const actual = state2modules(state);
+    expect(actual).toEqual(modules);
+    expect(state.modules.hasAllOff()).toEqual(false);
+    expect(state.modules.hasAllOn()).toEqual(false);
+    expect(state.modules.state.isNotLoaded()).toEqual(false);
+    expect(state.modules.state.hasSelection()).toEqual(true);
+    expect(state.modules.selections.get(moduleName)?.selected).toEqual(true);
   });
 });

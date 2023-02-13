@@ -190,10 +190,10 @@ export class SelectMany {
   copyWithOptionSet(selectedOption: string, on: boolean): SelectMany {
     console.assert(this.selections.has(selectedOption));
     const m = new Map(this.selections);
-    const { pkg, name } = this.selections.get(
+    const { pkg, name, size } = this.selections.get(
       selectedOption
     ) as SelectableElement;
-    m.set(selectedOption, { pkg: pkg, size: null, name: name, selected: on });
+    m.set(selectedOption, { pkg: pkg, size: size, name: name, selected: on });
     return new SelectMany(new SelectState(SelectValue.Selected), m);
   }
 
@@ -201,9 +201,11 @@ export class SelectMany {
     const packages = Array.from(this.selections.values())
       .map((v) => v.pkg)
       .filter((pkg) => pkg !== null) as PackageUpdate[];
-    const strings = [...this.selections.keys()];
+    const archives = new Map(
+      Array.from(this.selections, ([key, value]) => [key, value.size || "???"])
+    );
 
-    return makeSelectMany(packages.length > 0 ? packages : strings, allOn);
+    return makeSelectMany(packages.length > 0 ? packages : archives, allOn);
   }
 }
 
