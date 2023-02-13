@@ -201,9 +201,11 @@ export class SelectMany {
     const packages = Array.from(this.selections.values())
       .map((v) => v.pkg)
       .filter((pkg) => pkg !== null) as PackageUpdate[];
-    const strings = [...this.selections.keys()];
+    const archives = new Map(
+      Array.from(this.selections, ([key, value]) => [key, value.size || "???"])
+    );
 
-    return makeSelectMany(packages.length > 0 ? packages : strings, allOn);
+    return makeSelectMany(packages.length > 0 ? packages : archives, allOn);
   }
 }
 

@@ -43,6 +43,14 @@ const pipe =
     funcs.reduce((accum: State, func: StateReducer) => func(accum), state);
 
 const apply = (state: State, funcs: StateReducer[]) => pipe(funcs)(state);
+
+const state2modules = (state: State) =>
+  Array.from(state.modules.selections.values()).map((v) => v.pkg);
+const state2archives = (state: State) =>
+  new Map(
+    Array.from(state.archives.selections.values()).map((v) => [v.name, v.size])
+  );
+
 const makeLoadedState = () =>
   apply(makeState(hostFromStr("windows"), targetFromStr("desktop")), [
     StateUtils.withVersionsToolsLoaded(versions, tools),
@@ -85,9 +93,7 @@ describe("withModulesArchivesLoaded", () => {
   it("adds modules and archives", () => {
     const state = makeLoadedState();
 
-    const actual = Array.from(state.modules.selections.values()).map(
-      (v) => v.pkg
-    );
+    const actual = state2modules(state);
     expect(actual).toEqual(modules);
     expect(state.modules.hasAllOff()).toEqual(true);
     expect(state.modules.state.isNotLoaded()).toEqual(false);
@@ -99,9 +105,7 @@ describe("withToggledModules", () => {
   it("selects all modules", () => {
     const state = StateUtils.withToggledModules(true)(makeLoadedState());
 
-    const allModules = Array.from(state.modules.selections.values()).map(
-      (v) => v.pkg
-    );
+    const allModules = state2modules(state);
     expect(allModules).toEqual(modules);
     expect(state.modules.hasAllOff()).toEqual(false);
     expect(state.modules.hasAllOn()).toEqual(true);
@@ -112,11 +116,31 @@ describe("withToggledModules", () => {
       StateUtils.withToggledModules(false),
     ]);
 
-    const allModules = Array.from(state.modules.selections.values()).map(
-      (v) => v.pkg
-    );
+    const allModules = state2modules(state);
     expect(allModules).toEqual(modules);
     expect(state.modules.hasAllOff()).toEqual(true);
     expect(state.modules.hasAllOn()).toEqual(false);
+  });
+});
+
+describe("withToggledArchives", () => {
+  it("selects all archives", () => {
+    const state = StateUtils.withToggledArchives(true)(makeLoadedState());
+
+    const allArchives = state2archives(state);
+    expect(allArchives).toEqual(archives);
+    expect(state.archives.hasAllOff()).toEqual(false);
+    expect(state.archives.hasAllOn()).toEqual(true);
+  });
+  it("deselects all archives", () => {
+    const state = apply(makeLoadedState(), [
+      StateUtils.withToggledArchives(true),
+      StateUtils.withToggledArchives(false),
+    ]);
+
+    const allArchives = state2archives(state);
+    expect(allArchives).toEqual(archives);
+    expect(state.archives.hasAllOff()).toEqual(true);
+    expect(state.archives.hasAllOn()).toEqual(false);
   });
 });
