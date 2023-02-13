@@ -189,15 +189,17 @@ describe("constructs url for directory", () => {
 });
 describe("constructs url for Updates.json", () => {
   it.each`
-    version      | arch          | expected_folder
-    ${"5.9.0"}   | ${"wasm_32"}  | ${"qt5_59_wasm"}
-    ${"6.2.0"}   | ${"wasm_64"}  | ${"qt6_620_wasm"}
-    ${"6.29.0"}  | ${"wasm_128"} | ${"qt6_6290_wasm"}
-    ${"5.12.11"} | ${"wasm_16"}  | ${"qt5_51211_wasm"}
-    ${"5.9.0"}   | ${"mingw"}    | ${"qt5_59"}
-    ${"6.2.0"}   | ${"mingw"}    | ${"qt6_620"}
-    ${"6.29.0"}  | ${"mingw"}    | ${"qt6_6290"}
-    ${"5.12.11"} | ${"mingw"}    | ${"qt5_51211"}
+    version      | arch                   | expected_folder
+    ${"5.9.0"}   | ${"wasm_32"}           | ${"qt5_59_wasm"}
+    ${"6.2.0"}   | ${"wasm_64"}           | ${"qt6_620_wasm"}
+    ${"6.29.0"}  | ${"wasm_128"}          | ${"qt6_6290_wasm"}
+    ${"5.12.11"} | ${"wasm_16"}           | ${"qt5_51211_wasm"}
+    ${"5.9.0"}   | ${"mingw"}             | ${"qt5_59"}
+    ${"6.2.0"}   | ${"mingw"}             | ${"qt6_620"}
+    ${"6.29.0"}  | ${"mingw"}             | ${"qt6_6290"}
+    ${"5.12.11"} | ${"mingw"}             | ${"qt5_51211"}
+    ${"6.29.0"}  | ${"wasm_singlethread"} | ${"qt6_6290_wasm_singlethread"}
+    ${"6.29.0"}  | ${"wasm_multithread"}  | ${"qt6_6290_wasm_multithread"}
   `(
     `should return url when version is $version, arch is $arch`,
     ({
