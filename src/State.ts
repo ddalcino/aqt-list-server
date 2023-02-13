@@ -225,9 +225,7 @@ const makeSelectMany = (
         option: string | PackageUpdate | Map<string, string>
       ): [string, SelectableElement] => {
         const name =
-          typeof option === "string"
-            ? option
-            : (option as PackageUpdate).DisplayName;
+          typeof option === "string" ? option : (option as PackageUpdate).Name;
         const pkg =
           typeof option === "string" ? null : (option as PackageUpdate);
         return [
