@@ -514,7 +514,7 @@ export class State {
   }
 }
 
-type StateReducer = (state: State) => State;
+export type StateReducer = (state: State) => State;
 export const StateUtils = {
   withHostLoadingVersionsTools:
     (newHost: Host) =>
