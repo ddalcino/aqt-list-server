@@ -198,7 +198,12 @@ export class SelectMany {
   }
 
   copyWithAllOptions(allOn: boolean): SelectMany {
-    return makeSelectMany([...this.selections.keys()], allOn);
+    const packages = Array.from(this.selections.values())
+      .map((v) => v.pkg)
+      .filter((pkg) => pkg !== null) as PackageUpdate[];
+    const strings = [...this.selections.keys()];
+
+    return makeSelectMany(packages.length > 0 ? packages : strings, allOn);
   }
 }
 
