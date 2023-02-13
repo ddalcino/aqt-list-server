@@ -198,7 +198,12 @@ export class SelectMany {
   }
 
   copyWithAllOptions(allOn: boolean): SelectMany {
-    return makeSelectMany([...this.selections.keys()], allOn);
+    const packages = Array.from(this.selections.values())
+      .map((v) => v.pkg)
+      .filter((pkg) => pkg !== null) as PackageUpdate[];
+    const strings = [...this.selections.keys()];
+
+    return makeSelectMany(packages.length > 0 ? packages : strings, allOn);
   }
 }
 
@@ -225,9 +230,7 @@ const makeSelectMany = (
         option: string | PackageUpdate | Map<string, string>
       ): [string, SelectableElement] => {
         const name =
-          typeof option === "string"
-            ? option
-            : (option as PackageUpdate).DisplayName;
+          typeof option === "string" ? option : (option as PackageUpdate).Name;
         const pkg =
           typeof option === "string" ? null : (option as PackageUpdate);
         return [
@@ -514,7 +517,7 @@ export class State {
   }
 }
 
-type StateReducer = (state: State) => State;
+export type StateReducer = (state: State) => State;
 export const StateUtils = {
   withHostLoadingVersionsTools:
     (newHost: Host) =>
