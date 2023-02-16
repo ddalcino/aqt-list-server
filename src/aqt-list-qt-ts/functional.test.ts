@@ -90,6 +90,7 @@ describe("list-qt.ts", () => {
     ${"mac"}     | ${"ios"}     | ${"5.13.1"}
     ${"mac"}     | ${"ios"}     | ${"5.15.2"}
     ${"mac"}     | ${"ios"}     | ${"6.2.4"}
+    ${"linux"}   | ${"desktop"} | ${"6.5.0"}
   `(
     "should retrieve architectures for $host $target $version",
     async ({
