@@ -171,7 +171,11 @@ const updates_url = (
 
 const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
   const [_, target, version] = args;
-  if (arch.includes("wasm")) {
+  if (arch.includes("wasm_singlethread")) {
+    return "wasm_singlethread";
+  } else if (arch.includes("wasm_multithread")) {
+    return "wasm_multithread";
+  } else if (arch.includes("wasm")) {
     return "wasm";
   }
   if (version.major >= 6 && target == Target.android) {
@@ -186,10 +190,6 @@ const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
   }
 };
 
-const updates_url_wasm = (args: [Host, Target, SemVer]): string =>
-  updates_url(args, "wasm");
-const updates_url_nowasm = (args: [Host, Target, SemVer]): string =>
-  updates_url(args);
 export const to_updates_urls_by_arch =
   (arch: string) =>
   (args: [Host, Target, SemVer]): string =>
@@ -201,15 +201,19 @@ export const to_updates_urls = (
   version: SemVer
 ): string[] => {
   const args: [Host, Target, SemVer] = [host, target, version];
-  if (target === Target.android && version.major >= 6) {
-    return ["arm64_v8a", "armv7", "x86", "x86_64"].map((suffix) =>
-      updates_url(args, suffix)
-    );
-  } else if (target === Target.desktop && version.compare("5.13.0") > 0) {
-    return [updates_url_nowasm(args), updates_url_wasm(args)];
-  } else {
-    return [updates_url_nowasm(args)];
-  }
+  const extensions: string[] = ((): string[] => {
+    if (target === Target.android && version.major >= 6) {
+      return ["arm64_v8a", "armv7", "x86", "x86_64"];
+    } else if (target === Target.desktop && version.compare("6.5.0") >= 0) {
+      return ["", "wasm_singlethread", "wasm_multithread"];
+    } else if (target === Target.desktop && version.compare("5.13.0") > 0) {
+      return ["", "wasm"];
+    } else {
+      return [""];
+    }
+  })();
+
+  return extensions.map((suffix) => updates_url(args, suffix));
 };
 
 export const to_tools_updates_json = ([host, target, tool_name]: [
