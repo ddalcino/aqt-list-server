@@ -1,4 +1,6 @@
 {
   "QT_JSON_CACHE_BASE_URL": "https://ddalcino.github.io/qt-repo-cache/public",
-  "RECOMMEND_AQT_VERSION": "3.1.*"
+  "RECOMMEND_AQT_VERSION": "3.1.*",
+  "REQUIRED_PY7ZR": ">=0.20.2",
+  "POSTSCRIPT": null
 }

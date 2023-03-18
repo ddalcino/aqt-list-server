@@ -479,6 +479,12 @@ export class State {
       .join(" ");
     const toolsLine =
       toolsTuples.length === 0 ? "" : `\n        tools: '${toolsTuples}'`;
+    const py7zr = Config.REQUIRED_PY7ZR
+      ? `\n        py7zrversion: '${Config.REQUIRED_PY7ZR}'`
+      : "";
+    const postscript = Config.POSTSCRIPT
+      ? "\n        " + Config.POSTSCRIPT
+      : "";
     if (
       toolsLine.trim().length > 0 &&
       !this.arch.selected.state.hasSelection()
@@ -487,10 +493,12 @@ export class State {
         `    - name: Install Qt
       uses: jurplel/install-qt-action@v${installQtActionVersion}
       with:
-        aqtversion: '==${Config.RECOMMEND_AQT_VERSION}'
+        aqtversion: '==${Config.RECOMMEND_AQT_VERSION}'${py7zr}
         host: '${this.host.selected.value}'
         target: '${this.target.selected.value}'
-        toolsOnly: 'true'` + toolsLine
+        toolsOnly: 'true'` +
+        toolsLine +
+        postscript
       );
     } else if (!this.version.selected.state.hasSelection()) {
       return "Please select a Qt version or a tool.";
@@ -508,14 +516,15 @@ export class State {
       `    - name: Install Qt
       uses: jurplel/install-qt-action@v${installQtActionVersion}
       with:
-        aqtversion: '==${Config.RECOMMEND_AQT_VERSION}'
+        aqtversion: '==${Config.RECOMMEND_AQT_VERSION}'${py7zr}
         version: '${this.version.selected.value}'
         host: '${this.host.selected.value}'
         target: '${this.target.selected.value}'
         arch: '${this.arch.selected.value}'` +
       modulesLine +
       toolsLine +
-      archivesLine
+      archivesLine +
+      postscript
     );
   }
 }
