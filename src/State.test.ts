@@ -1,7 +1,12 @@
-import { makeState, State, StateReducer, StateUtils } from "./State";
+import { makeState, State, StateReducer, StateUtils, ToolData } from "./State";
 import { hostFromStr, RawPackageUpdates, targetFromStr } from "./lib/types";
 import win_620_json from "./aqt-list-qt-ts/test_data/windows-620-update.json";
-import { to_archives, to_modules } from "./aqt-list-qt-ts/list-qt-impl";
+import tools_vcredist from "./aqt-list-qt-ts/test_data/windows-desktop-tools_vcredist-update.json";
+import {
+  to_archives,
+  to_modules,
+  to_tool_variants,
+} from "./aqt-list-qt-ts/list-qt-impl";
 import { SemVer } from "semver";
 
 describe("makeState", () => {
@@ -31,11 +36,14 @@ const versions = [["6.1.0", "6.1.1", "6.1.2"], ["6.2.0"]];
 const version = "6.2.0";
 const arches = ["win64_mingw81", "win64_msvc2019_64", "win64_msvc2019_arm64"];
 const arch = "win64_mingw81";
-const tools = ["qtcreator", "qtifw"];
+const tools = ["qtcreator", "qtifw", "tools_vcredist"];
 
 const win620JsonRaw = win_620_json as unknown as RawPackageUpdates;
 const modules = to_modules(win620JsonRaw, [new SemVer(version), arch]);
 const archives = to_archives(win620JsonRaw, [new SemVer(version), arch, []]);
+const vcredist = to_tool_variants(
+  tools_vcredist as unknown as RawPackageUpdates
+);
 
 const pipe =
   (funcs: StateReducer[]): StateReducer =>
@@ -177,5 +185,99 @@ describe("withModuleSet", () => {
     expect(state.modules.state.isNotLoaded()).toEqual(false);
     expect(state.modules.state.hasSelection()).toEqual(true);
     expect(state.modules.selections.get(moduleName)?.selected).toEqual(true);
+  });
+});
+
+// TODO: figure out how to mock out config.json with different file contents!
+describe("toInstallQtAction", () => {
+  describe("with no qt or tools selected", () => {
+    it("should display valid yml", () => {
+      const state = makeState(hostFromStr("windows"), targetFromStr("desktop"));
+      expect(state.toInstallQtAction()).toEqual(
+        "Please select a Qt version or a tool."
+      );
+    });
+  });
+  describe("with qt but no tools selected", () => {
+    it("should display valid yml", () => {
+      const state = makeLoadedState(); //makeState(hostFromStr(host), targetFromStr(target));
+      expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        aqtversion: '==3.1.*'
+        py7zrversion: '>=0.20.2'
+        version: '6.2.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_mingw81'`);
+    });
+  });
+  describe("with tools but no qt selected", () => {
+    it("should display valid yml", () => {
+      const state = apply(
+        makeState(hostFromStr("windows"), targetFromStr("desktop")),
+        [
+          StateUtils.withVersionsToolsLoaded(versions, ["tools_vcredist"]),
+          StateUtils.withNewTool(
+            ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+          ),
+          StateUtils.withToggledToolVariants("tools_vcredist", true),
+        ]
+      );
+      expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        aqtversion: '==3.1.*'
+        py7zrversion: '>=0.20.2'
+        host: 'windows'
+        target: 'desktop'
+        toolsOnly: 'true'
+        tools: 'tools_vcredist'`);
+    });
+    it("should properly select one tool", () => {
+      const state = apply(
+        makeState(hostFromStr("windows"), targetFromStr("desktop")),
+        [
+          StateUtils.withVersionsToolsLoaded(versions, ["tools_vcredist"]),
+          StateUtils.withNewTool(
+            ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+          ),
+          StateUtils.withToolVariant(
+            "tools_vcredist",
+            "qt.tools.vcredist_msvc2019_x86",
+            true
+          ),
+        ]
+      );
+      expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        aqtversion: '==3.1.*'
+        py7zrversion: '>=0.20.2'
+        host: 'windows'
+        target: 'desktop'
+        toolsOnly: 'true'
+        tools: 'tools_vcredist,qt.tools.vcredist_msvc2019_x86'`);
+    });
+  });
+  describe("with both qt and tools selected", () => {
+    it("should display valid yml", () => {
+      const state = apply(makeLoadedState(), [
+        StateUtils.withNewTool(
+          ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+        ),
+        StateUtils.withToggledToolVariants("tools_vcredist", true),
+      ]);
+      expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        aqtversion: '==3.1.*'
+        py7zrversion: '>=0.20.2'
+        version: '6.2.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_mingw81'
+        tools: 'tools_vcredist'`);
+    });
   });
 });
