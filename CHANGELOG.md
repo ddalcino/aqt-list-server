@@ -7,6 +7,7 @@
   to bring the output in-line with what `aqtinstall` v3.1.2 can actually install (#15)
 
 ### Features
+* Add CLI commands for official Qt installers (#20)
 * Add Changelog (#16)
 
 ## v0.1.1
