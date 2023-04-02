@@ -16,6 +16,7 @@ import {
   fetch_arches,
   fetch_archive_info,
   fetch_modules,
+  fetch_online_installers,
   fetch_tool_variants,
   fetch_tools,
   fetch_versions,
@@ -25,13 +26,16 @@ import { SemVer } from "semver";
 import ComboBox, { options } from "./Components/ComboBox";
 
 const App = (): JSX.Element => {
-  const [state, setState] = useState(makeState());
+  const [state, setState] = useState(makeState((_) => ""));
   const loadVersionsTools = async (host: Host, target: Target) => {
-    const [versions, tools] = await Promise.all([
+    const [versions, tools, unifiedInstallers] = await Promise.all([
       fetch_versions(host, target),
       fetch_tools(host, target),
+      fetch_online_installers(),
     ]);
-    setState(S.withVersionsToolsLoaded(versions, tools));
+    setState(
+      S.withInstallersVersionsToolsLoaded(unifiedInstallers, versions, tools)
+    );
   };
   const loadModulesArchives = async (
     host: Host,
@@ -136,6 +140,20 @@ const App = (): JSX.Element => {
         toggleToolVariants={(toolName: string, on: boolean) =>
           setState(S.withToggledToolVariants(toolName, on))
         }
+      />
+      <CommandPanel
+        id="official-command"
+        label={
+          <span>
+            Your{" "}
+            <a href="https://doc.qt.io/qtinstallerframework/ifw-use-cases-cli.html">
+              official qt install
+            </a>{" "}
+            command:
+          </span>
+        }
+        command={state.toOfficialInstallCmd()}
+        isDisabled={!state.hasOutputs()}
       />
       <CommandPanel
         id="aqt-command"

@@ -1,13 +1,25 @@
 import { makeState, State, StateReducer, StateUtils, ToolData } from "./State";
-import { hostFromStr, RawPackageUpdates, targetFromStr } from "./lib/types";
+import {
+  Host,
+  hostFromStr,
+  hostToStr,
+  RawPackageUpdates,
+  Target,
+  targetFromStr,
+} from "./lib/types";
 import win_620_json from "./aqt-list-qt-ts/test_data/windows-620-update.json";
 import tools_vcredist from "./aqt-list-qt-ts/test_data/windows-desktop-tools_vcredist-update.json";
+import tools_vcredist_expect from "./aqt-list-qt-ts/test_data/windows-desktop-tools_vcredist-expect.json";
+import official_rel from "./aqt-list-qt-ts/test_data/official_releases.json";
 import {
   to_archives,
   to_modules,
   to_tool_variants,
 } from "./aqt-list-qt-ts/list-qt-impl";
 import { SemVer } from "semver";
+
+const _makeState = (host: keyof typeof Host, target: keyof typeof Target) =>
+  makeState(unifiedInstallers, hostFromStr(host), targetFromStr(target));
 
 describe("makeState", () => {
   it.each`
@@ -24,7 +36,7 @@ describe("makeState", () => {
       host: "windows" | "mac" | "linux";
       target: "desktop" | "android" | "ios" | "winrt";
     }) => {
-      const state = makeState(hostFromStr(host), targetFromStr(target));
+      const state = _makeState(host, target);
       expect(state.host.selected.value).toEqual(host);
       expect(state.target.selected.value).toEqual(target);
       expect(state.version.selected.state.isLoading()).toEqual(true);
@@ -60,8 +72,12 @@ const state2archives = (state: State) =>
   );
 
 const makeLoadedState = () =>
-  apply(makeState(hostFromStr("windows"), targetFromStr("desktop")), [
-    StateUtils.withVersionsToolsLoaded(versions, tools),
+  apply(_makeState("windows", "desktop"), [
+    StateUtils.withInstallersVersionsToolsLoaded(
+      unifiedInstallers,
+      versions,
+      tools
+    ),
     StateUtils.withVersionLoadingArches(version),
     StateUtils.withArchesLoaded(arches),
     StateUtils.withArchLoadingModulesArchives(arch),
@@ -70,10 +86,13 @@ const makeLoadedState = () =>
 
 describe("withVersionsToolsLoaded", () => {
   it("adds versions and tools to state", () => {
-    const state = apply(
-      makeState(hostFromStr("windows"), targetFromStr("desktop")),
-      [StateUtils.withVersionsToolsLoaded(versions, tools)]
-    );
+    const state = apply(_makeState("windows", "desktop"), [
+      StateUtils.withInstallersVersionsToolsLoaded(
+        unifiedInstallers,
+        versions,
+        tools
+      ),
+    ]);
 
     expect(state.version.versions).toEqual(versions);
     expect(state.version.selected.state.hasSelection()).toEqual(false);
@@ -83,14 +102,15 @@ describe("withVersionsToolsLoaded", () => {
 
 describe("withArchesLoaded", () => {
   it("adds architectures", () => {
-    const state = apply(
-      makeState(hostFromStr("windows"), targetFromStr("desktop")),
-      [
-        StateUtils.withVersionsToolsLoaded(versions, tools),
-        StateUtils.withVersionLoadingArches(version),
-        StateUtils.withArchesLoaded(arches),
-      ]
-    );
+    const state = apply(_makeState("windows", "desktop"), [
+      StateUtils.withInstallersVersionsToolsLoaded(
+        unifiedInstallers,
+        versions,
+        tools
+      ),
+      StateUtils.withVersionLoadingArches(version),
+      StateUtils.withArchesLoaded(arches),
+    ]);
 
     expect(state.version.selected.value).toEqual(version);
     expect(state.arch.options).toEqual(arches);
@@ -192,7 +212,7 @@ describe("withModuleSet", () => {
 describe("toInstallQtAction", () => {
   describe("with no qt or tools selected", () => {
     it("should display valid yml", () => {
-      const state = makeState(hostFromStr("windows"), targetFromStr("desktop"));
+      const state = _makeState("windows", "desktop");
       expect(state.toInstallQtAction()).toEqual(
         "Please select a Qt version or a tool."
       );
@@ -200,7 +220,7 @@ describe("toInstallQtAction", () => {
   });
   describe("with qt but no tools selected", () => {
     it("should display valid yml", () => {
-      const state = makeLoadedState(); //makeState(hostFromStr(host), targetFromStr(target));
+      const state = makeLoadedState();
       expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
@@ -214,16 +234,17 @@ describe("toInstallQtAction", () => {
   });
   describe("with tools but no qt selected", () => {
     it("should display valid yml", () => {
-      const state = apply(
-        makeState(hostFromStr("windows"), targetFromStr("desktop")),
-        [
-          StateUtils.withVersionsToolsLoaded(versions, ["tools_vcredist"]),
-          StateUtils.withNewTool(
-            ToolData.fromPackageUpdates("tools_vcredist", vcredist)
-          ),
-          StateUtils.withToggledToolVariants("tools_vcredist", true),
-        ]
-      );
+      const state = apply(_makeState("windows", "desktop"), [
+        StateUtils.withInstallersVersionsToolsLoaded(
+          unifiedInstallers,
+          versions,
+          ["tools_vcredist"]
+        ),
+        StateUtils.withNewTool(
+          ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+        ),
+        StateUtils.withToggledToolVariants("tools_vcredist", true),
+      ]);
       expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
@@ -235,20 +256,21 @@ describe("toInstallQtAction", () => {
         tools: 'tools_vcredist'`);
     });
     it("should properly select one tool", () => {
-      const state = apply(
-        makeState(hostFromStr("windows"), targetFromStr("desktop")),
-        [
-          StateUtils.withVersionsToolsLoaded(versions, ["tools_vcredist"]),
-          StateUtils.withNewTool(
-            ToolData.fromPackageUpdates("tools_vcredist", vcredist)
-          ),
-          StateUtils.withToolVariant(
-            "tools_vcredist",
-            "qt.tools.vcredist_msvc2019_x86",
-            true
-          ),
-        ]
-      );
+      const state = apply(_makeState("windows", "desktop"), [
+        StateUtils.withInstallersVersionsToolsLoaded(
+          unifiedInstallers,
+          versions,
+          ["tools_vcredist"]
+        ),
+        StateUtils.withNewTool(
+          ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+        ),
+        StateUtils.withToolVariant(
+          "tools_vcredist",
+          "qt.tools.vcredist_msvc2019_x86",
+          true
+        ),
+      ]);
       expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
@@ -278,6 +300,154 @@ describe("toInstallQtAction", () => {
         target: 'desktop'
         arch: 'win64_mingw81'
         tools: 'tools_vcredist'`);
+    });
+  });
+});
+
+const unifiedInstallers = (host: Host) => {
+  const installers = official_rel["online_installers/"];
+  return (
+    Object.entries(installers)
+      ?.map(([key, _]) => key)
+      ?.find((key) => key.includes(hostToStr(host))) || ""
+  );
+};
+
+const officialQtUnifiedPreamble = (host: Host) => {
+  const installer = unifiedInstallers(host);
+  return `curl -O https://download.qt.io/official_releases/online_installers/${installer}
+./${installer} \\
+  --accept-licenses \\
+  --default-answer \\
+  --confirm-command install \\
+  `;
+};
+
+describe("toOfficialInstallCmd", () => {
+  describe("with no qt or tools selected", () => {
+    it("should display valid yml", () => {
+      const state = makeState(
+        unifiedInstallers,
+        hostFromStr("windows"),
+        targetFromStr("desktop")
+      );
+      expect(state.toOfficialInstallCmd()).toEqual(
+        "Please select a Qt version or a tool."
+      );
+    });
+  });
+  describe("with qt but no tools selected", () => {
+    it("should display valid commands", () => {
+      const state = makeLoadedState();
+      const pre = officialQtUnifiedPreamble(Host.windows);
+      expect(state.toOfficialInstallCmd()).toEqual(
+        pre + "qt.qt6.620.win64_mingw81"
+      );
+    });
+    it("should add modules", () => {
+      const selected_modules = [
+        "qt.qt6.620.addons.qtcharts.win64_mingw81",
+        "qt.qt6.620.qtquicktimeline.win64_mingw81",
+      ];
+      const state = apply(
+        makeLoadedState(),
+        selected_modules.map((mod) => StateUtils.withModuleSet(mod, true))
+      );
+      expect(state.toOfficialInstallCmd()).toEqual(
+        officialQtUnifiedPreamble(Host.windows) +
+          `qt.qt6.620.win64_mingw81 \\
+  qt.qt6.620.addons.qtcharts.win64_mingw81 \\
+  qt.qt6.620.qtquicktimeline.win64_mingw81`
+      );
+    });
+  });
+
+  describe("with tools but no qt selected", () => {
+    it("should display command that installs all tools in group", () => {
+      const state = apply(_makeState("windows", "desktop"), [
+        StateUtils.withInstallersVersionsToolsLoaded(
+          unifiedInstallers,
+          versions,
+          ["tools_vcredist"]
+        ),
+        StateUtils.withNewTool(
+          ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+        ),
+        StateUtils.withToggledToolVariants("tools_vcredist", true),
+      ]);
+      expect(state.toOfficialInstallCmd()).toEqual(
+        officialQtUnifiedPreamble(Host.windows) +
+          tools_vcredist_expect.modules.sort().join(" \\\n  ")
+      );
+    });
+    it("should properly select one tool", () => {
+      const variant = "qt.tools.vcredist_msvc2019_x86";
+      const state = apply(_makeState("windows", "desktop"), [
+        StateUtils.withInstallersVersionsToolsLoaded(
+          unifiedInstallers,
+          versions,
+          ["tools_vcredist"]
+        ),
+        StateUtils.withNewTool(
+          ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+        ),
+        StateUtils.withToolVariant("tools_vcredist", variant, true),
+      ]);
+      expect(state.toOfficialInstallCmd()).toEqual(
+        officialQtUnifiedPreamble(Host.windows) + variant
+      );
+    });
+  });
+  describe("with both qt and tools selected", () => {
+    it("should display command that installs qt, modules, and all tools in group", () => {
+      const selected_modules = [
+        "qt.qt6.620.addons.qtcharts.win64_mingw81",
+        "qt.qt6.620.qtquicktimeline.win64_mingw81",
+      ];
+      const state = apply(makeLoadedState(), [
+        ...selected_modules.map((mod) => StateUtils.withModuleSet(mod, true)),
+        StateUtils.withNewTool(
+          ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+        ),
+        StateUtils.withToggledToolVariants("tools_vcredist", true),
+      ]);
+      expect(state.toOfficialInstallCmd()).toEqual(
+        officialQtUnifiedPreamble(Host.windows) +
+          `qt.qt6.620.win64_mingw81 \\
+  qt.qt6.620.addons.qtcharts.win64_mingw81 \\
+  qt.qt6.620.qtquicktimeline.win64_mingw81 \\
+  ${tools_vcredist_expect.modules.sort().join(" \\\n  ")}`
+      );
+    });
+    it("should display command that installs qt, modules, and one tool in group", () => {
+      const variant = "qt.tools.vcredist_msvc2019_x86";
+      const selected_modules = [
+        "qt.qt6.620.addons.qtcharts.win64_mingw81",
+        "qt.qt6.620.qtquicktimeline.win64_mingw81",
+      ];
+      const state = apply(_makeState("mac", "desktop"), [
+        StateUtils.withInstallersVersionsToolsLoaded(
+          unifiedInstallers,
+          versions,
+          ["tools_vcredist"]
+        ),
+        StateUtils.withVersionLoadingArches(version),
+        StateUtils.withArchesLoaded(arches),
+        StateUtils.withArchLoadingModulesArchives(arch),
+        StateUtils.withModulesArchivesLoaded(modules, archives),
+        ...selected_modules.map((mod) => StateUtils.withModuleSet(mod, true)),
+        StateUtils.withNewTool(
+          ToolData.fromPackageUpdates("tools_vcredist", vcredist)
+        ),
+        StateUtils.withToolVariant("tools_vcredist", variant, true),
+      ]);
+      expect(state.toOfficialInstallCmd()).toEqual(
+        officialQtUnifiedPreamble(Host.mac) +
+          `qt.qt6.620.win64_mingw81 \\
+  qt.qt6.620.addons.qtcharts.win64_mingw81 \\
+  qt.qt6.620.qtquicktimeline.win64_mingw81 \\
+  ${variant}`
+      );
     });
   });
 });

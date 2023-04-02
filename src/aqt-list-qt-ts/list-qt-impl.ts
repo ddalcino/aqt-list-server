@@ -1,10 +1,13 @@
 import {
   Directory,
   Host,
+  hostToStr,
+  OnlineInstallers,
   PackageUpdate,
   RawPackageUpdates,
   Target,
   to_package_updates,
+  UnifiedInstallers,
 } from "../lib/types";
 import semver, { SemVer } from "semver";
 import Config from "../config.json";
@@ -55,7 +58,7 @@ export const to_versions = (directory: Directory): string[][] => {
   }, initial).stratified;
 };
 
-const version_nodot = (version: SemVer): string =>
+export const version_nodot = (version: SemVer): string =>
   version.compare("5.9.0") === 0
     ? `${version.major}${version.minor}`
     : `${version.major}${version.minor}${version.patch}`;
@@ -221,3 +224,14 @@ export const to_tools_updates_json = ([host, target, tool_name]: [
   Target,
   string
 ]): string => `${to_url([host, target])}/${tool_name}.json`;
+
+export const official_releases_url = `${BASE_URL}/official_releases.json`;
+
+export const to_unified_installers = (
+  o: OnlineInstallers,
+  _: void
+): UnifiedInstallers => {
+  const keys = Object.entries(o["online_installers/"]).map(([key, _]) => key);
+  return (host: Host): string =>
+    keys.find((key) => key.includes(hostToStr(host))) || "";
+};

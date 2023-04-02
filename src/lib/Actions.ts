@@ -1,5 +1,5 @@
 import { State, ToolData, StateUtils as S } from "../State";
-import { Host, PackageUpdate, Target } from "./types";
+import { Host, PackageUpdate, Target, UnifiedInstallers } from "./types";
 
 export const enum ActionT {
   chooseHost,
@@ -32,11 +32,12 @@ export const setTarget = (target: Target): Action => ({
 });
 
 export const loadedVersionsTools = (
+  installers: UnifiedInstallers,
   versions: string[][],
   tools: string[]
 ): Action => ({
   type: ActionT.loadedVersionsTools,
-  reduce: S.withVersionsToolsLoaded(versions, tools),
+  reduce: S.withInstallersVersionsToolsLoaded(installers, versions, tools),
 });
 
 export const setVersion = (version: string): Action => ({

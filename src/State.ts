@@ -1,22 +1,25 @@
 // import _ from 'lodash';
 
-import { hosts, get_host_target_targets } from "./lib/utils";
+import { get_host_target_targets, hosts } from "./lib/utils";
 import _ from "lodash";
 import {
   Host,
-  Target,
-  SelectableElement,
   hostFromStr,
-  targetFromStr,
-  hostToStr,
-  targetToStr,
   HostString,
-  TargetString,
+  hostToStr,
   PackageUpdate,
-  seToolInstallName,
+  SelectableElement,
   seModuleInstallName,
+  seToolInstallName,
+  Target,
+  targetFromStr,
+  TargetString,
+  targetToStr,
+  UnifiedInstallers,
 } from "./lib/types";
 import Config from "./config.json";
+import { version_nodot } from "./aqt-list-qt-ts/list-qt-impl";
+import { SemVer } from "semver";
 
 export const enum SelectValue {
   NotLoaded,
@@ -184,6 +187,12 @@ export class SelectMany {
       .map(([name, el]) => seModuleInstallName(el) || name);
   }
 
+  optionKeysTurnedOn(): Array<string> {
+    return [...this.selections.entries()]
+      .filter(([, el]) => el.selected)
+      .map(([key, _]) => key);
+  }
+
   copy(): SelectMany {
     return new SelectMany(this.state.copy(), new Map(this.selections));
   }
@@ -289,6 +298,12 @@ export class ToolData {
     );
   }
 
+  selectedVariants(): string[] {
+    return [...this.variants.entries()]
+      .filter(([_, variant]) => variant.selected)
+      .map(([key, _]) => key);
+  }
+
   installCmd(host: string, target: string): string {
     if (
       [...this.variants.values()].every(
@@ -372,6 +387,7 @@ export class ToolSelector {
 
 export class State {
   constructor(
+    public unifiedInstallers: UnifiedInstallers,
     public host: SelectOne,
     public target: SelectOne,
     public toolNames: SelectNone, // = new SelectNone(SelectValue.NotLoaded),
@@ -392,6 +408,7 @@ export class State {
 
   copy(): State {
     return new State(
+      this.unifiedInstallers,
       this.host.copy(),
       this.target.copy(),
       this.toolNames.copy(),
@@ -467,6 +484,41 @@ export class State {
     )} ${version} ${arch}${modulesFlag}${archivesFlag}${toolsLines}`;
   }
 
+  toOfficialInstallCmd(): string {
+    const { host, version, arch } = this.values();
+    const between_lines = " \\\n  ";
+    const installer_bin = this.unifiedInstallers(host);
+    const curl_cmd = `curl -O https://download.qt.io/official_releases/online_installers/${installer_bin}`;
+    const tools = [...this.selectedTools.values()].flatMap(
+      (toolData: ToolData) => toolData.selectedVariants()
+    );
+    if (tools.length === 0) {
+      if (!this.version.selected.state.hasSelection()) {
+        return "Please select a Qt version or a tool.";
+      } else if (!this.arch.selected.state.hasSelection()) {
+        return "Please select a Qt architecture or a tool.";
+      }
+    }
+    const arch_modules = ((): string[] => {
+      if (!this.version.selected.state.hasSelection()) {
+        return [];
+      }
+      const ver = new SemVer(version);
+      return [`qt.qt${ver.major}.${version_nodot(ver)}.${arch}`];
+    })();
+    const modules = [
+      ...arch_modules,
+      ...this.modules.optionKeysTurnedOn(),
+      ...tools,
+    ];
+    return `${curl_cmd}
+./${installer_bin} \\
+  --accept-licenses \\
+  --default-answer \\
+  --confirm-command install \\
+  ${modules.join(between_lines)}`;
+  }
+
   toInstallQtAction(): string {
     const installQtActionVersion = parseInt(
       this.installActionVersion.selected.value
@@ -535,6 +587,7 @@ export const StateUtils = {
     (newHost: Host) =>
     (state: State): State =>
       makeState(
+        state.unifiedInstallers,
         newHost,
         targetFromStr(state.target.selected.value as TargetString)
       ),
@@ -543,11 +596,13 @@ export const StateUtils = {
     (newTarget: Target) =>
     (state: State): State =>
       makeState(
+        state.unifiedInstallers,
         hostFromStr(state.host.selected.value as HostString),
         newTarget
       ),
 
-  withVersionsToolsLoaded: (
+  withInstallersVersionsToolsLoaded: (
+    unifiedInstallers: UnifiedInstallers,
     versions: string[][],
     tools: string[]
   ): StateReducer => {
@@ -557,6 +612,7 @@ export const StateUtils = {
       tools.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
     return (state: State): State =>
       new State(
+        unifiedInstallers,
         state.host.copy(),
         state.target.copy(),
         new SelectNone(toolsState, tools),
@@ -569,7 +625,8 @@ export const StateUtils = {
     (newVersion: string) =>
     (state: State): State => {
       if (newVersion === NO_SELECTION) {
-        return StateUtils.withVersionsToolsLoaded(
+        return StateUtils.withInstallersVersionsToolsLoaded(
+          state.unifiedInstallers,
           [...state.version.versions],
           [...state.toolNames.options]
         )(state);
@@ -703,9 +760,14 @@ export const StateUtils = {
     },
 };
 
-export const makeState = (host?: Host, target?: Target): State => {
+export const makeState = (
+  installers: UnifiedInstallers,
+  host?: Host,
+  target?: Target
+): State => {
   const [_host, _target, _targets] = get_host_target_targets(host, target);
   return new State(
+    installers,
     new SelectOne(
       new Selection(hostToStr(_host), SelectValue.Selected),
       hosts.map(hostToStr),

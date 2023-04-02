@@ -7,6 +7,7 @@ import {
   to_tools,
   to_directory,
   to_versions,
+  to_unified_installers,
 } from "./list-qt-impl";
 import { Host, PackageUpdate, RawPackageUpdates, Target } from "../lib/types";
 import win_desktop_directory from "./test_data/windows-desktop-directory.json";
@@ -17,6 +18,7 @@ import win_59_json from "./test_data/windows-59-update.json";
 import expect_win_59 from "./test_data/windows-59-expect.json";
 import win_desktop_vcredist_json from "./test_data/windows-desktop-tools_vcredist-update.json";
 import expect_vcredist from "./test_data/windows-desktop-tools_vcredist-expect.json";
+import official_releases from "./test_data/official_releases.json";
 import Config from "../config.json";
 import { SemVer } from "semver";
 import { toHumanReadableSize } from "../lib/utils";
@@ -220,6 +222,21 @@ describe("constructs url for Updates.json", () => {
       expect(actual).toEqual(
         `${BASE_URL}/windows/desktop/${expected_folder}.json`
       );
+    }
+  );
+});
+
+describe("to_unified_installers", () => {
+  it.each`
+    host            | installer
+    ${Host.mac}     | ${"qt-unified-mac-x64-online.dmg"}
+    ${Host.linux}   | ${"qt-unified-linux-x64-online.run"}
+    ${Host.windows} | ${"qt-unified-windows-x64-online.exe"}
+  `(
+    `should return the $installer installer`,
+    ({ host, installer }: { host: Host; installer: string }) => {
+      const actual = to_unified_installers(official_releases);
+      expect(actual(host)).toEqual(installer);
     }
   );
 });

@@ -1,9 +1,11 @@
 import {
   Directory,
   Host,
+  OnlineInstallers,
   PackageUpdate,
   RawPackageUpdates,
   Target,
+  UnifiedInstallers,
 } from "../lib/types";
 import { SemVer } from "semver";
 import {
@@ -17,6 +19,8 @@ import {
   to_tools_updates_json,
   to_versions,
   to_updates_urls,
+  official_releases_url,
+  to_unified_installers,
 } from "./list-qt-impl";
 import Result from "../lib/Result";
 
@@ -134,4 +138,10 @@ export const fetch_tool_variants = (
   generic_fetch_data<PackageUpdate[], void, RawPackageUpdates>(
     to_tools_updates_json([host, target, tool_name]),
     to_tool_variants
+  )().then((result) => result.unwrap());
+
+export const fetch_online_installers = (): Promise<UnifiedInstallers> =>
+  generic_fetch_data<UnifiedInstallers, void, OnlineInstallers>(
+    official_releases_url,
+    to_unified_installers
   )().then((result) => result.unwrap());
