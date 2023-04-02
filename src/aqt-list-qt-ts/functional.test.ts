@@ -34,7 +34,7 @@ const get_versions = async (
     )
   ).stdout.trim();
   if (stdout.length === 0) return [];
-  return stdout.split("\n").map((line: string) => line.split(/\s+/));
+  return stdout.split(/\r?\n/).map((line: string) => line.split(/\s+/));
 };
 
 const get_aqt_output = async (args: string[]): Promise<string[]> => {
@@ -42,7 +42,7 @@ const get_aqt_output = async (args: string[]): Promise<string[]> => {
     await exec_promise(`python -m aqt ${args.join(" ")}`)
   ).stdout.trim();
   if (stdout.length === 0) return [];
-  return stdout.split(" ");
+  return stdout.split(/\s+/);
 };
 
 describe("list-qt.ts", () => {
@@ -60,16 +60,13 @@ describe("list-qt.ts", () => {
         target
       )}`, async () => {
         const actual = await fetch_tools(host, target);
-        const expected = (
-          await get_aqt_output([
-            "list-tool",
-            hostToStr(host),
-            targetToStr(target),
-          ])
-        )[0]
-          .split("\n")
-          .filter((s: string) => !s.includes("preview"))
-          .sort();
+        const expected = await get_aqt_output([
+          "list-tool",
+          hostToStr(host),
+          targetToStr(target),
+        ])
+          .then((x) => x.filter((s: string) => !s.includes("preview")))
+          .then((x) => x.sort());
         expect(actual).toEqual(expected);
       });
     })

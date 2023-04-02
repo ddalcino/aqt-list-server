@@ -119,3 +119,6 @@ export enum Target {
 export type TargetString = keyof typeof Target;
 export const targetToStr = (t: Target): string => Target[t];
 export const targetFromStr = (t: keyof typeof Target): Target => Target[t];
+
+export type OnlineInstallers = { "online_installers/": object };
+export type UnifiedInstallers = (host: Host) => string;
