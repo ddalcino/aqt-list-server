@@ -51,10 +51,10 @@ export const fetch_versions = (
   host: Host,
   target: Target
 ): Promise<string[][]> =>
-  generic_fetch_data<string[][], [], Directory>(
+  generic_fetch_data<string[][], void, Directory>(
     to_directory([host, target]),
     to_versions
-  )([]).then((result) => result.unwrap());
+  )().then((result) => result.unwrap());
 
 export const fetch_arches = async (
   host: Host,
@@ -121,17 +121,17 @@ export const fetch_archives = async (
 };
 
 export const fetch_tools = (host: Host, target: Target): Promise<string[]> =>
-  generic_fetch_data<string[], [], Directory>(
+  generic_fetch_data<string[], void, Directory>(
     to_directory([host, target]),
     to_tools
-  )([]).then((result) => result.unwrap());
+  )().then((result) => result.unwrap());
 
 export const fetch_tool_variants = (
   host: Host,
   target: Target,
   tool_name: string
 ): Promise<PackageUpdate[]> =>
-  generic_fetch_data<PackageUpdate[], [], RawPackageUpdates>(
+  generic_fetch_data<PackageUpdate[], void, RawPackageUpdates>(
     to_tools_updates_json([host, target, tool_name]),
     to_tool_variants
-  )([]).then((result) => result.unwrap());
+  )().then((result) => result.unwrap());
