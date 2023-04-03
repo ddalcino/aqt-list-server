@@ -142,20 +142,6 @@ const App = (): JSX.Element => {
         }
       />
       <CommandPanel
-        id="official-command"
-        label={
-          <span>
-            Your{" "}
-            <a href="https://doc.qt.io/qtinstallerframework/ifw-use-cases-cli.html">
-              official qt install
-            </a>{" "}
-            command:
-          </span>
-        }
-        command={state.toOfficialInstallCmd()}
-        isDisabled={!state.hasOutputs()}
-      />
-      <CommandPanel
         id="aqt-command"
         label={
           <span>
@@ -189,6 +175,21 @@ const App = (): JSX.Element => {
           </span>
         }
         command={state.toInstallQtAction()}
+        isDisabled={!state.hasOutputs()}
+      />
+      <CommandPanel
+        id="official-command"
+        label={
+          <span>
+            Your{" "}
+            <a href="https://doc.qt.io/qtinstallerframework/ifw-use-cases-cli.html">
+              official qt install
+            </a>{" "}
+            command: (Please note that this command will require patience
+            and CLI option wrangling to get it to work unattended)
+          </span>
+        }
+        command={state.toOfficialInstallCmd()}
         isDisabled={!state.hasOutputs()}
       />
     </div>
