@@ -185,8 +185,8 @@ const App = (): JSX.Element => {
             <a href="https://doc.qt.io/qtinstallerframework/ifw-use-cases-cli.html">
               official qt install
             </a>{" "}
-            command: (Please note that this command will require patience
-            and CLI option wrangling to get it to work unattended)
+            command: (Please note that this command will require patience and
+            CLI option wrangling to get it to work unattended)
           </span>
         }
         command={state.toOfficialInstallCmd()}
