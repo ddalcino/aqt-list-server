@@ -225,7 +225,6 @@ describe("toInstallQtAction", () => {
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        py7zrversion: '>=0.20.2'
         version: '6.2.0'
         host: 'windows'
         target: 'desktop'
@@ -249,7 +248,6 @@ describe("toInstallQtAction", () => {
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        py7zrversion: '>=0.20.2'
         host: 'windows'
         target: 'desktop'
         toolsOnly: 'true'
@@ -275,7 +273,6 @@ describe("toInstallQtAction", () => {
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        py7zrversion: '>=0.20.2'
         host: 'windows'
         target: 'desktop'
         toolsOnly: 'true'
@@ -294,7 +291,6 @@ describe("toInstallQtAction", () => {
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        py7zrversion: '>=0.20.2'
         version: '6.2.0'
         host: 'windows'
         target: 'desktop'
