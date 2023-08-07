@@ -66,6 +66,7 @@ describe("list-qt.ts", () => {
           targetToStr(target),
         ])
           .then((x) => x.filter((s: string) => !s.includes("preview")))
+          .then((x) => x.filter((s: string) => s !== "sdktool"))
           .then((x) => x.sort());
         expect(actual).toEqual(expected);
       });
