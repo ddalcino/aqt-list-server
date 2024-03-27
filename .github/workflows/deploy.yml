@@ -30,10 +30,12 @@ jobs:
       - name: Install aqtinstall - requirement for functional tests
         run: pip install aqtinstall==3.1.*
       - name: yarn install, build and test
+        env:
+          SKIP_FUNCTIONAL: "${{ github.ref == 'refs/heads/main' && github.actor == github.repository_owner && '--testPathIgnorePatterns=aqt-list-qt-ts/functional.test.ts' || '' }}"
         run: |
           yarn install --immutable --immutable-cache --check-cache
           yarn run build --if-present
-          yarn test --coverage
+          yarn test --coverage ${SKIP_FUNCTIONAL}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         env:
