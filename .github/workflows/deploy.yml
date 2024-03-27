@@ -36,6 +36,8 @@ jobs:
           yarn test --coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: deploy to gh-pages
         if: github.ref == 'refs/heads/main' && github.actor == github.repository_owner
         uses: peaceiris/actions-gh-pages@v3
