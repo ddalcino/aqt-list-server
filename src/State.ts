@@ -489,6 +489,9 @@ export class State {
     const between_lines = " \\\n  ";
     const installer_bin = this.unifiedInstallers(host);
     const curl_cmd = `curl -L -J -O https://download.qt.io/official_releases/online_installers/${installer_bin}`;
+    const chmod_cmd = `chmod u+x ${installer_bin}`;
+    const get_installer_cmd =
+      host === Host.windows ? curl_cmd : `${curl_cmd} && \\\n${chmod_cmd}`;
     const tools = [...this.selectedTools.values()].flatMap(
       (toolData: ToolData) => toolData.selectedVariants()
     );
@@ -511,7 +514,7 @@ export class State {
       ...this.modules.optionKeysTurnedOn(),
       ...tools,
     ];
-    return `${curl_cmd}
+    return `${get_installer_cmd} && \\
 ./${installer_bin} \\
   --accept-licenses \\
   --default-answer \\
