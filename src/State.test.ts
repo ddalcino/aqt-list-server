@@ -311,8 +311,9 @@ const unifiedInstallers = (host: Host) => {
 
 const officialQtUnifiedPreamble = (host: Host) => {
   const installer = unifiedInstallers(host);
-  return `curl -L -J -O https://download.qt.io/official_releases/online_installers/${installer}
-./${installer} \\
+  const chmod_line = host === Host.windows ? "" : `chmod u+x ${installer} && \\\n`
+  return `curl -L -J -O https://download.qt.io/official_releases/online_installers/${installer} && \\
+${chmod_line}./${installer} \\
   --accept-licenses \\
   --default-answer \\
   --confirm-command install \\
