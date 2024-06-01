@@ -311,7 +311,7 @@ const unifiedInstallers = (host: Host) => {
 
 const officialQtUnifiedPreamble = (host: Host) => {
   const installer = unifiedInstallers(host);
-  return `curl -O https://download.qt.io/official_releases/online_installers/${installer}
+  return `curl -L -J -O https://download.qt.io/official_releases/online_installers/${installer}
 ./${installer} \\
   --accept-licenses \\
   --default-answer \\

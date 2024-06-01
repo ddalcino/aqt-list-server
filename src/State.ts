@@ -488,7 +488,7 @@ export class State {
     const { host, version, arch } = this.values();
     const between_lines = " \\\n  ";
     const installer_bin = this.unifiedInstallers(host);
-    const curl_cmd = `curl -O https://download.qt.io/official_releases/online_installers/${installer_bin}`;
+    const curl_cmd = `curl -L -J -O https://download.qt.io/official_releases/online_installers/${installer_bin}`;
     const tools = [...this.selectedTools.values()].flatMap(
       (toolData: ToolData) => toolData.selectedVariants()
     );
