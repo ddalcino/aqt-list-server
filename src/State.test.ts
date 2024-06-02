@@ -331,6 +331,29 @@ const officialQtUnifiedPreamble = (host: Host) => {
   `;
 };
 
+describe("isWindows", () => {
+  it.each`
+    host         | isWindows
+    ${"windows"} | ${true}
+    ${"mac"}     | ${false}
+    ${"linux"}   | ${false}
+  `(
+    "on $host, isWindows() should return $isWindows",
+    ({
+       host,
+       isWindows,
+     }: {
+      host: "windows" | "mac" | "linux";
+      isWindows: boolean;
+    }) => {
+      const state = _makeState(host, "desktop");
+      expect(state.host.selected.value).toEqual(host);
+      expect(state.isWindows()).toEqual(isWindows);
+    }
+  );
+
+});
+
 describe("toOfficialInstallCmd", () => {
   describe("with no qt or tools selected", () => {
     it("should display valid yml", () => {
