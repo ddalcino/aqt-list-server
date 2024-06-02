@@ -597,7 +597,6 @@ export class State {
   }
 
   isWindows() {
-    console.log(this.host.selected.value);
     return this.host.selected.value === "windows";
   }
 }
