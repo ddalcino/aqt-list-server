@@ -315,7 +315,7 @@ const officialQtUnifiedPreamble = (host: Host) => {
     return `Invoke-WebRequest \`
   -OutFile 'qt-unified-windows-x64-online.exe' \`
   'https://download.qt.io/official_releases/online_installers/qt-unified-windows-x64-online.exe'
-./qt-unified-windows-x64-online.exe \`
+.\\qt-unified-windows-x64-online.exe \`
   --accept-licenses \`
   --default-answer \`
   --confirm-command install \`
