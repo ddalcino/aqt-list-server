@@ -185,7 +185,7 @@ const App = (): JSX.Element => {
             <a href="https://doc.qt.io/qtinstallerframework/ifw-use-cases-cli.html">
               official qt install
             </a>{" "}
-            {state.is_windows() ? "powershell" : "bash"} command: (Please note
+            {state.isWindows() ? "powershell" : "bash"} command: (Please note
             that this command will require patience and CLI option wrangling to
             get it to work unattended)
           </span>
