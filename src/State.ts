@@ -595,6 +595,11 @@ export class State {
       postscript
     );
   }
+
+  is_windows() {
+    console.log(this.host.selected.value);
+    return this.host.selected.value === "windows";
+  }
 }
 
 export type StateReducer = (state: State) => State;
