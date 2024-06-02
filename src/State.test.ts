@@ -311,9 +311,20 @@ const unifiedInstallers = (host: Host) => {
 
 const officialQtUnifiedPreamble = (host: Host) => {
   const installer = unifiedInstallers(host);
-  const chmod_line = host === Host.windows ? "" : `chmod u+x ${installer} && \\\n`
-  return `curl -L -J -O https://download.qt.io/official_releases/online_installers/${installer} && \\
-${chmod_line}./${installer} \\
+  if (host == Host.windows) {
+    return `Invoke-WebRequest \`
+  -OutFile 'qt-unified-windows-x64-online.exe' \`
+  'https://download.qt.io/official_releases/online_installers/qt-unified-windows-x64-online.exe'
+./qt-unified-windows-x64-online.exe \`
+  --accept-licenses \`
+  --default-answer \`
+  --confirm-command install \`
+  `;
+  }
+  const chmod_line = `chmod u+x ${installer} && \\\n`;
+  return `curl -L -O https://download.qt.io/official_releases/online_installers/${installer} && \\
+  chmod u+x ${installer}
+./${installer} \\
   --accept-licenses \\
   --default-answer \\
   --confirm-command install \\
@@ -352,8 +363,8 @@ describe("toOfficialInstallCmd", () => {
       );
       expect(state.toOfficialInstallCmd()).toEqual(
         officialQtUnifiedPreamble(Host.windows) +
-          `qt.qt6.620.win64_mingw81 \\
-  qt.qt6.620.addons.qtcharts.win64_mingw81 \\
+          `qt.qt6.620.win64_mingw81 \`
+  qt.qt6.620.addons.qtcharts.win64_mingw81 \`
   qt.qt6.620.qtquicktimeline.win64_mingw81`
       );
     });
@@ -374,7 +385,7 @@ describe("toOfficialInstallCmd", () => {
       ]);
       expect(state.toOfficialInstallCmd()).toEqual(
         officialQtUnifiedPreamble(Host.windows) +
-          tools_vcredist_expect.modules.sort().join(" \\\n  ")
+          tools_vcredist_expect.modules.sort().join(" `\n  ")
       );
     });
     it("should properly select one tool", () => {
@@ -410,10 +421,10 @@ describe("toOfficialInstallCmd", () => {
       ]);
       expect(state.toOfficialInstallCmd()).toEqual(
         officialQtUnifiedPreamble(Host.windows) +
-          `qt.qt6.620.win64_mingw81 \\
-  qt.qt6.620.addons.qtcharts.win64_mingw81 \\
-  qt.qt6.620.qtquicktimeline.win64_mingw81 \\
-  ${tools_vcredist_expect.modules.sort().join(" \\\n  ")}`
+          `qt.qt6.620.win64_mingw81 \`
+  qt.qt6.620.addons.qtcharts.win64_mingw81 \`
+  qt.qt6.620.qtquicktimeline.win64_mingw81 \`
+  ${tools_vcredist_expect.modules.sort().join(" `\n  ")}`
       );
     });
     it("should display command that installs qt, modules, and one tool in group", () => {

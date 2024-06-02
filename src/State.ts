@@ -486,12 +486,23 @@ export class State {
 
   toOfficialInstallCmd(): string {
     const { host, version, arch } = this.values();
-    const between_lines = " \\\n  ";
+    const multiline_cmd = (lines: string[]) =>
+      lines.join(host === Host.windows ? " `\n  " : " \\\n  ");
     const installer_bin = this.unifiedInstallers(host);
-    const curl_cmd = `curl -L -J -O https://download.qt.io/official_releases/online_installers/${installer_bin}`;
-    const chmod_cmd = `chmod u+x ${installer_bin}`;
-    const get_installer_cmd =
-      host === Host.windows ? curl_cmd : `${curl_cmd} && \\\n${chmod_cmd}`;
+    const get_installer_cmd = (() => {
+      if (host === Host.windows) {
+        return multiline_cmd([
+          "Invoke-WebRequest",
+          `-OutFile '${installer_bin}'`,
+          `'https://download.qt.io/official_releases/online_installers/${installer_bin}'`,
+        ]);
+      } else {
+        return multiline_cmd([
+          `curl -L -O https://download.qt.io/official_releases/online_installers/${installer_bin} &&`,
+          `chmod u+x ${installer_bin}`,
+        ]);
+      }
+    })();
     const tools = [...this.selectedTools.values()].flatMap(
       (toolData: ToolData) => toolData.selectedVariants()
     );
@@ -514,12 +525,14 @@ export class State {
       ...this.modules.optionKeysTurnedOn(),
       ...tools,
     ];
-    return `${get_installer_cmd} && \\
-./${installer_bin} \\
-  --accept-licenses \\
-  --default-answer \\
-  --confirm-command install \\
-  ${modules.join(between_lines)}`;
+    const install_cmd = multiline_cmd([
+      `.${host === Host.windows ? "\\" : "/"}${installer_bin}`,
+      "--accept-licenses",
+      "--default-answer",
+      "--confirm-command install",
+      ...modules,
+    ]);
+    return [get_installer_cmd, install_cmd].join("\n");
   }
 
   toInstallQtAction(): string {
