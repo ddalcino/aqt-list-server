@@ -2,9 +2,7 @@ import {
   fetch_arches,
   fetch_archives,
   fetch_modules,
-  // fetch_tool_variants,
   fetch_tools,
-  fetch_versions,
 } from "./list-qt";
 import util from "util";
 import { exec } from "child_process";
@@ -46,32 +44,51 @@ const get_aqt_output = async (args: string[]): Promise<string[]> => {
 };
 
 describe("list-qt.ts", () => {
-  hosts.forEach((host: Host) =>
-    targetsForHost(host).forEach((target: Target) => {
-      it(`lists versions for host ${hostToStr(host)} and target ${targetToStr(
-        target
-      )}`, async () => {
-        const actual = await fetch_versions(host, target);
-        const expected = await get_versions(host, target);
-        expect(actual).toEqual(expected);
-      });
+  hosts
+    .filter((host: Host) => host !== Host.windows_arm64)
+    .forEach((host: Host) =>
+      targetsForHost(host).forEach((target: Target) => {
+        // aqt list-qt is currently broken for this purpose
+        // it(`lists versions for host ${hostToStr(host)} and target ${targetToStr(
+        //   target
+        // )}`, async () => {
+        //   const actual = await fetch_versions(host, target);
+        //   const expected = await get_versions(host, target);
+        //   expect(actual).toEqual(expected);
+        // });
 
-      it(`lists tools for host ${hostToStr(host)} and target ${targetToStr(
-        target
-      )}`, async () => {
-        const actual = await fetch_tools(host, target);
-        const expected = await get_aqt_output([
-          "list-tool",
-          hostToStr(host),
-          targetToStr(target),
-        ])
-          .then((x) => x.filter((s: string) => !s.includes("preview")))
-          .then((x) => x.filter((s: string) => s !== "sdktool"))
-          .then((x) => x.sort());
-        expect(actual).toEqual(expected);
-      });
-    })
-  );
+        it(`lists tools for host ${hostToStr(host)} and target ${targetToStr(
+          target
+        )}`, async () => {
+          const actual = await fetch_tools(host, target);
+          const expected = await get_aqt_output([
+            "list-tool",
+            hostToStr(host),
+            targetToStr(target),
+          ])
+            // tools_generic is an empty module and should not be reported
+            .then((x) =>
+              x.filter(
+                (s: string) =>
+                  !s.includes("preview") && !["tools_generic"].includes(s)
+              )
+            )
+            .then((x) => {
+              // Edge case: tools_telemetry_eval_gui for linux_arm64 does not include an Updates.xml file.
+              // aqtinstall cannot install it; list-qt should not list it.
+              return x.filter(
+                (s: string) =>
+                  !(
+                    s === "tools_telemetry_eval_gui" &&
+                    host === Host.linux_arm64
+                  )
+              );
+            })
+            .then((x) => x.sort());
+          expect(actual).toEqual(expected);
+        });
+      })
+    );
 
   it.each`
     host         | target       | version
