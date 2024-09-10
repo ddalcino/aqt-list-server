@@ -340,9 +340,9 @@ describe("isWindows", () => {
   `(
     "on $host, isWindows() should return $isWindows",
     ({
-       host,
-       isWindows,
-     }: {
+      host,
+      isWindows,
+    }: {
       host: "windows" | "mac" | "linux";
       isWindows: boolean;
     }) => {
@@ -351,7 +351,6 @@ describe("isWindows", () => {
       expect(state.isWindows()).toEqual(isWindows);
     }
   );
-
 });
 
 describe("toOfficialInstallCmd", () => {
