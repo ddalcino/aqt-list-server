@@ -169,6 +169,9 @@ const updates_url = (
 ): string => {
   const ver_nodot = `qt${version.major}_${version_nodot(version)}`;
   const _ext = ext ? `_${ext}` : "";
+  if (should_override_host_all_os(target, version)) {
+    host = Host.all_os;
+  }
   const folder =
     version.compare(new SemVer("6.8.0")) >= 0 ? `${ver_nodot}/` : "";
   return `${to_url([host, target])}/${folder}${ver_nodot}${_ext}.json`;
@@ -195,6 +198,9 @@ const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
   }
 };
 
+const should_override_host_all_os = (target: Target, version: SemVer) =>
+  target == Target.android && version.compare(new SemVer("6.7.0")) >= 0;
+
 export const to_updates_urls_by_arch =
   (arch: string) =>
   (args: [Host, Target, SemVer]): string =>
@@ -206,6 +212,9 @@ export const to_updates_urls = (
   version: SemVer
 ): string[] => {
   const args: [Host, Target, SemVer] = [host, target, version];
+  if (should_override_host_all_os(target, version)) {
+    args[0] = Host.all_os;
+  }
   const extensions: string[] = ((): string[] => {
     if (target === Target.android && version.major >= 6) {
       return ["arm64_v8a", "armv7", "x86", "x86_64"];
