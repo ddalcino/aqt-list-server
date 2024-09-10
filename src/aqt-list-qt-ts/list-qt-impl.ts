@@ -169,7 +169,9 @@ const updates_url = (
 ): string => {
   const ver_nodot = `qt${version.major}_${version_nodot(version)}`;
   const _ext = ext ? `_${ext}` : "";
-  return `${to_url([host, target])}/${ver_nodot}${_ext}.json`;
+  const folder =
+    version.compare(new SemVer("6.8.0")) >= 0 ? `${ver_nodot}/` : "";
+  return `${to_url([host, target])}/${folder}${ver_nodot}${_ext}.json`;
 };
 
 const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
