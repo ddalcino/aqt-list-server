@@ -13,6 +13,7 @@ import semver, { SemVer } from "semver";
 import Config from "../config.json";
 
 const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;
+const HARDCODED_ALLOWED_TOOLS = ["sdktool"];
 
 export const to_versions = (directory: Directory): string[][] => {
   const should_include_folder = (name: string): boolean =>
@@ -143,11 +144,13 @@ export const to_archives = (
   return flattenMaps(maps);
 };
 
-export const to_tools = (directory: Directory): string[] => {
-  return directory.tools
-    .filter((href: string) => href.startsWith("tools_"))
+export const to_tools = (directory: Directory): string[] =>
+  directory.tools
+    .filter(
+      (href: string) =>
+        href.startsWith("tools_") || HARDCODED_ALLOWED_TOOLS.includes(href)
+    )
     .map((href: string) => (href.endsWith("/") ? href.slice(0, -1) : href));
-};
 
 export const to_tool_variants = (
   updates: RawPackageUpdates
