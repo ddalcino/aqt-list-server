@@ -9,18 +9,18 @@ import {
 } from "../lib/types";
 import { SemVer } from "semver";
 import {
+  official_releases_url,
   to_arches,
   to_archives,
   to_directory,
   to_modules,
-  to_updates_urls_by_arch,
   to_tool_variants,
   to_tools,
   to_tools_updates_json,
-  to_versions,
-  to_updates_urls,
-  official_releases_url,
   to_unified_installers,
+  to_updates_urls,
+  to_updates_urls_by_arch,
+  to_versions,
 } from "./list-qt-impl";
 import Result from "../lib/Result";
 
