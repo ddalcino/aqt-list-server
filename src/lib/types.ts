@@ -103,8 +103,11 @@ export type Directory = { qt: string[]; tools: string[] };
 
 export enum Host {
   windows,
+  windows_arm64,
   mac,
   linux,
+  linux_arm64,
+  all_os,
 }
 export type HostString = keyof typeof Host;
 export const hostToStr = (h: Host): string => Host[h];
