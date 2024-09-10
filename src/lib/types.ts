@@ -22,12 +22,15 @@ export interface SelectableElement {
 export const seToolInstallName = (se: SelectableElement): string | null =>
   se.pkg === null ? null : se.pkg.Name;
 
+const installableModuleRegex = /^qt\.qt\d\.\d+(\.addons)?\.(.+)\.[^.]+$/;
+export const packageNameToModuleName = (name: string): string =>
+  name.replace(installableModuleRegex, "$2");
+
 export const seModuleInstallName = (se: SelectableElement): string | null => {
   if (se.pkg === null) {
     return null;
   }
-  const parts = se.pkg.Name.split(".");
-  return parts[parts.length - 2];
+  return packageNameToModuleName(se.pkg.Name);
 };
 
 export interface RawPackageUpdate {
