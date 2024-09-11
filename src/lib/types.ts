@@ -121,6 +121,7 @@ export enum Target {
   android,
   ios,
   winrt,
+  wasm,
 }
 export type TargetString = keyof typeof Target;
 export const targetToStr = (t: Target): string => Target[t];
