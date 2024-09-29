@@ -9,18 +9,18 @@ import {
 } from "../lib/types";
 import { SemVer } from "semver";
 import {
+  official_releases_url,
   to_arches,
   to_archives,
   to_directory,
   to_modules,
-  to_updates_urls_by_arch,
   to_tool_variants,
   to_tools,
   to_tools_updates_json,
-  to_versions,
-  to_updates_urls,
-  official_releases_url,
   to_unified_installers,
+  to_updates_urls,
+  to_updates_urls_by_arch,
+  to_versions,
 } from "./list-qt-impl";
 import Result from "../lib/Result";
 
@@ -51,14 +51,34 @@ const generic_fetch_data = <T, U, V>(
   };
 };
 
-export const fetch_versions = (
+export const fetch_versions = async (
   host: Host,
   target: Target
-): Promise<string[][]> =>
-  generic_fetch_data<string[][], void, Directory>(
+): Promise<string[][]> => {
+  const versions = await generic_fetch_data<string[][], void, Directory>(
     to_directory([host, target]),
     to_versions
   )().then((result) => result.unwrap());
+  if (target !== Target.android) {
+    return versions;
+  }
+  // If we have android target, we need to fetch from the all_os directory as well.
+  const all_os_versions = await generic_fetch_data<string[][], void, Directory>(
+    to_directory([Host.all_os, target]),
+    to_versions
+  )().then((result) => result.unwrap());
+
+  // Return versions (less than 6.7.0) and all_os_versions (greater or equal to 6.7.0)
+  const has_versions_gte_670 = (versions: string[]): boolean => {
+    if (versions.length === 0) return false;
+    return new SemVer(versions[0]).compare("6.7.0") >= 0;
+  };
+
+  return [
+    ...versions.filter((row: string[]) => !has_versions_gte_670(row)),
+    ...all_os_versions.filter((row: string[]) => has_versions_gte_670(row)),
+  ];
+};
 
 export const fetch_arches = async (
   host: Host,

@@ -13,6 +13,7 @@ import semver, { SemVer } from "semver";
 import Config from "../config.json";
 
 const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;
+const HARDCODED_ALLOWED_TOOLS = ["sdktool"];
 
 export const to_versions = (directory: Directory): string[][] => {
   const should_include_folder = (name: string): boolean =>
@@ -143,11 +144,13 @@ export const to_archives = (
   return flattenMaps(maps);
 };
 
-export const to_tools = (directory: Directory): string[] => {
-  return directory.tools
-    .filter((href: string) => href.startsWith("tools_"))
+export const to_tools = (directory: Directory): string[] =>
+  directory.tools
+    .filter(
+      (href: string) =>
+        href.startsWith("tools_") || HARDCODED_ALLOWED_TOOLS.includes(href)
+    )
     .map((href: string) => (href.endsWith("/") ? href.slice(0, -1) : href));
-};
 
 export const to_tool_variants = (
   updates: RawPackageUpdates
@@ -169,7 +172,12 @@ const updates_url = (
 ): string => {
   const ver_nodot = `qt${version.major}_${version_nodot(version)}`;
   const _ext = ext ? `_${ext}` : "";
-  return `${to_url([host, target])}/${ver_nodot}${_ext}.json`;
+  if (should_override_host_all_os(target, version)) {
+    host = Host.all_os;
+  }
+  const folder =
+    version.compare(new SemVer("6.8.0")) >= 0 ? `${ver_nodot}/` : "";
+  return `${to_url([host, target])}/${folder}${ver_nodot}${_ext}.json`;
 };
 
 const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
@@ -193,6 +201,9 @@ const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
   }
 };
 
+const should_override_host_all_os = (target: Target, version: SemVer) =>
+  target == Target.android && version.compare(new SemVer("6.7.0")) >= 0;
+
 export const to_updates_urls_by_arch =
   (arch: string) =>
   (args: [Host, Target, SemVer]): string =>
@@ -204,6 +215,9 @@ export const to_updates_urls = (
   version: SemVer
 ): string[] => {
   const args: [Host, Target, SemVer] = [host, target, version];
+  if (should_override_host_all_os(target, version)) {
+    args[0] = Host.all_os;
+  }
   const extensions: string[] = ((): string[] => {
     if (target === Target.android && version.major >= 6) {
       return ["arm64_v8a", "armv7", "x86", "x86_64"];

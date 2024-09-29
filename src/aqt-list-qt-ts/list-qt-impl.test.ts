@@ -194,14 +194,16 @@ describe("constructs url for Updates.json", () => {
     version      | arch                   | expected_folder
     ${"5.9.0"}   | ${"wasm_32"}           | ${"qt5_59_wasm"}
     ${"6.2.0"}   | ${"wasm_64"}           | ${"qt6_620_wasm"}
-    ${"6.29.0"}  | ${"wasm_128"}          | ${"qt6_6290_wasm"}
+    ${"6.6.0"}   | ${"wasm_128"}          | ${"qt6_660_wasm"}
     ${"5.12.11"} | ${"wasm_16"}           | ${"qt5_51211_wasm"}
     ${"5.9.0"}   | ${"mingw"}             | ${"qt5_59"}
     ${"6.2.0"}   | ${"mingw"}             | ${"qt6_620"}
-    ${"6.29.0"}  | ${"mingw"}             | ${"qt6_6290"}
+    ${"6.7.0"}   | ${"mingw"}             | ${"qt6_670"}
+    ${"6.8.0"}   | ${"mingw"}             | ${"qt6_680/qt6_680"}
     ${"5.12.11"} | ${"mingw"}             | ${"qt5_51211"}
-    ${"6.29.0"}  | ${"wasm_singlethread"} | ${"qt6_6290_wasm_singlethread"}
-    ${"6.29.0"}  | ${"wasm_multithread"}  | ${"qt6_6290_wasm_multithread"}
+    ${"6.7.0"}   | ${"wasm_singlethread"} | ${"qt6_670_wasm_singlethread"}
+    ${"6.7.0"}   | ${"wasm_multithread"}  | ${"qt6_670_wasm_multithread"}
+    ${"6.8.0"}   | ${"wasm_multithread"}  | ${"qt6_680/qt6_680_wasm_multithread"}
   `(
     `should return url when version is $version, arch is $arch`,
     ({

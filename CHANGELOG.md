@@ -2,13 +2,28 @@
 
 ## Unreleased
 
+### Housekeeping
+* Update changelog (forgot to do this before release 0.1.2)
+
+## v0.1.2
+
 ### Bug fixes
 * Show the new architectures `wasm_singlethread` and `wasm_multithread` for Qt 6.5.0,
   to bring the output in-line with what `aqtinstall` v3.1.2 can actually install (#15)
+* Dependency updates (thanks @dependabot!) (#22, #23, #24, #27, #28, #29, #30, #31, #32, #35, #39, #47)
+* Updates for functional/integration tests (#25, #49)
+* Fix display of:
+  * Qt 6.8.0
+  * Android versions of Qt >= 6.7.0
+  * Module names for Qt >= 6.7.0
 
 ### Features
 * Add CLI commands for official Qt installers (#20)
 * Add Changelog (#16)
+* Add configurable settings for recommending a py7zr version (#19, #21)
+* Add CLI commands for official installers (#20, #41)
+* Show `sdktool` in list of supported tools
+* Add arm64 hosts for Windows and Linux
 
 ## v0.1.1
 
