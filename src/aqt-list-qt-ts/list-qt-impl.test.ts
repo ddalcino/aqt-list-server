@@ -173,6 +173,8 @@ describe("constructs url for directory", () => {
     ${Host.mac}     | ${Target.desktop} | ${BASE_URL + "/mac/desktop/directory.json"}
     ${Host.mac}     | ${Target.android} | ${BASE_URL + "/mac/android/directory.json"}
     ${Host.mac}     | ${Target.ios}     | ${BASE_URL + "/mac/ios/directory.json"}
+    ${Host.all_os}  | ${Target.wasm}    | ${BASE_URL + "/all_os/wasm/directory.json"}
+    ${Host.all_os}  | ${Target.android} | ${BASE_URL + "/all_os/android/directory.json"}
   `(
     `should return url when host is %s, target is %s`,
     ({
@@ -191,39 +193,40 @@ describe("constructs url for directory", () => {
 });
 describe("constructs url for Updates.json", () => {
   it.each`
-    version      | arch                   | expected_folder
-    ${"5.9.0"}   | ${"wasm_32"}           | ${"qt5_59_wasm"}
-    ${"6.2.0"}   | ${"wasm_64"}           | ${"qt6_620_wasm"}
-    ${"6.6.0"}   | ${"wasm_128"}          | ${"qt6_660_wasm"}
-    ${"5.12.11"} | ${"wasm_16"}           | ${"qt5_51211_wasm"}
-    ${"5.9.0"}   | ${"mingw"}             | ${"qt5_59"}
-    ${"6.2.0"}   | ${"mingw"}             | ${"qt6_620"}
-    ${"6.7.0"}   | ${"mingw"}             | ${"qt6_670"}
-    ${"6.8.0"}   | ${"mingw"}             | ${"qt6_680/qt6_680"}
-    ${"5.12.11"} | ${"mingw"}             | ${"qt5_51211"}
-    ${"6.7.0"}   | ${"wasm_singlethread"} | ${"qt6_670_wasm_singlethread"}
-    ${"6.7.0"}   | ${"wasm_multithread"}  | ${"qt6_670_wasm_multithread"}
-    ${"6.8.0"}   | ${"wasm_multithread"}  | ${"qt6_680/qt6_680_wasm_multithread"}
+    host            | target            | version      | arch                   | expected_folder
+    ${Host.mac}     | ${Target.desktop} | ${"5.9.0"}   | ${"wasm_32"}           | ${"mac/desktop/qt5_59_wasm"}
+    ${Host.linux}   | ${Target.desktop} | ${"6.2.0"}   | ${"wasm_64"}           | ${"linux/desktop/qt6_620_wasm"}
+    ${Host.windows} | ${Target.desktop} | ${"6.6.0"}   | ${"wasm_128"}          | ${"windows/desktop/qt6_660_wasm"}
+    ${Host.windows} | ${Target.desktop} | ${"5.12.11"} | ${"wasm_16"}           | ${"windows/desktop/qt5_51211_wasm"}
+    ${Host.windows} | ${Target.desktop} | ${"5.9.0"}   | ${"mingw"}             | ${"windows/desktop/qt5_59"}
+    ${Host.windows} | ${Target.desktop} | ${"6.2.0"}   | ${"mingw"}             | ${"windows/desktop/qt6_620"}
+    ${Host.windows} | ${Target.desktop} | ${"6.7.0"}   | ${"mingw"}             | ${"windows/desktop/qt6_670"}
+    ${Host.windows} | ${Target.desktop} | ${"6.8.0"}   | ${"mingw"}             | ${"windows/desktop/qt6_680/qt6_680"}
+    ${Host.windows} | ${Target.desktop} | ${"5.12.11"} | ${"mingw"}             | ${"windows/desktop/qt5_51211"}
+    ${Host.windows} | ${Target.desktop} | ${"6.7.0"}   | ${"wasm_singlethread"} | ${"all_os/wasm/qt6_670_wasm_singlethread"}
+    ${Host.linux}   | ${Target.desktop} | ${"6.7.0"}   | ${"wasm_multithread"}  | ${"all_os/wasm/qt6_670_wasm_multithread"}
+    ${Host.mac}     | ${Target.desktop} | ${"6.8.0"}   | ${"wasm_multithread"}  | ${"all_os/wasm/qt6_680/qt6_680_wasm_multithread"}
   `(
     `should return url when version is $version, arch is $arch`,
     ({
+      host,
+      target,
       version,
       arch,
       expected_folder,
     }: {
+      host: Host;
+      target: Target;
       version: string;
       arch: string;
       expected_folder: string;
     }) => {
-      const [host, target] = [Host.windows, Target.desktop];
-      const actual = to_updates_urls_by_arch(arch)([
+      const actual = to_updates_urls_by_arch(arch)(
         host,
         target,
-        new SemVer(version),
-      ]);
-      expect(actual).toEqual(
-        `${BASE_URL}/windows/desktop/${expected_folder}.json`
+        new SemVer(version)
       );
+      expect(actual).toEqual(`${BASE_URL}/${expected_folder}.json`);
     }
   );
 });
