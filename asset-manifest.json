@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/aqt-list-server/static/css/main.5e55c264.css",
-    "main.js": "/aqt-list-server/static/js/main.2cc0db62.js",
+    "main.js": "/aqt-list-server/static/js/main.58e5a1c2.js",
     "index.html": "/aqt-list-server/index.html",
     "main.5e55c264.css.map": "/aqt-list-server/static/css/main.5e55c264.css.map",
-    "main.2cc0db62.js.map": "/aqt-list-server/static/js/main.2cc0db62.js.map"
+    "main.58e5a1c2.js.map": "/aqt-list-server/static/js/main.58e5a1c2.js.map"
   },
   "entrypoints": [
     "static/css/main.5e55c264.css",
-    "static/js/main.2cc0db62.js"
+    "static/js/main.58e5a1c2.js"
   ]
 }
