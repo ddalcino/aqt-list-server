@@ -166,22 +166,32 @@ const to_url = ([host, target]: [Host, Target]): string =>
 export const to_directory = ([host, target]: [Host, Target]): string =>
   `${to_url([host, target])}/directory.json`;
 
-const updates_url = (
-  [host, target, version]: [Host, Target, SemVer],
-  ext?: string
-): string => {
-  const ver_nodot = `qt${version.major}_${version_nodot(version)}`;
-  const _ext = ext ? `_${ext}` : "";
-  if (should_override_host_all_os(target, version)) {
-    host = Host.all_os;
-  }
+interface ArchiveId {
+  host: Host;
+  target: Target;
+  version: SemVer;
+  extension: string;
+}
+const updates_url = (archiveId: ArchiveId): string => {
+  archiveId = overrides_for_all_os(archiveId);
+
+  const ver_nodot = `qt${archiveId.version.major}_${version_nodot(
+    archiveId.version
+  )}`;
+  const _ext = archiveId.extension ? `_${archiveId.extension}` : "";
   const folder =
-    version.compare(new SemVer("6.8.0")) >= 0 ? `${ver_nodot}/` : "";
-  return `${to_url([host, target])}/${folder}${ver_nodot}${_ext}.json`;
+    archiveId.version.compare(new SemVer("6.8.0")) >= 0 ? `${ver_nodot}/` : "";
+  return `${to_url([
+    archiveId.host,
+    archiveId.target,
+  ])}/${folder}${ver_nodot}${_ext}.json`;
 };
 
-const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
-  const [_, target, version] = args;
+const choose_ext_for_arch = (
+  target: Target,
+  version: SemVer,
+  arch: string
+): string => {
   if (arch.includes("wasm_singlethread")) {
     return "wasm_singlethread";
   } else if (arch.includes("wasm_multithread")) {
@@ -199,30 +209,40 @@ const choose_ext_for_arch = (args: [Host, Target, SemVer], arch: string) => {
     }
     return suffix;
   }
+  return "";
 };
 
-const should_override_host_all_os = (target: Target, version: SemVer) =>
-  target == Target.android && version.compare(new SemVer("6.7.0")) >= 0;
+const overrides_for_all_os = (archiveId: ArchiveId): ArchiveId => {
+  if (archiveId.version.compare("6.7.0") >= 0) {
+    if (archiveId.target === Target.android) {
+      return { ...archiveId, host: Host.all_os };
+    } else if (archiveId.extension.startsWith("wasm")) {
+      return { ...archiveId, host: Host.all_os, target: Target.wasm };
+    }
+  }
+  return archiveId;
+};
 
 export const to_updates_urls_by_arch =
   (arch: string) =>
-  (args: [Host, Target, SemVer]): string =>
-    updates_url(args, choose_ext_for_arch(args, arch));
+  (host: Host, target: Target, version: SemVer): string =>
+    updates_url({
+      host,
+      target,
+      version,
+      extension: choose_ext_for_arch(target, version, arch),
+    });
 
 export const to_updates_urls = (
   host: Host,
   target: Target,
   version: SemVer
 ): string[] => {
-  const args: [Host, Target, SemVer] = [host, target, version];
-  if (should_override_host_all_os(target, version)) {
-    args[0] = Host.all_os;
-  }
   const extensions: string[] = ((): string[] => {
     if (target === Target.android && version.major >= 6) {
       return ["arm64_v8a", "armv7", "x86", "x86_64"];
     } else if (target === Target.desktop && version.compare("6.5.0") >= 0) {
-      return ["", "wasm_singlethread", "wasm_multithread"];
+      return ["", "wasm_multithread", "wasm_singlethread"];
     } else if (target === Target.desktop && version.compare("5.13.0") > 0) {
       return ["", "wasm"];
     } else {
@@ -230,7 +250,9 @@ export const to_updates_urls = (
     }
   })();
 
-  return extensions.map((suffix) => updates_url(args, suffix));
+  return extensions.map((extension) =>
+    updates_url({ host, target, version, extension })
+  );
 };
 
 export const to_tools_updates_json = ([host, target, tool_name]: [
