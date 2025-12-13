@@ -108,7 +108,7 @@ export const fetch_modules = (
   arch: string
 ): Promise<PackageUpdate[]> =>
   generic_fetch_data<PackageUpdate[], [SemVer, string], RawPackageUpdates>(
-    to_updates_urls_by_arch(arch)([host, target, version]),
+    to_updates_urls_by_arch(arch)(host, target, version),
     to_modules
   )([version, arch]).then((result) => result.unwrap());
 
@@ -124,7 +124,7 @@ export const fetch_archive_info = async (
     [SemVer, string, string[]],
     RawPackageUpdates
   >(
-    to_updates_urls_by_arch(arch)([host, target, version]),
+    to_updates_urls_by_arch(arch)(host, target, version),
     to_archives
   )([version, arch, modules]).then((result) => result.unwrap());
 export const fetch_archives = async (
