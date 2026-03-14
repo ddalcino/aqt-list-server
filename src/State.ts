@@ -3,6 +3,7 @@
 import { get_host_target_targets, hosts } from "./lib/utils";
 import _ from "lodash";
 import {
+  AqtEntry,
   Host,
   hostFromStr,
   HostString,
@@ -15,6 +16,7 @@ import {
   targetFromStr,
   TargetString,
   targetToStr,
+  to_package_updates,
   UnifiedInstallers,
 } from "./lib/types";
 import Config from "./config.json";
@@ -688,6 +690,19 @@ export const StateUtils = {
       return newState;
     },
 
+  // User has chosen an arch, or had one supplied
+  withAqtEntryLoaded: (aqt_entry: AqtEntry) => (state: State) => {
+    const newState = _.cloneDeep(state);
+    newState.modules = makeSelectMany(
+      to_package_updates(aqt_entry.modules),
+      false
+    );
+    newState.archives = makeSelectMany(
+      new Map(Object.entries(aqt_entry.archives)),
+      true
+    );
+    return newState;
+  },
   withModulesArchivesLoaded:
     (modules: PackageUpdate[], archives: Map<string, string>) =>
     (state: State): State => {
