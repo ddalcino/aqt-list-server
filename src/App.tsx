@@ -13,9 +13,8 @@ import {
   TargetString,
 } from "./lib/types";
 import {
+  fetch_aqt_entry,
   fetch_arches,
-  fetch_archive_info,
-  fetch_modules,
   fetch_online_installers,
   fetch_tool_variants,
   fetch_tools,
@@ -37,24 +36,26 @@ const App = (): JSX.Element => {
       S.withInstallersVersionsToolsLoaded(unifiedInstallers, versions, tools)
     );
   };
-  const loadModulesArchives = async (
+  const loadAqtEntry = async (
     host: Host,
     target: Target,
     version: string,
     arch: string
   ) => {
-    const [modules, archives] = await Promise.all([
-      fetch_modules(host, target, new SemVer(version), arch),
-      fetch_archive_info(host, target, new SemVer(version), arch, []),
-    ]);
-    setState(S.withModulesArchivesLoaded(modules, archives));
+    const aqt_entry = await fetch_aqt_entry(
+      host,
+      target,
+      new SemVer(version),
+      arch
+    );
+    setState(S.withAqtEntryLoaded(aqt_entry));
   };
   const loadArches = async (host: Host, target: Target, version: string) => {
     const arches = await fetch_arches(host, target, new SemVer(version));
     setState(S.withArchesLoaded(arches)); // will set arch automatically if only 1 arch available
     if (arches.length === 1) {
       // chain load of arches when only one option exists
-      await loadModulesArchives(host, target, version, arches[0]);
+      await loadAqtEntry(host, target, version, arches[0]);
     }
   };
   const loadTool = async (host: Host, target: Target, toolName: string) => {
@@ -101,7 +102,7 @@ const App = (): JSX.Element => {
             setState(S.withArchLoadingModulesArchives(arch));
             const { host, target, version } = state.values();
             if (isInvalid(arch) || isInvalid(version)) return;
-            await loadModulesArchives(host, target, version, arch);
+            await loadAqtEntry(host, target, version, arch);
           }}
         />
         <SelectMany

@@ -16,47 +16,25 @@ const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;
 const HARDCODED_ALLOWED_TOOLS = ["sdktool"];
 
 export const to_versions = (directory: Directory): string[][] => {
-  const should_include_folder = (name: string): boolean =>
-    ["_preview", "_src_doc_examples"].reduce(
-      (accum: boolean, ext: string) => accum && !name.endsWith(ext),
-      true
-    );
-  const raw_versions = directory.qt
-    .filter(should_include_folder)
-    .map((name: string) => name.match(/^qt\d_(\d+)/))
-    .reduce<Set<string>>((accum, match: RegExpMatchArray | null) => {
-      if (match !== null) accum.add(match[1]);
-      return accum;
-    }, new Set());
-  const versions = Array.from(raw_versions)
-    .map((ver: string) => {
-      const chop_at = (a: number, b: number) =>
-        new SemVer(`${ver.slice(0, a)}.${ver.slice(a, b)}.${ver.slice(b)}`);
-      if (ver.length > 3) return chop_at(1, 3);
-      if (ver.length === 3) return chop_at(1, 2);
-      if (ver.length === 2) return new SemVer(`${ver[0]}.${ver[1]}.0`);
-      throw new Error("Regex should make this unreachable");
-    })
-    .sort(semver.compare);
-
   // Sort and stratify
-  const to_major_minor = (ver: SemVer): string => `${ver.major}.${ver.minor}`;
   const initial: { stratified: string[][]; major_minor: string } = {
     stratified: [],
     major_minor: "",
   };
-  return versions.reduce(({ stratified, major_minor }, ver) => {
-    const curr_mm = to_major_minor(ver);
-    if (major_minor === "")
-      return { stratified: [[ver.format()]], major_minor: curr_mm };
-    else if (major_minor != curr_mm)
-      return {
-        stratified: [...stratified, [ver.format()]],
-        major_minor: curr_mm,
-      };
-    stratified[stratified.length - 1].push(ver.format());
-    return { stratified, major_minor };
-  }, initial).stratified;
+  return directory.qt
+    .map((v: string) => new SemVer(v))
+    .reduce(({ stratified, major_minor }, ver) => {
+      const curr_major_minor = `${ver.major}.${ver.minor}`;
+      if (major_minor === "")
+        return { stratified: [[ver.format()]], major_minor: curr_major_minor };
+      else if (major_minor != curr_major_minor)
+        return {
+          stratified: [...stratified, [ver.format()]],
+          major_minor: curr_major_minor,
+        };
+      stratified[stratified.length - 1].push(ver.format());
+      return { stratified, major_minor };
+    }, initial).stratified;
 };
 
 export const version_nodot = (version: SemVer): string =>
@@ -165,6 +143,17 @@ const to_url = ([host, target]: [Host, Target]): string =>
 
 export const to_directory = ([host, target]: [Host, Target]): string =>
   `${to_url([host, target])}/directory.json`;
+
+export const to_aqt_directory = ([host, target]: [Host, Target]): string =>
+  `${to_url([host, target])}/aqt_list_directory.json`;
+
+export const aqt_updates_url = ([host, target, version]: [
+  Host,
+  Target,
+  SemVer
+]): string => {
+  return `${to_url([host, target])}/aqt_${version}.json`;
+};
 
 const updates_url = (
   [host, target, version]: [Host, Target, SemVer],

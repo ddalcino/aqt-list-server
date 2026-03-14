@@ -6,6 +6,7 @@ export const hosts: Readonly<Host[]> = [
   Host.mac,
   Host.linux,
   Host.linux_arm64,
+  Host.all_os,
 ];
 export const targetsForHost = (host: Host): Target[] => {
   switch (host) {
@@ -20,7 +21,7 @@ export const targetsForHost = (host: Host): Target[] => {
     case Host.windows_arm64:
       return [Target.desktop];
     case Host.all_os:
-      return [];
+      return [Target.wasm, Target.android]; // TODO add `qt` when supported by aqtinstall
   }
 };
 

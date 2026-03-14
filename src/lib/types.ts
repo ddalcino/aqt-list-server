@@ -103,6 +103,10 @@ export const toPackageUpdate = (obj: RawPackageUpdate): PackageUpdate => ({
 });
 
 export type Directory = { qt: string[]; tools: string[] };
+export type ArchivesSizes = Record<string, string>; // key is archive, value is archive size
+export type ModulesData = Record<string, RawPackageUpdate>; // key is module name
+export type AqtEntry = { archives: ArchivesSizes; modules: ModulesData };
+export type AqtDirectory = Record<string, AqtEntry>; // key is architecture
 
 export enum Host {
   windows,
@@ -121,6 +125,7 @@ export enum Target {
   android,
   ios,
   winrt,
+  wasm,
 }
 export type TargetString = keyof typeof Target;
 export const targetToStr = (t: Target): string => Target[t];

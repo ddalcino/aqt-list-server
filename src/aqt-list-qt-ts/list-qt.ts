@@ -1,4 +1,6 @@
 import {
+  AqtDirectory,
+  AqtEntry,
   Directory,
   Host,
   OnlineInstallers,
@@ -9,17 +11,14 @@ import {
 } from "../lib/types";
 import { SemVer } from "semver";
 import {
+  aqt_updates_url,
   official_releases_url,
-  to_arches,
-  to_archives,
+  to_aqt_directory,
   to_directory,
-  to_modules,
   to_tool_variants,
   to_tools,
   to_tools_updates_json,
   to_unified_installers,
-  to_updates_urls,
-  to_updates_urls_by_arch,
   to_versions,
 } from "./list-qt-impl";
 import Result from "../lib/Result";
@@ -55,29 +54,20 @@ export const fetch_versions = async (
   host: Host,
   target: Target
 ): Promise<string[][]> => {
-  const versions = await generic_fetch_data<string[][], void, Directory>(
-    to_directory([host, target]),
+  return await generic_fetch_data<string[][], void, Directory>(
+    to_aqt_directory([host, target]),
     to_versions
-  )().then((result) => result.unwrap());
-  if (target !== Target.android) {
+  )().then((result) => {
+    const versions = result.unwrap();
+
+    // TODO: remove this when aqt list-qt bug is fixed!
+    // aqt list-qt says that it can list and install qt 6.7.* for android, on non-all_os hosts, but it cannont.
+    if (host != Host.all_os && target == Target.android) {
+      return versions.filter(([first_ver]) => !first_ver?.startsWith("6.7."));
+    }
+
     return versions;
-  }
-  // If we have android target, we need to fetch from the all_os directory as well.
-  const all_os_versions = await generic_fetch_data<string[][], void, Directory>(
-    to_directory([Host.all_os, target]),
-    to_versions
-  )().then((result) => result.unwrap());
-
-  // Return versions (less than 6.7.0) and all_os_versions (greater or equal to 6.7.0)
-  const has_versions_gte_670 = (versions: string[]): boolean => {
-    if (versions.length === 0) return false;
-    return new SemVer(versions[0]).compare("6.7.0") >= 0;
-  };
-
-  return [
-    ...versions.filter((row: string[]) => !has_versions_gte_670(row)),
-    ...all_os_versions.filter((row: string[]) => has_versions_gte_670(row)),
-  ];
+  });
 };
 
 export const fetch_arches = async (
@@ -85,64 +75,22 @@ export const fetch_arches = async (
   target: Target,
   version: SemVer
 ): Promise<string[]> => {
-  const all_arches = await Promise.all(
-    to_updates_urls(host, target, version).map((url) =>
-      generic_fetch_data<string[], [SemVer], RawPackageUpdates>(
-        url,
-        to_arches
-      )([version]).then((result) =>
-        result.match(
-          (arches: string[]): string[] => arches,
-          (_err: FetchError): string[] => []
-        )
-      )
-    )
-  );
-  return all_arches.flat();
+  return await generic_fetch_data<string[], void, AqtDirectory>(
+    aqt_updates_url([host, target, version]),
+    (aqt_dir: AqtDirectory) => Object.keys(aqt_dir)
+  )().then((result) => result.unwrap());
 };
 
-export const fetch_modules = (
+export const fetch_aqt_entry = (
   host: Host,
   target: Target,
   version: SemVer,
   arch: string
-): Promise<PackageUpdate[]> =>
-  generic_fetch_data<PackageUpdate[], [SemVer, string], RawPackageUpdates>(
-    to_updates_urls_by_arch(arch)([host, target, version]),
-    to_modules
-  )([version, arch]).then((result) => result.unwrap());
-
-export const fetch_archive_info = async (
-  host: Host,
-  target: Target,
-  version: SemVer,
-  arch: string,
-  modules: string[]
-): Promise<Map<string, string>> =>
-  generic_fetch_data<
-    Map<string, string>,
-    [SemVer, string, string[]],
-    RawPackageUpdates
-  >(
-    to_updates_urls_by_arch(arch)([host, target, version]),
-    to_archives
-  )([version, arch, modules]).then((result) => result.unwrap());
-export const fetch_archives = async (
-  host: Host,
-  target: Target,
-  version: SemVer,
-  arch: string,
-  modules: string[]
-): Promise<string[]> => {
-  const archiveInfo = await fetch_archive_info(
-    host,
-    target,
-    version,
-    arch,
-    modules
-  );
-  return [...archiveInfo.keys()].sort();
-};
+): Promise<AqtEntry> =>
+  generic_fetch_data<AqtEntry, string, AqtDirectory>(
+    aqt_updates_url([host, target, version]),
+    (aqt_directory: AqtDirectory, arch: string): AqtEntry => aqt_directory[arch]
+  )(arch).then((result) => result.unwrap());
 
 export const fetch_tools = (host: Host, target: Target): Promise<string[]> =>
   generic_fetch_data<string[], void, Directory>(
