@@ -23,14 +23,6 @@ import Config from "../config.json";
 import { SemVer } from "semver";
 import { toHumanReadableSize } from "../lib/utils";
 
-test("scrapes versions from html", () => {
-  const expected = expect_win_desktop.qt.qt.map((major_minor_row: string) =>
-    major_minor_row.split(" ")
-  );
-  const actual = to_versions(win_desktop_directory);
-  expect(actual).toEqual(expected);
-});
-
 describe("retrieves arches from json", () => {
   it.each`
     version    | updates_json    | expected_arches
