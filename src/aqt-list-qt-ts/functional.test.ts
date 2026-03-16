@@ -45,7 +45,7 @@ const get_aqt_output = async (args: string[]): Promise<string[]> => {
 
 describe("list-qt.ts", () => {
   hosts
-    .filter((host: Host) => host !== Host.windows_arm64)
+    .filter((host: Host) => host !== Host.all_os)
     .forEach((host: Host) =>
       targetsForHost(host).forEach((target: Target) => {
         // aqt list-qt is currently broken for this purpose
