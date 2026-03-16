@@ -1,7 +1,6 @@
 import {
   fetch_arches,
-  fetch_archives,
-  fetch_modules,
+  fetch_aqt_entry,
   fetch_tools,
 } from "./list-qt";
 import util from "util";
@@ -17,6 +16,7 @@ import {
   targetFromStr,
   TargetString,
   targetToStr,
+  to_package_updates,
 } from "../lib/types";
 import { SemVer } from "semver";
 
@@ -162,13 +162,14 @@ describe("list-qt.ts", () => {
         new SemVer(version),
         arch,
       ];
-      const actual_modules = (await fetch_modules(...args))
+      const aqt_entry = await fetch_aqt_entry(...args);
+      const actual_modules = to_package_updates(aqt_entry.modules)
         .map((pkg: PackageUpdate): string => {
           const parts = pkg.Name.split(".");
           return parts[parts.length - 2];
         })
         .sort();
-      const actual_archives = (await fetch_archives(...args, [])).sort();
+      const actual_archives = Object.keys(aqt_entry.archives).sort();
       const [expect_modules, expect_archives] = await Promise.all([
         get_aqt_output(["list-qt", host, target, "--modules", version, arch]),
         get_aqt_output(["list-qt", host, target, "--archives", version, arch]),
