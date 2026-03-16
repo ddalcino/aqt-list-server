@@ -22,13 +22,22 @@ import { SemVer } from "semver";
 
 const exec_promise = util.promisify(exec);
 
+export function getPython() {
+  if (process.env.USE_VENV !== "true") {
+    return "python";
+  }
+  return process.platform === "win32"
+      ? `.venv/Scripts/python.exe`
+      : `.venv/bin/python`;
+}
+
 const get_versions = async (
   host: Host,
   target: Target
 ): Promise<string[][]> => {
   const stdout: string = (
     await exec_promise(
-      `python -m aqt list-qt ${hostToStr(host)} ${targetToStr(target)}`
+      `${getPython()} -m aqt list-qt ${hostToStr(host)} ${targetToStr(target)}`
     )
   ).stdout.trim();
   if (stdout.length === 0) return [];
@@ -37,7 +46,7 @@ const get_versions = async (
 
 const get_aqt_output = async (args: string[]): Promise<string[]> => {
   const stdout: string = (
-    await exec_promise(`python -m aqt ${args.join(" ")}`)
+    await exec_promise(`${getPython()} -m aqt ${args.join(" ")}`)
   ).stdout.trim();
   if (stdout.length === 0) return [];
   return stdout.split(/\s+/);
