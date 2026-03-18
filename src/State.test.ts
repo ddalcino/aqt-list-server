@@ -321,7 +321,6 @@ const officialQtUnifiedPreamble = (host: Host) => {
   --confirm-command install \`
   `;
   }
-  const chmod_line = `chmod u+x ${installer} && \\\n`;
   return `curl -L -O https://download.qt.io/official_releases/online_installers/${installer} && \\
   chmod u+x ${installer}
 ./${installer} \\
