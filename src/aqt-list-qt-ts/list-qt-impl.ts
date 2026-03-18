@@ -1,4 +1,5 @@
 import {
+  AqtVersionsList,
   Directory,
   Host,
   hostToStr,
@@ -15,13 +16,13 @@ import Config from "../config.json";
 const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;
 const HARDCODED_ALLOWED_TOOLS = ["sdktool"];
 
-export const to_versions = (directory: Directory): string[][] => {
+export const to_versions = (aqtVersionsList: AqtVersionsList): string[][] => {
   // Sort and stratify
   const initial: { stratified: string[][]; major_minor: string } = {
     stratified: [],
     major_minor: "",
   };
-  return directory.qt
+  return aqtVersionsList.qt
     .map((v: string) => new SemVer(v))
     .reduce(({ stratified, major_minor }, ver) => {
       const curr_major_minor = `${ver.major}.${ver.minor}`;

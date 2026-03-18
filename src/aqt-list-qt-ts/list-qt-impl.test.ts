@@ -7,9 +7,11 @@ import {
   to_tools,
   to_directory,
   to_unified_installers,
+  to_versions,
 } from "./list-qt-impl";
 import { Host, PackageUpdate, RawPackageUpdates, Target } from "../lib/types";
 import win_desktop_directory from "./test_data/windows-desktop-directory.json";
+import win_desktop_aqt_list_directory from "./test_data/windows-desktop-aqt_list_directory.json";
 import expect_win_desktop from "./test_data/windows-desktop-expect.json";
 import win_620_json from "./test_data/windows-620-update.json";
 import expect_win_620 from "./test_data/windows-620-expect.json";
@@ -21,6 +23,14 @@ import official_releases from "./test_data/official_releases.json";
 import Config from "../config.json";
 import { SemVer } from "semver";
 import { toHumanReadableSize } from "../lib/utils";
+
+test("scrapes versions from html", () => {
+  const expected = expect_win_desktop.qt.qt.map((major_minor_row: string) =>
+    major_minor_row.split(" ")
+  );
+  const actual = to_versions(win_desktop_aqt_list_directory);
+  expect(actual).toEqual(expected);
+});
 
 describe("retrieves arches from json", () => {
   it.each`
