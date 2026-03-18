@@ -6,7 +6,6 @@ import {
   to_tool_variants,
   to_tools,
   to_directory,
-  to_versions,
   to_unified_installers,
 } from "./list-qt-impl";
 import { Host, PackageUpdate, RawPackageUpdates, Target } from "../lib/types";

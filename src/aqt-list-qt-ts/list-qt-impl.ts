@@ -9,7 +9,7 @@ import {
   to_package_updates,
   UnifiedInstallers,
 } from "../lib/types";
-import semver, { SemVer } from "semver";
+import { SemVer } from "semver";
 import Config from "../config.json";
 
 const BASE_URL = Config.QT_JSON_CACHE_BASE_URL;

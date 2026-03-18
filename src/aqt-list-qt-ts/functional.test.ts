@@ -1,8 +1,4 @@
-import {
-  fetch_arches,
-  fetch_aqt_entry,
-  fetch_tools,
-} from "./list-qt";
+import { fetch_arches, fetch_aqt_entry, fetch_tools } from "./list-qt";
 import util from "util";
 import { exec } from "child_process";
 import { hosts, targetsForHost } from "../lib/utils";
@@ -27,22 +23,9 @@ export function getPython() {
     return "python";
   }
   return process.platform === "win32"
-      ? `.venv/Scripts/python.exe`
-      : `.venv/bin/python`;
+    ? `.venv/Scripts/python.exe`
+    : `.venv/bin/python`;
 }
-
-const get_versions = async (
-  host: Host,
-  target: Target
-): Promise<string[][]> => {
-  const stdout: string = (
-    await exec_promise(
-      `${getPython()} -m aqt list-qt ${hostToStr(host)} ${targetToStr(target)}`
-    )
-  ).stdout.trim();
-  if (stdout.length === 0) return [];
-  return stdout.split(/\r?\n/).map((line: string) => line.split(/\s+/));
-};
 
 const get_aqt_output = async (args: string[]): Promise<string[]> => {
   const stdout: string = (
