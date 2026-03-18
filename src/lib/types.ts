@@ -103,6 +103,7 @@ export const toPackageUpdate = (obj: RawPackageUpdate): PackageUpdate => ({
 });
 
 export type Directory = { qt: string[]; tools: string[] };
+export type AqtVersionsList = { qt: string[] };
 export type ArchivesSizes = Record<string, string>; // key is archive, value is archive size
 export type ModulesData = Record<string, RawPackageUpdate>; // key is module name
 export type AqtEntry = { archives: ArchivesSizes; modules: ModulesData };
