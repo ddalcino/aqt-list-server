@@ -222,9 +222,9 @@ describe("toInstallQtAction", () => {
     it("should display valid yml", () => {
       const state = makeLoadedState();
       expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       with:
-        aqtversion: '==3.1.*'
+        aqtversion: '==3.3.*'
         version: '6.2.0'
         host: 'windows'
         target: 'desktop'
@@ -245,9 +245,9 @@ describe("toInstallQtAction", () => {
         StateUtils.withToggledToolVariants("tools_vcredist", true),
       ]);
       expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       with:
-        aqtversion: '==3.1.*'
+        aqtversion: '==3.3.*'
         host: 'windows'
         target: 'desktop'
         toolsOnly: 'true'
@@ -270,9 +270,9 @@ describe("toInstallQtAction", () => {
         ),
       ]);
       expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       with:
-        aqtversion: '==3.1.*'
+        aqtversion: '==3.3.*'
         host: 'windows'
         target: 'desktop'
         toolsOnly: 'true'
@@ -288,9 +288,9 @@ describe("toInstallQtAction", () => {
         StateUtils.withToggledToolVariants("tools_vcredist", true),
       ]);
       expect(state.toInstallQtAction()).toEqual(`    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       with:
-        aqtversion: '==3.1.*'
+        aqtversion: '==3.3.*'
         version: '6.2.0'
         host: 'windows'
         target: 'desktop'
