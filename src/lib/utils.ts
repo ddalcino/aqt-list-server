@@ -41,8 +41,7 @@ export const get_host_target_targets = (
       ? host
       : hostOs();
   const targets = targetsForHost(host_os);
-  const target_sdk =
-    target && targets.includes(target) ? target : Target.desktop;
+  const target_sdk = target && targets.includes(target) ? target : targets[0];
   return [host_os, target_sdk, targets];
 };
 
