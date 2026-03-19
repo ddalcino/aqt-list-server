@@ -42,6 +42,15 @@ describe("makeState", () => {
       expect(state.version.selected.state.isLoading()).toEqual(true);
     }
   );
+  it("doesn't allow setting unsupported target for host", () => {
+    // This will attempt to set host == all_os and target == desktop, unless target is validated
+    const state = apply(_makeState("windows", "desktop"), [
+      StateUtils.withHostLoadingVersionsTools(Host.all_os),
+    ]);
+
+    expect(state.host.selected.value).toEqual("all_os");
+    expect(state.target.selected.value).toEqual("wasm");
+  });
 });
 
 const versions = [["6.1.0", "6.1.1", "6.1.2"], ["6.2.0"]];
