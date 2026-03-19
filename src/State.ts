@@ -402,8 +402,8 @@ export class State {
     public modules: SelectMany = new SelectMany(),
     public archives: SelectMany = new SelectMany(),
     public installActionVersion: SelectOne = new SelectOne(
-      new Selection("3"),
-      ["2", "3"],
+      new Selection("4 (compatible with 3)"),
+      ["2", "4 (compatible with 3)"],
       false
     )
   ) {}
