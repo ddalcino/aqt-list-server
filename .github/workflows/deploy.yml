@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
@@ -43,6 +43,8 @@ jobs:
       - name: deploy to gh-pages
         if: github.ref == 'refs/heads/main' && github.actor == github.repository_owner
         uses: peaceiris/actions-gh-pages@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
