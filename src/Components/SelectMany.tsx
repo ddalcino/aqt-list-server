@@ -17,7 +17,7 @@ const SelectMany = (props: Props): JSX.Element => {
   const hasAllOn =
     options.size > 0 &&
     [...options.values()].every(
-      (element: SelectableElement) => element.selected
+      (element: SelectableElement) => element.selected,
     );
 
   return (

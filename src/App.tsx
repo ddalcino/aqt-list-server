@@ -33,20 +33,20 @@ const App = (): JSX.Element => {
       fetch_online_installers(),
     ]);
     setState(
-      S.withInstallersVersionsToolsLoaded(unifiedInstallers, versions, tools)
+      S.withInstallersVersionsToolsLoaded(unifiedInstallers, versions, tools),
     );
   };
   const loadAqtEntry = async (
     host: Host,
     target: Target,
     version: string,
-    arch: string
+    arch: string,
   ) => {
     const aqt_entry = await fetch_aqt_entry(
       host,
       target,
       new SemVer(version),
-      arch
+      arch,
     );
     setState(S.withAqtEntryLoaded(aqt_entry));
   };
@@ -68,7 +68,7 @@ const App = (): JSX.Element => {
   if (state.version.selected.state.isLoading())
     loadVersionsTools(
       hostFromStr(state.host.selected.value as HostString),
-      targetFromStr(state.target.selected.value as TargetString)
+      targetFromStr(state.target.selected.value as TargetString),
     );
 
   return (
@@ -82,14 +82,14 @@ const App = (): JSX.Element => {
           arch={state.arch}
           changeHost={async (host: string) =>
             setState(
-              S.withHostLoadingVersionsTools(hostFromStr(host as HostString))
+              S.withHostLoadingVersionsTools(hostFromStr(host as HostString)),
             )
           }
           changeTarget={async (target: string) =>
             setState(
               S.withTargetLoadingVersionsTools(
-                targetFromStr(target as TargetString)
-              )
+                targetFromStr(target as TargetString),
+              ),
             )
           }
           changeVersion={async (version: string) => {

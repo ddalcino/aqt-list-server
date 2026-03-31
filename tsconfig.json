@@ -6,6 +6,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "types": ["jest", "node"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -21,7 +22,5 @@
     "jsx": "react-jsx",
     "downlevelIteration": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src", "setupJest.ts", "**/*.test.ts", "**/*.test.tsx"]
 }

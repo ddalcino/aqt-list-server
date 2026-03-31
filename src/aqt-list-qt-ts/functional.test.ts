@@ -15,6 +15,12 @@ import {
   to_package_updates,
 } from "../lib/types";
 import { SemVer } from "semver";
+import fetch from "node-fetch";
+
+// Use real global fetch for tests that use real HTTP fetching (every test in this file)
+if (!globalThis.fetch) {
+  globalThis.fetch = fetch as unknown as typeof globalThis.fetch;
+}
 
 const exec_promise = util.promisify(exec);
 
@@ -50,7 +56,7 @@ describe("list-qt.ts", () => {
         // });
 
         it(`lists tools for host ${hostToStr(host)} and target ${targetToStr(
-          target
+          target,
         )}`, async () => {
           const actual = await fetch_tools(host, target);
           const expected = await get_aqt_output([
@@ -62,8 +68,8 @@ describe("list-qt.ts", () => {
             .then((x) =>
               x.filter(
                 (s: string) =>
-                  !s.includes("preview") && !["tools_generic"].includes(s)
-              )
+                  !s.includes("preview") && !["tools_generic"].includes(s),
+              ),
             )
             .then((x) => {
               // Edge case: tools_telemetry_eval_gui for linux_arm64 does not include an Updates.xml file.
@@ -73,13 +79,13 @@ describe("list-qt.ts", () => {
                   !(
                     s === "tools_telemetry_eval_gui" &&
                     host === Host.linux_arm64
-                  )
+                  ),
               );
             })
             .then((x) => x.sort());
           expect(actual).toEqual(expected);
         });
-      })
+      }),
     );
 
   it.each`
@@ -113,7 +119,7 @@ describe("list-qt.ts", () => {
       const actual = await fetch_arches(
         hostFromStr(host),
         targetFromStr(target),
-        new SemVer(version)
+        new SemVer(version),
       );
       const expected = await get_aqt_output([
         "list-qt",
@@ -125,7 +131,7 @@ describe("list-qt.ts", () => {
 
       expect(actual.sort()).toEqual(expected.sort());
     },
-    10 * 1000 // 10 second timeout: it takes 6 seconds to run `aqt list-qt <host> android --arch 6.2.4`
+    10 * 1000, // 10 second timeout: it takes 6 seconds to run `aqt list-qt <host> android --arch 6.2.4`
   );
 
   it.each`
@@ -169,6 +175,6 @@ describe("list-qt.ts", () => {
 
       expect(actual_modules).toEqual(expect_modules);
       expect(actual_archives).toEqual(expect_archives);
-    }
+    },
   );
 });

@@ -48,7 +48,7 @@ const ToolSelectPanel = (props: Props): JSX.Element => (
             }
           />
         </div>
-      )
+      ),
     )}
   </div>
 );

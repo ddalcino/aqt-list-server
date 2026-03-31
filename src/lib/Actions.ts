@@ -34,7 +34,7 @@ export const setTarget = (target: Target): Action => ({
 export const loadedVersionsTools = (
   installers: UnifiedInstallers,
   versions: string[][],
-  tools: string[]
+  tools: string[],
 ): Action => ({
   type: ActionT.loadedVersionsTools,
   reduce: S.withInstallersVersionsToolsLoaded(installers, versions, tools),
@@ -57,7 +57,7 @@ export const setArchitecture = (arch: string): Action => ({
 
 export const loadedModulesArchives = (
   modules: PackageUpdate[],
-  archives: Map<string, string>
+  archives: Map<string, string>,
 ): Action => ({
   type: ActionT.loadedModulesArchives,
   reduce: S.withModulesArchivesLoaded(modules, archives),
@@ -105,7 +105,7 @@ export const removeTool = (toolName: string): Action => ({
 
 export const addToolVariant = (
   toolName: string,
-  toolVariant: string
+  toolVariant: string,
 ): Action => ({
   type: ActionT.chooseToolVariant,
   reduce: S.withToolVariant(toolName, toolVariant, true),
@@ -113,7 +113,7 @@ export const addToolVariant = (
 
 export const removeToolVariant = (
   toolName: string,
-  toolVariant: string
+  toolVariant: string,
 ): Action => ({
   type: ActionT.chooseToolVariant,
   reduce: S.withToolVariant(toolName, toolVariant, false),

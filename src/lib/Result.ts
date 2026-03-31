@@ -8,11 +8,14 @@ const enum Status {
   Err,
 }
 class Result<Ok, Err> {
-  private constructor(private status: Status, private content: Ok | Err) {}
+  private constructor(
+    private status: Status,
+    private content: Ok | Err,
+  ) {}
 
   public match<OkOut, ErrOut>(
     ok: (content: Ok) => OkOut,
-    err: (content: Err) => ErrOut
+    err: (content: Err) => ErrOut,
   ): OkOut | ErrOut {
     switch (this.status) {
       case Status.Ok:
@@ -26,7 +29,7 @@ class Result<Ok, Err> {
       (res) => res,
       (err) => {
         throw err;
-      }
+      },
     );
   }
   public static Ok<Ok, Err>(content: Ok): Result<Ok, Err> {

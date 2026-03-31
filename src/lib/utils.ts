@@ -34,7 +34,7 @@ const hostOs = (): Host => {
 
 export const get_host_target_targets = (
   host?: Host,
-  target?: Target
+  target?: Target,
 ): [Host, Target, Target[]] => {
   const host_os: Host =
     host !== null && host !== undefined && hosts.includes(host)
