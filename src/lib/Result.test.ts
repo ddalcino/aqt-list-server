@@ -33,5 +33,5 @@ test("Error throws on unwrap", () => {
 
   expect(
     () => Result.Err<OkType, ErrType>(err).unwrap().textContent
-  ).toThrowError(err);
+  ).toThrow(err);
 });

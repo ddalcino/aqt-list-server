@@ -6,6 +6,8 @@ import expect_win_620 from "./test_data/windows-620-expect.json";
 import expect_win_desktop from "./test_data/windows-desktop-expect.json";
 import fsPromises from "fs";
 
+fetchMock.enableMocks();
+
 const [win_desktop_dir_json] = ["windows-desktop-directory.json"].map(
   (filename: string) =>
     fsPromises

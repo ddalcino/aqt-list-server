@@ -15,6 +15,13 @@ import {
   to_package_updates,
 } from "../lib/types";
 import { SemVer } from "semver";
+import fetch from 'node-fetch';
+
+// Use real global fetch for tests that use real HTTP fetching (every test in this file)
+if (!globalThis.fetch) {
+  // @ts-ignore
+  globalThis.fetch = fetch;
+}
 
 const exec_promise = util.promisify(exec);
 
