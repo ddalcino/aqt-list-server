@@ -15,7 +15,7 @@ test.skip("renders a checkbox", () => {
       onChange={() => {
         hasFiredCallback = true;
       }}
-    />
+    />,
   );
   const linkElement = getByText(/something/i);
   expect(linkElement).toBeInTheDocument();

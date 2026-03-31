@@ -26,7 +26,7 @@ import { toHumanReadableSize } from "../lib/utils";
 
 test("scrapes versions from html", () => {
   const expected = expect_win_desktop.qt.qt.map((major_minor_row: string) =>
-    major_minor_row.split(" ")
+    major_minor_row.split(" "),
   );
   const actual = to_versions(win_desktop_aqt_list_directory);
   expect(actual).toEqual(expected);
@@ -50,7 +50,7 @@ describe("retrieves arches from json", () => {
     }) => {
       const actual = to_arches(updates_json, [new SemVer(version)]);
       expect(actual).toEqual(expected_arches);
-    }
+    },
   );
 });
 
@@ -58,7 +58,7 @@ describe("retrieves modules from json", () => {
   const join_ver_testdata = (
     ver: SemVer,
     arch_expected: [string, string[]][],
-    updates: RawPackageUpdates
+    updates: RawPackageUpdates,
   ): [SemVer, string, string[], RawPackageUpdates][] =>
     arch_expected.map(([arch, x_modules]) => [ver, arch, x_modules, updates]);
 
@@ -66,30 +66,30 @@ describe("retrieves modules from json", () => {
     join_ver_testdata(
       new SemVer("6.2.0"),
       Object.entries(expect_win_620.modules_by_arch),
-      win_620_json as unknown as RawPackageUpdates
+      win_620_json as unknown as RawPackageUpdates,
     ).concat(
       join_ver_testdata(
         new SemVer("5.9.0"),
         Object.entries(expect_win_59.modules_by_arch),
-        win_59_json as unknown as RawPackageUpdates
-      )
-    )
+        win_59_json as unknown as RawPackageUpdates,
+      ),
+    ),
   )(
     `should return modules when version is %s and arch is %s`,
     (
       ver: SemVer,
       arch: string,
       expected_modules: string[],
-      updates: RawPackageUpdates
+      updates: RawPackageUpdates,
     ) => {
       const actual = to_modules(updates, [ver, arch]).map(
         (pkg: PackageUpdate): string => {
           const parts = pkg.Name.split(".");
           return parts[parts.length - 2];
-        }
+        },
       );
       expect(actual).toEqual(expected_modules);
-    }
+    },
   );
 });
 
@@ -111,17 +111,17 @@ test("retrieves archives from json", () => {
   const [ver, arch] = [new SemVer("6.2.0"), "win64_msvc2019_64"];
   const actual_base_arc = to_archives(
     win_620_json as unknown as RawPackageUpdates,
-    [ver, arch, []]
+    [ver, arch, []],
   );
   expect([...actual_base_arc.keys()].sort()).toEqual(
-    win_620_base_archives.map((s) => s.split("-")[0]).sort()
+    win_620_base_archives.map((s) => s.split("-")[0]).sort(),
   );
   const actual_base_pos_arc = to_archives(
     win_620_json as unknown as RawPackageUpdates,
-    [ver, arch, ["qtpositioning"]]
+    [ver, arch, ["qtpositioning"]],
   );
   expect([...actual_base_pos_arc.keys()].sort()).toEqual(
-    win_620_pos_archives.map((s) => s.split("-")[0]).sort()
+    win_620_pos_archives.map((s) => s.split("-")[0]).sort(),
   );
 });
 
@@ -156,7 +156,7 @@ test.skip("retrieves tool variants from json", () => {
         ArchiveSizes: new Map<string, string>(),
         // selected: false,
       } as PackageUpdate;
-    }
+    },
   );
   const actual = to_tool_variants(win_desktop_vcredist_json);
   expect(actual).toEqual(expected);
@@ -187,7 +187,7 @@ describe("constructs url for directory", () => {
     }) => {
       const actual = to_directory([host, target]);
       expect(actual).toEqual(result);
-    }
+    },
   );
 });
 describe("constructs url for Updates.json", () => {
@@ -223,9 +223,9 @@ describe("constructs url for Updates.json", () => {
         new SemVer(version),
       ]);
       expect(actual).toEqual(
-        `${BASE_URL}/windows/desktop/${expected_folder}.json`
+        `${BASE_URL}/windows/desktop/${expected_folder}.json`,
       );
-    }
+    },
   );
 });
 
@@ -240,6 +240,6 @@ describe("to_unified_installers", () => {
     ({ host, installer }: { host: Host; installer: string }) => {
       const actual = to_unified_installers(official_releases);
       expect(actual(host)).toEqual(installer);
-    }
+    },
   );
 });

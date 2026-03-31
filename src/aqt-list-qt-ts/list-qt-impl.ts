@@ -45,7 +45,7 @@ export const version_nodot = (version: SemVer): string =>
 
 export const to_arches = (
   updates: RawPackageUpdates,
-  [actual_ver]: [SemVer]
+  [actual_ver]: [SemVer],
 ): string[] => {
   const ver_nodot = version_nodot(actual_ver);
   return to_package_updates(updates)
@@ -60,7 +60,7 @@ export const to_arches = (
 
 export const to_modules = (
   updates: RawPackageUpdates,
-  [actual_ver, arch]: [SemVer, string]
+  [actual_ver, arch]: [SemVer, string],
 ): PackageUpdate[] => {
   const ver_nodot = version_nodot(actual_ver);
   //(r"^(preview\.)?qt\.(qt" + str(version.major) + r"\.)?" + qt_ver_str + r"\.(.+)$")
@@ -71,7 +71,7 @@ export const to_modules = (
       ver_nodot +
       ".(addons.)?(.+)." +
       arch +
-      "$"
+      "$",
   );
   return to_package_updates(updates)
     .filter((pkg: PackageUpdate) => pkg.DownloadableArchives.length)
@@ -107,7 +107,7 @@ const flattenMaps = (maps: StringMap[]): StringMap => {
 
 export const to_archives = (
   updates: RawPackageUpdates,
-  [ver, arch, modules]: [SemVer, string, string[]]
+  [ver, arch, modules]: [SemVer, string, string[]],
 ): Map<string, string> => {
   const ver_nodot = version_nodot(ver);
   const maps = to_package_updates(updates)
@@ -127,15 +127,15 @@ export const to_tools = (directory: Directory): string[] =>
   directory.tools
     .filter(
       (href: string) =>
-        href.startsWith("tools_") || HARDCODED_ALLOWED_TOOLS.includes(href)
+        href.startsWith("tools_") || HARDCODED_ALLOWED_TOOLS.includes(href),
     )
     .map((href: string) => (href.endsWith("/") ? href.slice(0, -1) : href));
 
 export const to_tool_variants = (
-  updates: RawPackageUpdates
+  updates: RawPackageUpdates,
 ): PackageUpdate[] => {
   return to_package_updates(updates).filter(
-    (pkg: PackageUpdate) => pkg.DownloadableArchives.length
+    (pkg: PackageUpdate) => pkg.DownloadableArchives.length,
   );
 };
 
@@ -151,14 +151,14 @@ export const to_aqt_directory = ([host, target]: [Host, Target]): string =>
 export const aqt_updates_url = ([host, target, version]: [
   Host,
   Target,
-  SemVer
+  SemVer,
 ]): string => {
   return `${to_url([host, target])}/aqt_${version}.json`;
 };
 
 const updates_url = (
   [host, target, version]: [Host, Target, SemVer],
-  ext?: string
+  ext?: string,
 ): string => {
   const ver_nodot = `qt${version.major}_${version_nodot(version)}`;
   const _ext = ext ? `_${ext}` : "";
@@ -202,7 +202,7 @@ export const to_updates_urls_by_arch =
 export const to_updates_urls = (
   host: Host,
   target: Target,
-  version: SemVer
+  version: SemVer,
 ): string[] => {
   const args: [Host, Target, SemVer] = [host, target, version];
   if (should_override_host_all_os(target, version)) {
@@ -226,14 +226,14 @@ export const to_updates_urls = (
 export const to_tools_updates_json = ([host, target, tool_name]: [
   Host,
   Target,
-  string
+  string,
 ]): string => `${to_url([host, target])}/${tool_name}.json`;
 
 export const official_releases_url = `${BASE_URL}/official_releases.json`;
 
 export const to_unified_installers = (
   o: OnlineInstallers,
-  _: void
+  _: void,
 ): UnifiedInstallers => {
   const keys = Object.entries(o["online_installers/"]).map(([key, _]) => key);
   return (host: Host): string =>

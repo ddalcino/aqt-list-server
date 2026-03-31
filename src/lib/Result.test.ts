@@ -8,7 +8,7 @@ test("Result matches on ok or error", () => {
   const matcher = (result: Result<OkType, ErrType>): string =>
     result.match(
       (ok_res) => ok_res.textContent,
-      (err_res) => err_res.errMsg
+      (err_res) => err_res.errMsg,
     );
 
   const err_content = matcher(Result.Err<OkType, ErrType>(err));
@@ -23,7 +23,7 @@ test("Result unwraps ok", () => {
   const ok: OkType = { textContent: "I am ok" };
 
   expect(Result.Ok<OkType, ErrType>(ok).unwrap().textContent).toEqual(
-    ok.textContent
+    ok.textContent,
   );
 });
 test("Error throws on unwrap", () => {
@@ -31,7 +31,7 @@ test("Error throws on unwrap", () => {
   type ErrType = { name: string; message: string };
   const err: ErrType = { name: "ErrType", message: "I am not ok" };
 
-  expect(
-    () => Result.Err<OkType, ErrType>(err).unwrap().textContent
-  ).toThrow(err);
+  expect(() => Result.Err<OkType, ErrType>(err).unwrap().textContent).toThrow(
+    err,
+  );
 });

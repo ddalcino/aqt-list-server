@@ -35,14 +35,14 @@ type FetchResult<T> = Result<T, FetchError>;
  */
 const generic_fetch_data = <T, U, V>(
   url: string,
-  json_transform: (obj: V, args: U) => T
+  json_transform: (obj: V, args: U) => T,
 ): ((json_args: U) => Promise<FetchResult<T>>) => {
   return async (json_args: U) => {
     // console.log(`fetch ${url}`);
     return fetch(url, { cache: "force-cache" })
       .then((response: Response) => response.json())
       .then((obj: V) =>
-        Result.Ok<T, FetchError>(json_transform(obj, json_args))
+        Result.Ok<T, FetchError>(json_transform(obj, json_args)),
       )
       .catch((err) => {
         return Result.Err<T, FetchError>(new FetchError(err));
@@ -52,11 +52,11 @@ const generic_fetch_data = <T, U, V>(
 
 export const fetch_versions = async (
   host: Host,
-  target: Target
+  target: Target,
 ): Promise<string[][]> => {
   return await generic_fetch_data<string[][], void, Directory>(
     to_aqt_directory([host, target]),
-    to_versions
+    to_versions,
   )().then((result) => {
     const versions = result.unwrap();
 
@@ -73,11 +73,11 @@ export const fetch_versions = async (
 export const fetch_arches = async (
   host: Host,
   target: Target,
-  version: SemVer
+  version: SemVer,
 ): Promise<string[]> => {
   return await generic_fetch_data<string[], void, AqtDirectory>(
     aqt_updates_url([host, target, version]),
-    (aqt_dir: AqtDirectory) => Object.keys(aqt_dir)
+    (aqt_dir: AqtDirectory) => Object.keys(aqt_dir),
   )().then((result) => result.unwrap());
 };
 
@@ -85,31 +85,32 @@ export const fetch_aqt_entry = (
   host: Host,
   target: Target,
   version: SemVer,
-  arch: string
+  arch: string,
 ): Promise<AqtEntry> =>
   generic_fetch_data<AqtEntry, string, AqtDirectory>(
     aqt_updates_url([host, target, version]),
-    (aqt_directory: AqtDirectory, arch: string): AqtEntry => aqt_directory[arch]
+    (aqt_directory: AqtDirectory, arch: string): AqtEntry =>
+      aqt_directory[arch],
   )(arch).then((result) => result.unwrap());
 
 export const fetch_tools = (host: Host, target: Target): Promise<string[]> =>
   generic_fetch_data<string[], void, Directory>(
     to_directory([host, target]),
-    to_tools
+    to_tools,
   )().then((result) => result.unwrap());
 
 export const fetch_tool_variants = (
   host: Host,
   target: Target,
-  tool_name: string
+  tool_name: string,
 ): Promise<PackageUpdate[]> =>
   generic_fetch_data<PackageUpdate[], void, RawPackageUpdates>(
     to_tools_updates_json([host, target, tool_name]),
-    to_tool_variants
+    to_tool_variants,
   )().then((result) => result.unwrap());
 
 export const fetch_online_installers = (): Promise<UnifiedInstallers> =>
   generic_fetch_data<UnifiedInstallers, void, OnlineInstallers>(
     official_releases_url,
-    to_unified_installers
+    to_unified_installers,
   )().then((result) => result.unwrap());

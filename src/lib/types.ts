@@ -51,7 +51,7 @@ export interface RawPackageUpdates {
   [key: string]: RawPackageUpdate;
 }
 export const to_package_updates = (
-  updates: RawPackageUpdates
+  updates: RawPackageUpdates,
 ): PackageUpdate[] => Object.values(updates).map(toPackageUpdate);
 
 const toStringArray = (o: string | string[] | null | undefined): string[] => {
@@ -70,7 +70,7 @@ const toArchiveSizes = (obj: RawPackageUpdate): Map<string, string> => {
       Object.entries(obj.ArchiveSizes).map(([k, v]: [string, string]) => [
         trimExcess(k),
         v,
-      ])
+      ]),
     );
   }
   // Otherwise, there's probably only one archive whose size is obj.CompressedSize:

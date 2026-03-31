@@ -63,8 +63,8 @@ class Selection {
         state !== undefined
           ? state
           : valueOrState === NO_SELECTION
-          ? SelectValue.Loaded
-          : SelectValue.Selected
+            ? SelectValue.Loaded
+            : SelectValue.Selected,
       );
     } else {
       // it's a SelectState
@@ -80,7 +80,7 @@ export class SelectOne {
   constructor(
     public selected: Selection,
     public options: Readonly<string[]> = [],
-    public allowEmpty: boolean = true
+    public allowEmpty: boolean = true,
   ) {}
 
   copy(): SelectOne {
@@ -90,11 +90,11 @@ export class SelectOne {
   copyWithOption(option: string): SelectOne {
     console.assert(
       this.options.length > 0,
-      "There's no need to copy a SelectOne that contains no selections"
+      "There's no need to copy a SelectOne that contains no selections",
     );
     const selected = new Selection(
       option,
-      this.options.includes(option) ? SelectValue.Selected : SelectValue.Loaded
+      this.options.includes(option) ? SelectValue.Selected : SelectValue.Loaded,
     );
     return new SelectOne(selected, [...this.options], this.allowEmpty);
   }
@@ -110,7 +110,7 @@ export class SelectNone extends SelectOne {
 export const contains = <T>(haystack: Array<Array<T>>, needle: T): boolean =>
   haystack.reduce(
     (accum: boolean, row: Array<T>) => accum || row.includes(needle),
-    false
+    false,
   );
 
 export class Versions {
@@ -118,7 +118,7 @@ export class Versions {
 
   constructor(
     public selected: Selection,
-    public versions: Array<Array<string>>
+    public versions: Array<Array<string>>,
   ) {}
 
   copy(): Versions {
@@ -128,17 +128,17 @@ export class Versions {
   copyWithOption(option: string): Versions {
     console.assert(
       this.versions.length > 0,
-      "There's no need to copy a Versions that contains no selections"
+      "There's no need to copy a Versions that contains no selections",
     );
     const selected = new Selection(
       option,
       contains(this.versions, option)
         ? SelectValue.Selected
-        : SelectValue.Loaded
+        : SelectValue.Loaded,
     );
     return new Versions(
       selected,
-      this.versions.map((row: Array<string>) => [...row])
+      this.versions.map((row: Array<string>) => [...row]),
     );
   }
 }
@@ -146,13 +146,13 @@ export class Versions {
 export class SelectMany {
   constructor(
     public state: SelectState = new SelectState(SelectValue.NotLoaded),
-    public selections: Map<string, SelectableElement> = new Map()
+    public selections: Map<string, SelectableElement> = new Map(),
   ) {}
 
   hasSelections(): boolean {
     return (
       [...this.selections.values()].findIndex(
-        (el: SelectableElement) => el.selected
+        (el: SelectableElement) => el.selected,
       ) >= 0
     );
   }
@@ -161,7 +161,7 @@ export class SelectMany {
     return (
       !this.isEmpty() &&
       [...this.selections.values()].every(
-        (el: SelectableElement) => el.selected
+        (el: SelectableElement) => el.selected,
       )
     );
   }
@@ -170,7 +170,7 @@ export class SelectMany {
     return (
       !this.isEmpty() &&
       [...this.selections.values()].every(
-        (el: SelectableElement) => !el.selected
+        (el: SelectableElement) => !el.selected,
       )
     );
   }
@@ -203,7 +203,7 @@ export class SelectMany {
     console.assert(this.selections.has(selectedOption));
     const m = new Map(this.selections);
     const { pkg, name, size } = this.selections.get(
-      selectedOption
+      selectedOption,
     ) as SelectableElement;
     m.set(selectedOption, { pkg: pkg, size: size, name: name, selected: on });
     return new SelectMany(new SelectState(SelectValue.Selected), m);
@@ -214,7 +214,7 @@ export class SelectMany {
       .map((v) => v.pkg)
       .filter((pkg) => pkg !== null) as PackageUpdate[];
     const archives = new Map(
-      Array.from(this.selections, ([key, value]) => [key, value.size || "???"])
+      Array.from(this.selections, ([key, value]) => [key, value.size || "???"]),
     );
 
     return makeSelectMany(packages.length > 0 ? packages : archives, allOn);
@@ -223,7 +223,7 @@ export class SelectMany {
 
 const makeSelectMany = (
   options: string[] | PackageUpdate[] | Map<string, string>,
-  allOn: boolean
+  allOn: boolean,
 ): SelectMany => {
   if (options instanceof Map) {
     const m = [...options.entries()].map(
@@ -235,13 +235,13 @@ const makeSelectMany = (
           name: option,
           selected: allOn,
         },
-      ]
+      ],
     );
     return new SelectMany(new SelectState(SelectValue.Loaded), new Map(m));
   } else {
     const m = options.map(
       (
-        option: string | PackageUpdate | Map<string, string>
+        option: string | PackageUpdate | Map<string, string>,
       ): [string, SelectableElement] => {
         const name =
           typeof option === "string" ? option : (option as PackageUpdate).Name;
@@ -256,7 +256,7 @@ const makeSelectMany = (
             selected: allOn,
           },
         ];
-      }
+      },
     );
     return new SelectMany(new SelectState(SelectValue.Loaded), new Map(m));
   }
@@ -266,7 +266,7 @@ export class ToolData {
   constructor(
     public name: string,
     public isLoading: boolean,
-    public variants: Map<string, SelectableElement>
+    public variants: Map<string, SelectableElement>,
   ) {}
 
   copy(): ToolData {
@@ -274,28 +274,28 @@ export class ToolData {
   }
   copyWithVariantSet(variant: string, on: boolean): ToolData {
     return this._copy((k: string, selected: boolean) =>
-      k === variant ? on : selected
+      k === variant ? on : selected,
     );
   }
   copyWithToggledVariants(on: boolean): ToolData {
     return this._copy((_k: string, _selected: boolean) => on);
   }
   _copy(
-    shouldSelect: (variantName: string, existingSelected: boolean) => boolean
+    shouldSelect: (variantName: string, existingSelected: boolean) => boolean,
   ): ToolData {
     const variants = new Map<string, SelectableElement>();
     this.variants.forEach((value: SelectableElement, variantName: string) =>
       variants.set(variantName, {
         ...value,
         selected: shouldSelect(variantName, value.selected),
-      })
+      }),
     );
     return new ToolData(this.name, this.isLoading, variants);
   }
   hasSelectedVariants(): boolean {
     return (
       [...this.variants.values()].findIndex(
-        (variant: SelectableElement) => variant.selected
+        (variant: SelectableElement) => variant.selected,
       ) >= 0
     );
   }
@@ -309,7 +309,7 @@ export class ToolData {
   installCmd(host: string, target: string): string {
     if (
       [...this.variants.values()].every(
-        (variant: SelectableElement) => variant.selected
+        (variant: SelectableElement) => variant.selected,
       )
     )
       return `aqt install-tool ${host} ${target} ${this.name}`;
@@ -318,8 +318,8 @@ export class ToolData {
       .map(
         (variant: SelectableElement) =>
           `aqt install-tool ${host} ${target} ${this.name} ${seToolInstallName(
-            variant
-          )}`
+            variant,
+          )}`,
       )
       .join("\n");
   }
@@ -333,7 +333,7 @@ export class ToolData {
 
     if (
       [...this.variants.values()].every(
-        (variant: SelectableElement) => variant.selected
+        (variant: SelectableElement) => variant.selected,
       ) &&
       actionVersion >= 3
     )
@@ -342,18 +342,18 @@ export class ToolData {
     return [...this.variants.values()]
       .filter(
         (variant: SelectableElement) =>
-          variant.selected && variant?.pkg !== null
+          variant.selected && variant?.pkg !== null,
       )
       .map((variant: SelectableElement) =>
         actionVersion >= 3
           ? action3ToolsTuple(variant.pkg as PackageUpdate)
-          : action2ToolsTuple(variant.pkg as PackageUpdate)
+          : action2ToolsTuple(variant.pkg as PackageUpdate),
       )
       .join(" ");
   }
   public static fromPackageUpdates(
     tool_name: string,
-    pkgUpdates: PackageUpdate[]
+    pkgUpdates: PackageUpdate[],
   ): ToolData {
     return new ToolData(
       tool_name,
@@ -366,14 +366,17 @@ export class ToolData {
             name: pkgUpdate.Name,
             selected: false,
           } as SelectableElement,
-        ])
-      )
+        ]),
+      ),
     );
   }
 }
 
 export class ToolSelector {
-  constructor(public name: string, public toolVariants: SelectMany) {}
+  constructor(
+    public name: string,
+    public toolVariants: SelectMany,
+  ) {}
 
   copy(): ToolSelector {
     return new ToolSelector(this.name, this.toolVariants.copy());
@@ -382,7 +385,7 @@ export class ToolSelector {
   copyWithVariantSet(selectedVariant: string, on: boolean): ToolSelector {
     return new ToolSelector(
       this.name,
-      this.toolVariants.copyWithOptionSet(selectedVariant, on)
+      this.toolVariants.copyWithOptionSet(selectedVariant, on),
     );
   }
 }
@@ -397,15 +400,15 @@ export class State {
     public version: Versions, // = new Versions(new Selection(SelectValue.NotLoaded), []),
     public arch: SelectOne = new SelectOne(
       new Selection(SelectValue.NotLoaded),
-      []
+      [],
     ),
     public modules: SelectMany = new SelectMany(),
     public archives: SelectMany = new SelectMany(),
     public installActionVersion: SelectOne = new SelectOne(
       new Selection("4 (compatible with 3)"),
       ["2", "4 (compatible with 3)"],
-      false
-    )
+      false,
+    ),
   ) {}
 
   copy(): State {
@@ -419,13 +422,13 @@ export class State {
       this.arch.copy(),
       this.modules.copy(),
       this.archives.copy(),
-      this.installActionVersion.copy()
+      this.installActionVersion.copy(),
     );
   }
   hasSelectedTools(): boolean {
     return (
       [...this.selectedTools.values()].findIndex((toolData: ToolData) =>
-        toolData.hasSelectedVariants()
+        toolData.hasSelectedVariants(),
       ) >= 0
     );
   }
@@ -454,7 +457,7 @@ export class State {
         : "\n" +
           [...this.selectedTools.values()]
             .map((toolData: ToolData) =>
-              toolData.installCmd(hostToStr(host), targetToStr(target))
+              toolData.installCmd(hostToStr(host), targetToStr(target)),
             )
             .filter((tuple: string) => tuple.length > 0)
             .join("\n");
@@ -473,16 +476,16 @@ export class State {
     const modulesFlag = this.modules.hasAllOn()
       ? " -m all"
       : this.modules.hasSelections()
-      ? " -m " + this.modules.optionsTurnedOn().join(" ")
-      : "";
+        ? " -m " + this.modules.optionsTurnedOn().join(" ")
+        : "";
     const archivesFlag =
       this.archives.hasAllOn() || this.archives.isEmpty()
         ? ""
         : this.archives.hasAllOff()
-        ? " --noarchives"
-        : " --archives " + this.archives.optionsTurnedOn().join(" ");
+          ? " --noarchives"
+          : " --archives " + this.archives.optionsTurnedOn().join(" ");
     return `aqt install-qt ${hostToStr(host)} ${targetToStr(
-      target
+      target,
     )} ${version} ${arch}${modulesFlag}${archivesFlag}${toolsLines}`;
   }
 
@@ -506,7 +509,7 @@ export class State {
       }
     })();
     const tools = [...this.selectedTools.values()].flatMap(
-      (toolData: ToolData) => toolData.selectedVariants()
+      (toolData: ToolData) => toolData.selectedVariants(),
     );
     if (tools.length === 0) {
       if (!this.version.selected.state.hasSelection()) {
@@ -539,11 +542,11 @@ export class State {
 
   toInstallQtAction(): string {
     const installQtActionVersion = parseInt(
-      this.installActionVersion.selected.value
+      this.installActionVersion.selected.value,
     );
     const toolsTuples = [...this.selectedTools.values()]
       .map((toolData: ToolData) =>
-        toolData.variantTuples(installQtActionVersion)
+        toolData.variantTuples(installQtActionVersion),
       )
       .filter((tuple: string) => tuple.length > 0)
       .join(" ");
@@ -611,7 +614,7 @@ export const StateUtils = {
       makeState(
         state.unifiedInstallers,
         newHost,
-        targetFromStr(state.target.selected.value as TargetString)
+        targetFromStr(state.target.selected.value as TargetString),
       ),
 
   withTargetLoadingVersionsTools:
@@ -620,13 +623,13 @@ export const StateUtils = {
       makeState(
         state.unifiedInstallers,
         hostFromStr(state.host.selected.value as HostString),
-        newTarget
+        newTarget,
       ),
 
   withInstallersVersionsToolsLoaded: (
     unifiedInstallers: UnifiedInstallers,
     versions: string[][],
-    tools: string[]
+    tools: string[],
   ): StateReducer => {
     const versionsState =
       versions.length > 0 ? SelectValue.Loaded : SelectValue.NotLoaded;
@@ -639,7 +642,7 @@ export const StateUtils = {
         state.target.copy(),
         new SelectNone(toolsState, tools),
         new Map(),
-        new Versions(new Selection(versionsState), versions)
+        new Versions(new Selection(versionsState), versions),
       );
   },
 
@@ -650,13 +653,13 @@ export const StateUtils = {
         return StateUtils.withInstallersVersionsToolsLoaded(
           state.unifiedInstallers,
           [...state.version.versions],
-          [...state.toolNames.options]
+          [...state.toolNames.options],
         )(state);
       }
       const newState = _.cloneDeep(state);
       newState.version.selected = new Selection(
         newVersion,
-        SelectValue.Selected
+        SelectValue.Selected,
       );
       newState.arch = new SelectOne(new Selection(SelectValue.Loading), []);
       newState.modules = new SelectMany();
@@ -695,11 +698,11 @@ export const StateUtils = {
     const newState = _.cloneDeep(state);
     newState.modules = makeSelectMany(
       to_package_updates(aqt_entry.modules),
-      false
+      false,
     );
     newState.archives = makeSelectMany(
       new Map(Object.entries(aqt_entry.archives)),
-      true
+      true,
     );
     return newState;
   },
@@ -777,7 +780,7 @@ export const StateUtils = {
       const toolData = state.selectedTools.get(toolName) as ToolData;
       newState.selectedTools.set(
         toolName,
-        toolData.copyWithVariantSet(toolVariant, on)
+        toolData.copyWithVariantSet(toolVariant, on),
       );
       return newState;
     },
@@ -789,7 +792,7 @@ export const StateUtils = {
       const toolData = state.selectedTools.get(toolName) as ToolData;
       newState.selectedTools.set(
         toolName,
-        toolData.copyWithToggledVariants(on)
+        toolData.copyWithToggledVariants(on),
       );
       return newState;
     },
@@ -798,7 +801,7 @@ export const StateUtils = {
 export const makeState = (
   installers: UnifiedInstallers,
   host?: Host,
-  target?: Target
+  target?: Target,
 ): State => {
   const [_host, _target, _targets] = get_host_target_targets(host, target);
   return new State(
@@ -806,15 +809,15 @@ export const makeState = (
     new SelectOne(
       new Selection(hostToStr(_host), SelectValue.Selected),
       hosts.map(hostToStr),
-      false
+      false,
     ),
     new SelectOne(
       new Selection(targetToStr(_target), SelectValue.Selected),
       _targets.map(targetToStr),
-      false
+      false,
     ),
     new SelectNone(SelectValue.Loading),
     new Map(),
-    new Versions(new Selection(SelectValue.Loading), [])
+    new Versions(new Selection(SelectValue.Loading), []),
   );
 };

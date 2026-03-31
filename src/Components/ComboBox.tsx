@@ -46,13 +46,13 @@ export const options = (content: SelectOne, key_id: string): JSX.Element[] => {
   return prefix.concat(
     content.options.map((option, index) => (
       <Option value={option} key={`${key_id}-${index}`} />
-    ))
+    )),
   );
 };
 
 export const optionsQtVersions = (
   content: Versions,
-  key_id: string
+  key_id: string,
 ): JSX.Element[] => {
   const selectState = content.selected.state;
   const prefix = content.allowEmpty ? [emptyOption(key_id)] : [];
@@ -75,7 +75,7 @@ export const optionsQtVersions = (
             ))}
           </optgroup>
         );
-      })
+      }),
   );
 };
 

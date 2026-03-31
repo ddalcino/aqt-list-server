@@ -12,7 +12,7 @@ const [win_desktop_dir_json] = ["windows-desktop-directory.json"].map(
   (filename: string) =>
     fsPromises
       .readFileSync(`src/aqt-list-qt-ts/test_data/${filename}`)
-      .toString()
+      .toString(),
 );
 
 beforeEach(() => {
@@ -26,7 +26,7 @@ test.skip("fetch versions via HTTP", async () => {
   const [host, target] = [Host.windows, Target.desktop];
   const actual = await fetch_versions(host, target);
   const expected = expect_win_desktop.qt.qt.map((major_minor_row: string) =>
-    major_minor_row.split(" ")
+    major_minor_row.split(" "),
   );
   expect(actual).toEqual(expected);
 });
