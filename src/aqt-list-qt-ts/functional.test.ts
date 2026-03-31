@@ -19,8 +19,7 @@ import fetch from 'node-fetch';
 
 // Use real global fetch for tests that use real HTTP fetching (every test in this file)
 if (!globalThis.fetch) {
-  // @ts-ignore
-  globalThis.fetch = fetch;
+  globalThis.fetch = fetch as unknown as typeof globalThis.fetch;
 }
 
 const exec_promise = util.promisify(exec);
