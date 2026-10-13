@@ -8,6 +8,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Explicitly limit the scope of the default GITHUB_TOKEN
+permissions:
+  contents: write    # Required by peaceiris/actions-gh-pages to push to the gh-pages branch
+  pull-requests: read # Good practice for PR triggers
+
 
 jobs:
   build_test:
